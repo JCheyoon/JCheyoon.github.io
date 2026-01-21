@@ -1,9 +1,8 @@
-import { StarIcon } from "lucide-react";
-import { Button } from "@repo/shadcn-ui/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardTitle,
 } from "@repo/shadcn-ui/components/ui/card";
 export default function CardProduct() {
@@ -13,16 +12,19 @@ export default function CardProduct() {
         <CardContent className="px-3 text-center">
           <div className="aspect-square rounded-md bg-gray-100 mb-2">
             <div className="flex items-center justify-center h-full text-muted-foreground text-xs">
-              Product Image
+              Image
             </div>
           </div>
-          <CardTitle className="text-sm mb-1">Wireless Headphones</CardTitle>
+          <CardTitle className="text-sm mb-1">Jung Cheyoon</CardTitle>
           <CardDescription className="text-xs mb-2 line-clamp-2">
-            title
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium
+            suscipit ea accusamus pariatur numquam eaque recusandae laboriosam
+            impedit sequi ut.
           </CardDescription>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-bold">$199</span>
-          </div>
+          <CardFooter className="flex justify-center gap-3 px-3">
+            <span className="text-sm font-bold">Github</span>
+            <span className="text-sm font-bold">Linkdin</span>
+          </CardFooter>
         </CardContent>
       </Card>
     </div>

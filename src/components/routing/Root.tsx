@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Navbar04 } from "@/components/ui/shadcn-io/navbar-04";
-import CardProduct from "@/components/ui/shadcn-io/cardProduct/cardProduct";
-import SidebarMenu from "@/components/ui/shadcn-io/sidebarMenu/sidebarMenu";
+import CardProduct from "@/components/ui/cardProduct";
+import SidebarMenu from "@/components/ui/sidebarMenu";
 
 const Root = () => {
   return (
@@ -14,7 +14,7 @@ const Root = () => {
               <CardProduct />
               <SidebarMenu />
             </div>
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 overflow-auto pl-6">
               <Outlet />
             </div>
           </div>

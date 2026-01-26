@@ -5,6 +5,7 @@ import SidebarMenu from "@/components/ui/sidebarMenu";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Category } from "@/types/types";
+import Footer from "../ui/footer";
 
 const dummyCategories: Category[] = [
   { id: 1, category: "Development" },
@@ -52,6 +53,7 @@ const Root = () => {
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     </>
   );

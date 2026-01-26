@@ -1,5 +1,5 @@
 import { useOutletContext } from "react-router-dom";
-import PostList from "@repo/components/ui/postList";
+import PostList from "@/components/home/postList";
 import type { OutletContext } from "@/types/types";
 
 const dummyPosts = [

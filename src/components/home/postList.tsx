@@ -19,7 +19,10 @@ export default function PostList({ posts }: PostListProps) {
   return (
     <div className="grid gap-6">
       {posts.map((post) => (
-        <Card key={post.id} className="hover:shadow-lg transition-shadow">
+        <Card
+          key={post.id + post.title}
+          className="hover:shadow-lg transition-shadow"
+        >
           <CardContent className="p-6">
             <p className="text-sm font-medium text-muted-foreground mb-1">
               {post.category}

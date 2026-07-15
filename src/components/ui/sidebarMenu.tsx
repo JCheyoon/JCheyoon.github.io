@@ -22,10 +22,10 @@ const SidebarMenu = ({
             </h2>
           </div>
           <ul className="flex flex-col gap-2">
-            {categories.map((category) => {
+            {categories.map((category, index) => {
               const isActive = selectedCategory === category;
               return (
-                <li key={category}>
+                <li key={category + index}>
                   <button
                     onClick={() => onSelect(category)}
                     className={`

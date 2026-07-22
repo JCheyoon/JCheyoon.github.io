@@ -8,7 +8,6 @@ import {
 } from "react";
 import type { ReactNode } from "react";
 import {
-  getAdminEmailFromToken,
   isAdminJwtUsable,
   persistAdminToken,
   readStoredAdminToken,
@@ -16,7 +15,6 @@ import {
 
 interface AdminAuthContextValue {
   token: string | null;
-  adminEmail: string | null;
   isAuthenticated: boolean;
   signIn: (token: string) => void;
   signOut: () => void;
@@ -38,7 +36,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     persistAdminToken(token);
   }, [token]);
 
-  const adminEmail = useMemo(() => getAdminEmailFromToken(token), [token]);
   const isAuthenticated = Boolean(token && isAdminJwtUsable(token));
 
   const signIn = useCallback((nextToken: string) => {
@@ -50,8 +47,8 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ token, adminEmail, isAuthenticated, signIn, signOut }),
-    [token, adminEmail, isAuthenticated, signIn, signOut],
+    () => ({ token, isAuthenticated, signIn, signOut }),
+    [token, isAuthenticated, signIn, signOut],
   );
 
   return (

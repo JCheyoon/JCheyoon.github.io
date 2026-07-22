@@ -11,7 +11,7 @@ const navItemClass = ({ isActive }: { isActive: boolean }) =>
 
 export default function AdminLayout() {
   const navigate = useNavigate();
-  const { adminEmail, signOut } = useAdminAuth();
+  const { signOut } = useAdminAuth();
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.08),_transparent_36%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] text-slate-950">
@@ -21,15 +21,8 @@ export default function AdminLayout() {
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
               Admin Console
             </p>
-            <h1 className="mt-1 text-xl font-semibold">Post publisher</h1>
-            <p className="text-sm text-slate-500">
-              JWT stateless auth, single-admin mode
-            </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-600">
-              {adminEmail ?? "unknown admin"}
-            </span>
             <button
               type="button"
               onClick={() => {
@@ -53,14 +46,6 @@ export default function AdminLayout() {
                 New post
               </NavLink>
             </nav>
-            <div className="mt-6 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
-              <p className="font-medium text-slate-800">Backend contract</p>
-              <p className="mt-2 leading-6">
-                <span>POST /api/admin/login</span> issues a JWT.{" "}
-                <span>POST /api/admin/posts</span> expects{" "}
-                <span>Authorization: Bearer token</span>.
-              </p>
-            </div>
           </aside>
 
           <main className="rounded-3xl border border-slate-200/80 bg-white/90 p-5 shadow-sm backdrop-blur md:p-8">

@@ -9,9 +9,12 @@ export interface OutletContext {
 
 export type Post = {
   id: number;
-  category: string;
   title: string;
-  description: string;
-  author: string;
-  date: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  tags: string[];
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
 };

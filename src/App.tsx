@@ -17,6 +17,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import AdminLogin from "./components/admin/AdminLogin";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import AdminPostEditor from "./components/admin/AdminPostEditor";
+import { ApiProvider } from "./lib/api-context";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +29,7 @@ const router = createBrowserRouter(
         <Route path="about" element={<About />} />
         <Route path="archive" element={<Archive />} />
         <Route path="portfolio" element={<Portfolio />} />
-        <Route path="post/:id" element={<Post />} />
+        <Route path="post/:slug" element={<Post />} />
       </Route>
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin" element={<RequireAuth />}>
@@ -43,11 +44,13 @@ const router = createBrowserRouter(
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AdminAuthProvider>
-        <RouterProvider router={router} />
-      </AdminAuthProvider>
-    </QueryClientProvider>
+    <ApiProvider>
+      <QueryClientProvider client={queryClient}>
+        <AdminAuthProvider>
+          <RouterProvider router={router} />
+        </AdminAuthProvider>
+      </QueryClientProvider>
+    </ApiProvider>
   );
 }
 

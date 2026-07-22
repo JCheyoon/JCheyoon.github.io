@@ -1,57 +1,86 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { fetchAllPosts, deletePost } from "@/lib/posts";
 import { useAdminAuth } from "./AdminAuthProvider";
+import type { Post } from "@/types/types";
 
 export default function AdminDashboard() {
-  const { adminEmail } = useAdminAuth();
+  const { token } = useAdminAuth();
+  const queryClient = useQueryClient();
+
+  const { data: posts = [] } = useQuery<Post[]>({
+    queryKey: ["admin", "posts"],
+    queryFn: fetchAllPosts,
+  });
+
+  const del = useMutation({
+    mutationFn: (id: number) => deletePost(id, token!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "posts"] });
+    },
+  });
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-          Dashboard
-        </p>
-        <h2 className="mt-2 text-3xl font-semibold text-slate-950">
-          Post control room
-        </h2>
-        <p className="mt-2 max-w-2xl text-slate-600">
-          로그인은 JWT 기반이며, 이 화면에서는 업로드 전용 작업만 하도록
-          분리합니다.
-        </p>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-          <p className="text-sm text-slate-500">Signed in as</p>
-          <p className="mt-2 break-all text-lg font-semibold text-slate-950">
-            {adminEmail ?? "unknown"}
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
+            Dashboard
           </p>
         </div>
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-          <p className="text-sm text-slate-500">Protection model</p>
-          <p className="mt-2 text-lg font-semibold text-slate-950">
-            JWT bearer only
-          </p>
-        </div>
-        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-          <p className="text-sm text-slate-500">Upload target</p>
-          <p className="mt-2 text-lg font-semibold text-slate-950">
-            /api/admin/posts
-          </p>
-        </div>
+        <Link
+          to="/admin/posts/new"
+          className="rounded-2xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+        >
+          + New post
+        </Link>
       </div>
 
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h3 className="text-xl font-semibold text-slate-950">Quick actions</h3>
-        <p className="mt-2 text-sm text-slate-600">
-          글 작성 화면으로 이동해서 제목, slug, 본문, 상태를 입력한 뒤
-          업로드하세요.
-        </p>
-        <Link
-          to="/admin/posts/new"
-          className="mt-5 inline-flex rounded-2xl bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
-        >
-          Create new post
-        </Link>
+        <h3 className="text-xl font-semibold text-slate-950">
+          All posts ({posts.length})
+        </h3>
+
+        <div className="mt-4 space-y-3">
+          {posts.length === 0 && (
+            <p className="text-sm text-slate-500">No posts yet.</p>
+          )}
+
+          {posts.map((post) => (
+            <div
+              key={post.id}
+              className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="truncate text-sm font-medium text-slate-900">
+                    {post.title}
+                  </span>
+                  {!post.published && (
+                    <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">
+                      Draft
+                    </span>
+                  )}
+                </div>
+                <p className="mt-0.5 text-xs text-slate-400">
+                  {new Date(post.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm("Delete this post?")) {
+                    del.mutate(post.id);
+                  }
+                }}
+                disabled={del.isPending}
+                className="ml-4 shrink-0 rounded-full px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+              >
+                Delete
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

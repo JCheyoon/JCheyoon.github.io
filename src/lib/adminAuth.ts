@@ -1,3 +1,5 @@
+import { apiRequest } from "./api";
+
 export interface AdminJwtPayload {
   sub?: string;
   email?: string;
@@ -81,52 +83,30 @@ export interface AdminLoginResponse {
 
 export interface CreateAdminPostPayload {
   title: string;
-  slug: string;
   excerpt: string;
   content: string;
-  status: "draft" | "published";
-}
-
-const adminApiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "";
-
-function buildAdminApiUrl(path: string): string {
-  return `${adminApiBaseUrl}${path}`;
+  tags: string[];
+  published: boolean;
 }
 
 export async function loginAdmin(
   credentials: AdminLoginCredentials,
 ): Promise<AdminLoginResponse> {
-  const response = await fetch(buildAdminApiUrl("/api/admin/login"), {
+  return apiRequest<AdminLoginResponse>("/api/auth/login", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(credentials),
+    body: credentials,
   });
-
-  if (!response.ok) {
-    throw new Error("Admin login failed");
-  }
-
-  return (await response.json()) as AdminLoginResponse;
 }
 
 export async function createAdminPost(
   token: string,
   payload: CreateAdminPostPayload,
 ): Promise<unknown> {
-  const response = await fetch(buildAdminApiUrl("/api/admin/posts"), {
+  return apiRequest<unknown>("/api/posts", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(payload),
+    body: payload,
   });
-
-  if (!response.ok) {
-    throw new Error("Failed to create post");
-  }
-
-  return response.json();
 }

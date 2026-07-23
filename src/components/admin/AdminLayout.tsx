@@ -45,6 +45,9 @@ export default function AdminLayout() {
               <NavLink to="/admin/posts/new" className={navItemClass}>
                 New post
               </NavLink>
+              <NavLink to="/admin/categories" className={navItemClass}>
+                Categories
+              </NavLink>
             </nav>
           </aside>
 

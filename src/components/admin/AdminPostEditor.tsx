@@ -1,21 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useAdminAuth } from "./AdminAuthProvider";
 import { createAdminPost } from "@/lib/adminAuth";
+import { fetchPost, updatePost } from "@/lib/posts";
+import { useCategoryCache, flattenCategories } from "@/lib/category-cache";
 import TextEditor from "./textEditor";
 
-const tagsPlaceholder = "Type a tag and press Enter";
-
 export default function AdminPostEditor() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { token } = useAdminAuth();
+  const isEdit = Boolean(id);
+
+  const { data: categoryTree = [] } = useCategoryCache();
+  const flatCats = flattenCategories(categoryTree);
+
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [categoryId, setCategoryId] = useState<number | "">("");
   const [status, setStatus] = useState<"draft" | "published">("draft");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  // Load existing post data when editing
+  const { data: existing } = useQuery({
+    queryKey: ["admin", "post", id],
+    queryFn: () => fetchPost(Number(id!), token!),
+    enabled: isEdit && !!token,
+  });
+
+  useEffect(() => {
+    if (!existing) return;
+    setTitle(existing.title);
+    setExcerpt(existing.excerpt);
+    setContent(existing.content);
+    setTags(existing.tags);
+    setCategoryId(existing.categoryId ?? "");
+    setStatus(existing.published ? "published" : "draft");
+  }, [existing]);
 
   const addTag = () => {
     const trimmed = tagInput.trim();
@@ -39,7 +66,6 @@ export default function AdminPostEditor() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // flush any remaining tag input before submit
     const finalTags = tagInput.trim()
       ? tags.includes(tagInput.trim())
         ? tags
@@ -55,17 +81,27 @@ export default function AdminPostEditor() {
     setMessage(null);
 
     try {
-      await createAdminPost(token, {
+      const payload = {
         title,
         excerpt,
         content,
         tags: finalTags,
+        categoryId: categoryId !== "" ? Number(categoryId) : null,
         published: status === "published",
-      });
-      setMessage("포스트가 업로드되었습니다.");
+      };
+
+      if (isEdit) {
+        await updatePost(Number(id), payload, token);
+        setMessage("포스트가 수정되었습니다.");
+      } else {
+        await createAdminPost(token, payload);
+        setMessage("포스트가 업로드되었습니다.");
+      }
     } catch {
       setMessage(
-        "포스트 업로드에 실패했습니다. 백엔드 엔드포인트와 JWT 검증을 확인하세요.",
+        isEdit
+          ? "포스트 수정에 실패했습니다."
+          : "포스트 업로드에 실패했습니다.",
       );
     } finally {
       setIsSubmitting(false);
@@ -76,10 +112,10 @@ export default function AdminPostEditor() {
     <div className="space-y-6">
       <div>
         <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-          New post
+          {isEdit ? "Edit post" : "New post"}
         </p>
         <h2 className="mt-2 text-3xl font-semibold text-slate-950">
-          Write and publish
+          {isEdit ? "Edit and update" : "Write and publish"}
         </h2>
       </div>
 
@@ -94,6 +130,24 @@ export default function AdminPostEditor() {
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 outline-none transition focus:border-slate-950"
               placeholder="Post title"
             />
+          </label>
+
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-slate-700">Category</span>
+            <select
+              value={categoryId}
+              onChange={(e) =>
+                setCategoryId(e.target.value ? Number(e.target.value) : "")
+              }
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 outline-none transition focus:border-slate-950"
+            >
+              <option value="">— No category —</option>
+              {flatCats.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
 
@@ -130,7 +184,7 @@ export default function AdminPostEditor() {
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={handleTagKeyDown}
               className="min-w-[120px] flex-1 bg-transparent px-1 py-1 text-slate-950 outline-none placeholder:text-slate-400"
-              placeholder={tagsPlaceholder}
+              placeholder="Type a tag and press Enter"
             />
           </div>
         </label>
@@ -155,13 +209,28 @@ export default function AdminPostEditor() {
             </select>
           </label>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isSubmitting ? "Uploading..." : "Upload post"}
-          </button>
+          <div className="flex gap-3">
+            {isEdit && (
+              <button
+                type="button"
+                onClick={() => navigate("/admin")}
+                className="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
+              >
+                Cancel
+              </button>
+            )}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSubmitting
+                ? "Uploading..."
+                : isEdit
+                  ? "Update post"
+                  : "Upload post"}
+            </button>
+          </div>
         </div>
 
         {message ? (

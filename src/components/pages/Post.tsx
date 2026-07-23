@@ -1,10 +1,13 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPostBySlug } from "@/lib/posts";
+import { useCategoryCache, flattenCategories } from "@/lib/category-cache";
 import type { Post } from "@/types/types";
 
 const PostPage = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { data: categoryTree = [] } = useCategoryCache();
+  const flatCats = flattenCategories(categoryTree);
 
   const {
     data: post,
@@ -37,10 +40,17 @@ const PostPage = () => {
     day: "numeric",
   });
 
+  const catName = flatCats.find((c) => c.id === post.categoryId)?.name;
+
   return (
     <article className="max-w-3xl space-y-6">
       <div className="space-y-3">
         <div className="flex flex-wrap gap-2">
+          {catName && (
+            <span className="rounded-full bg-slate-800 px-3 py-1 text-xs text-white">
+              {catName}
+            </span>
+          )}
           {post.tags.map((tag) => (
             <span
               key={tag}

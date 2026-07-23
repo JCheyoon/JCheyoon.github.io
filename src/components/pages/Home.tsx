@@ -2,15 +2,21 @@ import { useOutletContext } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import PostList from "@/components/home/postList";
 import { fetchPosts } from "@/lib/posts";
-import type { Post, OutletContext } from "@/types/types";
+import { useCategoryCache, flattenCategories } from "@/lib/category-cache";
+import type { OutletContext } from "@/types/types";
 
 const Home = () => {
   const { selectedCategory } = useOutletContext<OutletContext>();
-  const tag = selectedCategory !== "All" ? selectedCategory : undefined;
+  const { data: categoryTree = [] } = useCategoryCache();
+  const flatCats = flattenCategories(categoryTree);
 
-  const { data: posts = [] } = useQuery<Post[]>({
-    queryKey: ["posts", tag],
-    queryFn: () => fetchPosts(tag),
+  // Map selected name → slug. "All" means no filter.
+  const selected = flatCats.find((c) => c.name === selectedCategory);
+  const categorySlug = selectedCategory === "All" ? undefined : selected?.slug;
+
+  const { data: posts = [] } = useQuery({
+    queryKey: ["posts", categorySlug],
+    queryFn: () => fetchPosts(undefined, categorySlug),
     staleTime: 30_000,
   });
 

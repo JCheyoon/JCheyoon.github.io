@@ -1,6 +1,11 @@
 export type Category = {
   id: number;
-  category: string;
+  name: string;
+  slug: string;
+  parentId: number | null;
+  children: Category[];
+  createdAt: string;
+  updatedAt: string;
 };
 
 export interface OutletContext {
@@ -14,6 +19,7 @@ export type Post = {
   excerpt: string;
   content: string;
   tags: string[];
+  categoryId: number | null;
   published: boolean;
   createdAt: string;
   updatedAt: string;

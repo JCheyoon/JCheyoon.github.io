@@ -17,6 +17,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import AdminLogin from "./components/admin/AdminLogin";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import AdminPostEditor from "./components/admin/AdminPostEditor";
+import CategoryManager from "./components/admin/CategoryManager";
 import { ApiProvider } from "./lib/api-context";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,8 @@ const router = createBrowserRouter(
         <Route element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="posts/new" element={<AdminPostEditor />} />
+          <Route path="posts/:id/edit" element={<AdminPostEditor />} />
+          <Route path="categories" element={<CategoryManager />} />
         </Route>
       </Route>
     </>,

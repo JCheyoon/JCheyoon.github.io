@@ -46,40 +46,50 @@ export default function AdminDashboard() {
             <p className="text-sm text-slate-500">No posts yet.</p>
           )}
 
-          {posts.map((post) => (
-            <div
-              key={post.id}
-              className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
-            >
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="truncate text-sm font-medium text-slate-900">
-                    {post.title}
-                  </span>
-                  {!post.published && (
-                    <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">
-                      Draft
-                    </span>
-                  )}
-                </div>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  {new Date(post.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  if (window.confirm("Delete this post?")) {
-                    del.mutate(post.id);
-                  }
-                }}
-                disabled={del.isPending}
-                className="ml-4 shrink-0 rounded-full px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+          {posts.map((post) => {
+            return (
+              <div
+                key={post.id}
+                className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3"
               >
-                Delete
-              </button>
-            </div>
-          ))}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="truncate text-sm font-medium text-slate-900">
+                      {post.title}
+                    </span>
+                    {!post.published && (
+                      <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">
+                        Draft
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-0.5 text-xs text-slate-400">
+                    {new Date(post.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Link
+                    to={`/admin/posts/${post.id}/edit`}
+                    className="shrink-0 rounded-full px-3 py-1 text-xs font-medium text-slate-600 transition hover:bg-slate-100"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm("Delete this post?")) {
+                        del.mutate(post.id);
+                      }
+                    }}
+                    disabled={del.isPending}
+                    className="shrink-0 rounded-full px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

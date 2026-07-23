@@ -1,13 +1,14 @@
 import { Card, CardContent } from "@repo/shadcn-ui/components/ui/card";
+import type { Category } from "@/types/types";
 
 interface SidebarMenuProps {
-  categories: string[];
+  tree: Category[];
   selectedCategory: string;
   onSelect: (category: string) => void;
 }
 
 const SidebarMenu = ({
-  categories,
+  tree,
   selectedCategory,
   onSelect,
 }: SidebarMenuProps) => {
@@ -17,36 +18,75 @@ const SidebarMenu = ({
         <div>
           <div className="flex items-center mb-4">
             <span className="w-1 h-6 bg-muted mr-2 rounded" />
-            <h2 className="text-lg font-semibold text-muted-foreground">
+            <h2 className="text-lg font-semibold text-muted-foreground pl-1">
               Categories
             </h2>
           </div>
-          <ul className="flex flex-col gap-2">
-            {categories.map((category, index) => {
-              const isActive = selectedCategory === category;
-              return (
-                <li key={category + index}>
-                  <button
-                    onClick={() => onSelect(category)}
-                    className={`
-                      w-full text-left rounded-md px-4 py-2 text-sm transition
-                      ${
-                        isActive
-                          ? "bg-muted text-foreground font-semibold"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                      }
-                    `}
-                  >
-                    {category}
-                  </button>
-                </li>
-              );
-            })}
+          <ul className="flex flex-col gap-1">
+            <CategoryButton
+              label="All"
+              isActive={selectedCategory === "All"}
+              onClick={() => onSelect("All")}
+            />
+
+            {tree.map((cat) => (
+              <li key={cat.id}>
+                <CategoryButton
+                  label={cat.name}
+                  isActive={selectedCategory === cat.name}
+                  onClick={() => onSelect(cat.name)}
+                />
+                {cat.children && cat.children.length > 0 && (
+                  <ul className="mt-1 gap-1">
+                    {cat.children.map((child) => (
+                      <li key={child.id}>
+                        <span className="bg-slate-200" />
+                        <CategoryButton
+                          label={child.name}
+                          isActive={selectedCategory === child.name}
+                          onClick={() => onSelect(child.name)}
+                          isSub
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
           </ul>
         </div>
       </CardContent>
     </Card>
   );
 };
+
+function CategoryButton({
+  label,
+  isActive,
+  onClick,
+  isSub,
+}: {
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+  isSub?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        w-full text-left rounded-md px-3 py-2 text-sm transition flex items-center gap-2
+        ${
+          isActive
+            ? "bg-muted text-foreground font-semibold"
+            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+        }
+      `}
+    >
+      {isSub && <span className="text-slate-300 text-xs">└</span>}
+      {label}
+    </button>
+  );
+}
 
 export default SidebarMenu;

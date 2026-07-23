@@ -86,6 +86,7 @@ export interface CreateAdminPostPayload {
   excerpt: string;
   content: string;
   tags: string[];
+  categoryId?: number | null;
   published: boolean;
 }
 

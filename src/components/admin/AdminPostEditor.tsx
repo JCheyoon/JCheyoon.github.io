@@ -111,10 +111,10 @@ export default function AdminPostEditor() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
+        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground">
           {isEdit ? "Edit post" : "New post"}
         </p>
-        <h2 className="mt-2 text-3xl font-semibold text-slate-950">
+        <h2 className="mt-2 text-3xl font-semibold text-foreground">
           {isEdit ? "Edit and update" : "Write and publish"}
         </h2>
       </div>
@@ -122,24 +122,26 @@ export default function AdminPostEditor() {
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div className="grid gap-5 md:grid-cols-2">
           <label className="block space-y-2">
-            <span className="text-sm font-medium text-slate-700">Title</span>
+            <span className="text-sm font-medium text-foreground">Title</span>
             <input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               required
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 outline-none transition focus:border-slate-950"
+              className="w-full rounded-2xl border border-border bg-muted/50 px-4 py-3 text-foreground outline-none transition focus:border-primary"
               placeholder="Post title"
             />
           </label>
 
           <label className="block space-y-2">
-            <span className="text-sm font-medium text-slate-700">Category</span>
+            <span className="text-sm font-medium text-foreground">
+              Category
+            </span>
             <select
               value={categoryId}
               onChange={(e) =>
                 setCategoryId(e.target.value ? Number(e.target.value) : "")
               }
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 outline-none transition focus:border-slate-950"
+              className="w-full rounded-2xl border border-border bg-muted/50 px-4 py-3 text-foreground outline-none transition focus:border-primary"
             >
               <option value="">— No category —</option>
               {flatCats.map((cat) => (
@@ -152,28 +154,28 @@ export default function AdminPostEditor() {
         </div>
 
         <label className="block space-y-2">
-          <span className="text-sm font-medium text-slate-700">Excerpt</span>
+          <span className="text-sm font-medium text-foreground">Excerpt</span>
           <input
             value={excerpt}
             onChange={(event) => setExcerpt(event.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 outline-none transition focus:border-slate-950"
+            className="w-full rounded-2xl border border-border bg-muted/50 px-4 py-3 text-foreground outline-none transition focus:border-primary"
             placeholder="Short summary for list pages"
           />
         </label>
 
         <label className="block space-y-2">
-          <span className="text-sm font-medium text-slate-700">Tags</span>
-          <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 transition focus-within:border-slate-950">
+          <span className="text-sm font-medium text-foreground">Tags</span>
+          <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-muted/50 px-3 py-2 transition focus-within:border-primary">
             {tags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-1 rounded-full bg-slate-200 px-3 py-1 text-sm text-slate-700"
+                className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-sm text-foreground"
               >
                 {tag}
                 <button
                   type="button"
                   onClick={() => removeTag(tag)}
-                  className="text-slate-400 hover:text-slate-700"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   &times;
                 </button>
@@ -183,7 +185,7 @@ export default function AdminPostEditor() {
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={handleTagKeyDown}
-              className="min-w-[120px] flex-1 bg-transparent px-1 py-1 text-slate-950 outline-none placeholder:text-slate-400"
+              className="min-w-[120px] flex-1 bg-transparent px-1 py-1 text-foreground outline-none placeholder:text-muted-foreground"
               placeholder="Type a tag and press Enter"
             />
           </div>
@@ -196,13 +198,13 @@ export default function AdminPostEditor() {
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <label className="space-y-2">
-            <span className="text-sm font-medium text-slate-700">Status</span>
+            <span className="text-sm font-medium text-foreground">Status</span>
             <select
               value={status}
               onChange={(event) =>
                 setStatus(event.target.value as "draft" | "published")
               }
-              className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-950 outline-none transition focus:border-slate-950"
+              className="block rounded-2xl border border-border bg-muted/50 px-4 py-3 text-foreground outline-none transition focus:border-primary"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
@@ -214,7 +216,7 @@ export default function AdminPostEditor() {
               <button
                 type="button"
                 onClick={() => navigate("/admin")}
-                className="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
+                className="rounded-2xl border border-border px-5 py-3 text-sm font-medium text-muted-foreground transition hover:bg-muted"
               >
                 Cancel
               </button>
@@ -222,7 +224,7 @@ export default function AdminPostEditor() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-2xl bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting
                 ? "Uploading..."
@@ -234,7 +236,7 @@ export default function AdminPostEditor() {
         </div>
 
         {message ? (
-          <p className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+          <p className="rounded-2xl border border-border bg-muted/50 px-4 py-3 text-sm text-foreground">
             {message}
           </p>
         ) : null}

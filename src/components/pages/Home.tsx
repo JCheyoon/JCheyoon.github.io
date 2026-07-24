@@ -25,14 +25,9 @@ const Home = () => {
 
   return (
     <div className="space-y-6">
-      <section>
-        <h1 className="text-2xl font-bold tracking-tight">
-          Welcome to cheyoon blog 👋
-        </h1>
-      </section>
       {selectedCategory !== "All" && (
         <section className="space-y-1">
-          <h2 className="text-sm text-slate-500">
+          <h2 className="text-sm text-muted-foreground">
             {postCount} {postLabel} in this category
           </h2>
         </section>

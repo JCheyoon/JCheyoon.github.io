@@ -5,8 +5,8 @@ const navItemClass = ({ isActive }: { isActive: boolean }) =>
   [
     "rounded-2xl px-4 py-3 text-sm font-medium transition",
     isActive
-      ? "bg-slate-950 text-white shadow-lg"
-      : "text-slate-600 hover:bg-slate-100",
+      ? "bg-primary text-primary-foreground shadow-lg"
+      : "text-muted-foreground hover:bg-muted",
   ].join(" ");
 
 export default function AdminLayout() {
@@ -14,11 +14,11 @@ export default function AdminLayout() {
   const { signOut } = useAdminAuth();
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.08),_transparent_36%),linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] text-slate-950">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-6 lg:px-8">
-        <header className="flex flex-col gap-4 rounded-3xl border border-slate-200/80 bg-white/80 p-4 shadow-sm backdrop-blur md:flex-row md:items-center md:justify-between">
+        <header className="flex flex-col gap-4 rounded-3xl border border-border/80 bg-card/80 p-4 shadow-sm backdrop-blur md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground">
               Admin Console
             </p>
           </div>
@@ -29,7 +29,7 @@ export default function AdminLayout() {
                 signOut();
                 navigate("/admin/login", { replace: true });
               }}
-              className="rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
+              className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
             >
               Logout
             </button>
@@ -37,7 +37,7 @@ export default function AdminLayout() {
         </header>
 
         <div className="mt-6 grid flex-1 gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
-          <aside className="rounded-3xl border border-slate-200/80 bg-white/80 p-4 shadow-sm backdrop-blur">
+          <aside className="rounded-3xl border border-border/80 bg-card/80 p-4 shadow-sm backdrop-blur">
             <nav className="flex flex-col gap-2">
               <NavLink to="/admin" end className={navItemClass}>
                 Dashboard

@@ -52,7 +52,7 @@ export default function AdminLogin() {
         </div>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <label className="block space-y-2">
-            <span className="text-sm font-medium text-slate-700">Email</span>
+            <span className="text-sm font-medium text-foreground">Email</span>
             <input
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -64,7 +64,9 @@ export default function AdminLogin() {
           </label>
 
           <label className="block space-y-2">
-            <span className="text-sm font-medium text-slate-700">Password</span>
+            <span className="text-sm font-medium text-foreground">
+              Password
+            </span>
             <input
               value={password}
               onChange={(event) => setPassword(event.target.value)}

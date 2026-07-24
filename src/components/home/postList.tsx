@@ -6,7 +6,7 @@ interface PostListProps {
   posts: Post[];
 }
 
-const POSTS_PER_PAGE = 6;
+const POSTS_PER_PAGE = 5;
 
 export default function PostList({ posts }: PostListProps) {
   const [page, setPage] = useState(1);
@@ -16,7 +16,9 @@ export default function PostList({ posts }: PostListProps) {
 
   if (posts.length === 0) {
     return (
-      <p className="text-sm text-slate-500">No posts in this category yet.</p>
+      <p className="text-sm text-muted-foreground">
+        No posts in this category yet.
+      </p>
     );
   }
 
@@ -36,8 +38,8 @@ export default function PostList({ posts }: PostListProps) {
               onClick={() => setPage(p)}
               className={`h-9 w-9 rounded-full text-sm font-medium transition ${
                 p === page
-                  ? "bg-slate-950 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-accent"
               }`}
             >
               {p}

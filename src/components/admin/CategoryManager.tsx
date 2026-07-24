@@ -77,10 +77,10 @@ export default function CategoryManager() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
+        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground">
           Categories
         </p>
-        <h2 className="mt-2 text-3xl font-semibold text-slate-950">
+        <h2 className="mt-2 text-3xl font-semibold text-foreground">
           Manage categories
         </h2>
       </div>
@@ -88,22 +88,22 @@ export default function CategoryManager() {
       {/* Create form */}
       <form
         onSubmit={handleCreate}
-        className="flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4"
+        className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-muted/50 p-4"
       >
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">
+          <label className="block text-xs font-medium text-muted-foreground mb-1">
             Name
           </label>
           <input
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             required
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-950"
+            className="rounded-xl border border-border bg-card px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
             placeholder="Category name"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">
+          <label className="block text-xs font-medium text-muted-foreground mb-1">
             Parent (optional)
           </label>
           <select
@@ -111,7 +111,7 @@ export default function CategoryManager() {
             onChange={(e) =>
               setNewParent(e.target.value ? Number(e.target.value) : null)
             }
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-950"
+            className="rounded-xl border border-border bg-card px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
           >
             <option value="">— Top-level —</option>
             {rootCategories.map((c) => (
@@ -124,7 +124,7 @@ export default function CategoryManager() {
         <button
           type="submit"
           disabled={createMut.isPending}
-          className="rounded-xl bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-60"
+          className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:opacity-60"
         >
           {createMut.isPending ? "..." : "Add"}
         </button>
@@ -133,7 +133,7 @@ export default function CategoryManager() {
       {/* List */}
       <div className="space-y-4">
         {rootCategories.length === 0 && subCategories.length === 0 && (
-          <p className="text-sm text-slate-500">No categories yet.</p>
+          <p className="text-sm text-muted-foreground">No categories yet.</p>
         )}
 
         {/* Top-level categories */}
@@ -207,21 +207,21 @@ function CategoryRow({
   const isEditing = editing?.id === cat.id;
 
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4">
+    <div className="rounded-2xl border border-border bg-card p-4">
       {isEditing ? (
         <div className="flex flex-wrap items-end gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">
+            <label className="block text-xs font-medium text-muted-foreground mb-1">
               Name
             </label>
             <input
               value={editing.name}
               onChange={(e) => onEdit({ ...editing, name: e.target.value })}
-              className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-slate-950"
+              className="rounded-xl border border-border bg-muted/50 px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">
+            <label className="block text-xs font-medium text-muted-foreground mb-1">
               Parent
             </label>
             <select
@@ -232,7 +232,7 @@ function CategoryRow({
                   parentId: e.target.value ? Number(e.target.value) : null,
                 })
               }
-              className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-slate-950"
+              className="rounded-xl border border-border bg-muted/50 px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
             >
               <option value="">— Top-level —</option>
               {allCategories
@@ -250,13 +250,13 @@ function CategoryRow({
                 onUpdate(editing.id, editing.name, editing.parentId)
               }
               disabled={isPending || !editing.name.trim()}
-              className="rounded-xl bg-slate-950 px-3 py-2 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-60"
+              className="rounded-xl bg-primary px-3 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
             >
               Save
             </button>
             <button
               onClick={() => onEdit(null)}
-              className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100"
+              className="rounded-xl border border-border px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-muted"
             >
               Cancel
             </button>
@@ -265,11 +265,11 @@ function CategoryRow({
       ) : (
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-sm font-medium text-slate-900">
+            <span className="text-sm font-medium text-foreground">
               {cat.name}
             </span>
             {cat.parentId && (
-              <span className="ml-2 text-xs text-slate-400">sub</span>
+              <span className="ml-2 text-xs text-muted-foreground">sub</span>
             )}
           </div>
           <div className="flex gap-2">
@@ -281,7 +281,7 @@ function CategoryRow({
                   parentId: cat.parentId ?? null,
                 })
               }
-              className="rounded-full px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100"
+              className="rounded-full px-3 py-1 text-xs font-medium text-muted-foreground hover:bg-muted"
             >
               Edit
             </button>

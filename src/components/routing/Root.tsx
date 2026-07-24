@@ -1,18 +1,27 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import { Navbar04 } from "@/components/ui/shadcn-io/navbar-04";
 import CardProduct from "@/components/ui/cardProduct";
 import SidebarMenu from "@/components/ui/sidebarMenu";
-import { useState } from "react";
 import { useCategoryCache } from "@/lib/category-cache";
 import Footer from "../ui/footer";
 
 const Root = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const selectedCategory = searchParams.get("category") ?? "All";
   const { data: categoryTree = [] } = useCategoryCache();
+
+  const handleCategorySelect = (category: string) => {
+    if (category === "All") {
+      navigate("/");
+    } else {
+      navigate(`/?category=${encodeURIComponent(category)}`);
+    }
+  };
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center">
+      <div className="min-h-screen bg-background flex flex-col items-center">
         <div className="w-full max-w-[1200px]">
           <Navbar04 />
           <div className="flex py-6">
@@ -21,7 +30,7 @@ const Root = () => {
               <SidebarMenu
                 tree={categoryTree}
                 selectedCategory={selectedCategory}
-                onSelect={setSelectedCategory}
+                onSelect={handleCategorySelect}
               />
             </div>
             <div className="flex-1 overflow-auto pl-6">

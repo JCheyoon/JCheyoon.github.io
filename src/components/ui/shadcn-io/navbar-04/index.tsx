@@ -173,7 +173,7 @@ export const Navbar04 = React.forwardRef<HTMLElement, Navbar04Props>(
       <header
         ref={combinedRef}
         className={cn(
-          "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-6 [&_*]:no-underline h-[72px] rounded-b-xl",
+          "sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 px-4 md:px-6 [&_*]:no-underline h-[72px] rounded-b-xl",
           className,
         )}
         {...props}
@@ -196,7 +196,7 @@ export const Navbar04 = React.forwardRef<HTMLElement, Navbar04Props>(
                           to={link.href || "#"}
                           className={`inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium ${
                             isActive
-                              ? "bg-accent text-accent-foreground"
+                              ? "bg-background text-foreground font-semibold"
                               : "text-muted-foreground hover:text-primary focus:bg-accent focus:text-accent-foreground"
                           }`}
                         >
@@ -246,7 +246,7 @@ export const Navbar04 = React.forwardRef<HTMLElement, Navbar04Props>(
               </SelectTrigger>
               <SelectContent
                 position="popper"
-                className="bg-background rounded-md shadow-md [&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2"
+                className="bg-card rounded-md shadow-md [&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2"
               >
                 {languages.map((lang) => (
                   <SelectItem key={lang.value} value={lang.value}>
@@ -269,7 +269,7 @@ export const Navbar04 = React.forwardRef<HTMLElement, Navbar04Props>(
                     <HamburgerIcon className="h-5 w-5" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="md:hidden w-64 p-2 bg-background rounded-md shadow-md">
+                <PopoverContent className="md:hidden w-64 p-2 bg-card rounded-md shadow-md">
                   <div className="flex flex-col gap-1">
                     {navigationLinks.map((link) => {
                       const isActive = location.pathname === link.href;
@@ -280,7 +280,7 @@ export const Navbar04 = React.forwardRef<HTMLElement, Navbar04Props>(
                             to={link.href || "#"}
                             className={`inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium ${
                               isActive
-                                ? "bg-accent text-accent-foreground"
+                                ? "bg-background text-foreground font-semibold"
                                 : "text-muted-foreground hover:text-primary focus:bg-accent focus:text-accent-foreground"
                             }`}
                           >

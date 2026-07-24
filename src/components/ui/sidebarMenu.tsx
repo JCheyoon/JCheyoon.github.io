@@ -40,7 +40,7 @@ const SidebarMenu = ({
                   <ul className="mt-1 gap-1">
                     {cat.children.map((child) => (
                       <li key={child.id}>
-                        <span className="bg-slate-200" />
+                        <span className="bg-border" />
                         <CategoryButton
                           label={child.name}
                           isActive={selectedCategory === child.name}
@@ -78,12 +78,12 @@ function CategoryButton({
         w-full text-left rounded-md px-3 py-2 text-sm transition flex items-center gap-2
         ${
           isActive
-            ? "bg-muted text-foreground font-semibold"
-            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            ? "bg-background text-foreground font-semibold"
+            : "text-muted-foreground hover:bg-background hover:text-foreground"
         }
       `}
     >
-      {isSub && <span className="text-slate-300 text-xs">└</span>}
+      {isSub && <span className="text-muted-foreground/50 text-xs">└</span>}
       {label}
     </button>
   );

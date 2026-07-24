@@ -6,11 +6,7 @@
 * {
   font-family:
     system-ui, Arial, Helvetica, sans-serif, Helvetica, Arial, sans-serif;
-  margin: 0;
   box-sizing: border-box;
-}
-body {
-  background-color: #e8f1f0;
 }
 
 @theme inline {
@@ -56,6 +52,8 @@ body {
 
   --color-accent-foreground: var(--accent-foreground);
 
+  --color-accent-bar: var(--accent-bar);
+
   --color-destructive: var(--destructive);
 
   --color-border: var(--border);
@@ -94,7 +92,7 @@ body {
 :root {
   --radius: 0.625rem;
 
-  --background: oklch(1 0 0);
+  --background: oklch(0.9511 0.0097 189.06);
 
   --foreground: oklch(0.13 0.028 261.692);
 
@@ -110,7 +108,7 @@ body {
 
   --primary-foreground: oklch(0.985 0.002 247.839);
 
-  --secondary: oklch(0.967 0.003 264.542);
+  --secondary: oklch(0.87 0.015 189);
 
   --secondary-foreground: oklch(0.21 0.034 264.665);
 
@@ -121,6 +119,8 @@ body {
   --accent: oklch(0.967 0.003 264.542);
 
   --accent-foreground: oklch(0.21 0.034 264.665);
+
+  --accent-bar: oklch(0.6594 0.0659 194.387);
 
   --destructive: oklch(0.577 0.245 27.325);
 
@@ -174,7 +174,7 @@ body {
 
   --primary-foreground: oklch(0.21 0.034 264.665);
 
-  --secondary: oklch(0.278 0.033 256.848);
+  --secondary: oklch(0.22 0.035 260);
 
   --secondary-foreground: oklch(0.985 0.002 247.839);
 
@@ -185,6 +185,8 @@ body {
   --accent: oklch(0.278 0.033 256.848);
 
   --accent-foreground: oklch(0.985 0.002 247.839);
+
+  --accent-bar: oklch(0.7 0.07 195);
 
   --destructive: oklch(0.704 0.191 22.216);
 

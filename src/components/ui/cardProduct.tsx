@@ -10,16 +10,12 @@ export default function CardProduct() {
     <div className="w-full flex justify-center">
       <Card className="w-68 py-3">
         <CardContent className="px-3 text-center">
-          <div className="aspect-square rounded-md bg-gray-100 mb-2">
-            <div className="flex items-center justify-center h-full text-muted-foreground text-xs">
-              Image
-            </div>
-          </div>
+          <section>
+            <h1 className="text-2xl font-bold tracking-wide pb-1 ">WELCOME</h1>
+          </section>
           <CardTitle className="text-sm mb-1">Jung Cheyoon</CardTitle>
-          <CardDescription className="text-xs mb-2 line-clamp-2">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium
-            suscipit ea accusamus pariatur numquam eaque recusandae laboriosam
-            impedit sequi ut.
+          <CardDescription className="flex text-xs pb-3">
+            Sharing what I learn while building software.
           </CardDescription>
           <CardFooter className="flex justify-center gap-3 px-3">
             <span className="text-sm font-bold">Github</span>

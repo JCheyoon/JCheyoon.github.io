@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(npm run dev:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run preview:*)",
+      "Bash(npm install:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "ask": [
+      "Bash(npm run deploy:*)",
+      "Bash(git push:*)",
+      "Bash(git reset:*)",
+      "Edit(.env)"
+    ],
+    "deny": ["Bash(rm -rf *)", "Bash(git push --force:*)", "Edit(dist/**)"]
+  },
+  "env": {
+    "VITE_API_BASE_URL": "http://localhost:8080"
+  }
+}

@@ -55,8 +55,8 @@ Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 �
 ```
 
 - 독자가 글을 볼 때 백엔드나 DB를 거치지 않는다.
-- 사이트 저장소는 `JCheyoon.github.io`이다. 기존 Vite SPA는 `legacy/spa/`로 옮겨 보관한다 [결정 필요].
-- `blog-backend`는 유지보수 모드로 둔다. 콘텐츠 원본이 아니다. 질문 위젯을 붙이려면 글 본문을 DB 대신 사이트 기준으로 가져오도록 바꿔야 한다(Phase 5).
+- 사이트 저장소는 `JCheyoon.github.io`이다. 기존 Vite SPA는 `legacy/spa/`로 옮겨 보관한다(D7).
+- `blog-backend`는 유지보수 모드로 둔다. 콘텐츠 원본이 아니다. DB에 글이 없어 옮길 콘텐츠도 없다(2026-11-23 작성자 확인). 질문 위젯을 붙이려면 글 본문을 DB 대신 사이트 기준으로 가져오도록 바꿔야 한다(Phase 5).
 
 ### 3.1 배포 방식과 브랜치
 
@@ -134,7 +134,6 @@ slug 규칙:
 | disclosure | string | 조건부 | 제휴·협찬이 있으면 필수 |
 | sources | `{title, url, accessed}[]` | 선택 | 주요 출처 |
 | cover | `{src, alt}` | 선택 | 쓰면 alt 필수 |
-| legacy | boolean | 선택 | DB에서 옮겨 온 글 |
 
 ### 5.2 빌드 실패 조건 (스키마와 검사 스크립트)
 

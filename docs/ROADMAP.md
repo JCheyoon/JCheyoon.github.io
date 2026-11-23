@@ -17,9 +17,9 @@
 | 미완성 페이지 | About, Archive, Portfolio가 빈 페이지 |
 | 동작하지 않는 UI | 검색창, 언어 선택, GitHub/LinkedIn 링크 |
 | 관리자 | 초안이 목록에 보이지 않음, 한글 제목은 slug 생성 불가 |
-| 글 수, 카테고리 | 확인 못 함 (DB export 필요) |
+| 글 | DB에 글이 없음 (작성자 확인, 2026-11-23). 옮길 글이 없다 |
 
-**기존 SPA의 버그는 고치지 않는다.** 이전하면 사라질 코드이기 때문이다. 예외는 데이터 export에 필요한 작업뿐이다.
+**기존 SPA의 버그는 고치지 않는다.** 이전하면 사라질 코드이기 때문이다.
 
 ## 기능 정리 (현재 → 결정)
 
@@ -52,11 +52,11 @@
 ## Phase 0: 결정과 정리 (1~2일)
 
 - [x] D1~D3, D6~D8 결정 (2026-11-23)
+- [x] 글 이전 필요 여부 확인: DB에 글이 없어서 이전하지 않는다 (2026-11-23)
 - [ ] 규칙, 스킬, SPEC, ROADMAP 적용 (PR 1)
 - [ ] 백엔드 문서 정비 (PR 2)
-- [ ] DB의 글과 카테고리를 JSON으로 export하고, 한글 제목 글에 영문 slug 지정
 
-완료 기준: PR 1 merge, export 파일 확보
+완료 기준: PR 1, PR 2 merge
 
 ## Phase 1: 공개 가능한 최소 사이트 (4~6일)
 
@@ -65,14 +65,14 @@
 - [ ] 기존 SPA를 `legacy/spa/`로 이동하고, 레거시 규칙에 `paths: ["legacy/**"]` 적용
 - [ ] Astro 골격, `site.config.ts`(`SITE_URL=https://jcheyoon.github.io`), `categories.ts`
 - [ ] 콘텐츠 스키마와 검증 규칙
-- [ ] export → Markdown 변환 스크립트, 기존 글 이전
-  - 원래 발행된 글은 `published`, `legacy: true`로 옮긴다.
-  - Phase 2에서 재점검한다.
 - [ ] 반응형 레이아웃, 홈과 페이지네이션, 글, 카테고리, 소개, 404
+- [ ] 첫 글 1편 발행 (글 템플릿 검증용)
+  - 작성자가 직접 쓴다.
+  - 파이프라인이 Phase 2에서 검증되므로, 이 글은 `review-post` 점검표만 참고해 수동으로 기록한다.
 - [ ] SEO head, JSON-LD, sitemap, RSS, robots, typography, 이미지 처리
 - [ ] GitHub Actions 배포 워크플로와 HTML 검사 스크립트
 - [ ] 끝 슬래시 정책 결정 (D5)
-- [ ] 새 코드 기준으로 `coding-style` 규칙과 `verify-project` 스킬 작성
+- [ ] 새 코드 기준으로 `coding-style` 규칙과 `verify-site` 스킬 작성 (레거시 `verify-project`와 별도)
 - [ ] 전환: `master`에 merge → Pages Source를 GitHub Actions로 변경 (사람이 직접) → 확인. 롤백은 `gh-pages` 브랜치로.
 
 완료 기준:
@@ -86,7 +86,6 @@
 - [ ] `draft-post`, `review-post`, `publish-post` 스킬을 실제 글로 검증
 - [ ] PR 템플릿 작성, `master` 브랜치 보호 (GitHub 설정은 사람이 직접)
 - [ ] 태그, 아카이브, 테마 토글, OG 이미지
-- [ ] `legacy: true` 글을 `review-post`로 재점검
 - [ ] 새 글 2~3편을 전체 과정으로 발행
 
 완료 기준: draft → reviewed → published 기록이 git에 남은 글이 1편 이상 있다.

@@ -71,6 +71,8 @@
     /* 한국어 문장이 단어 중간에서 끊기지 않게 한다 */
     word-break: keep-all;
     overflow-wrap: anywhere;
+    /* 스크롤바가 생기고 사라질 때 페이지가 좌우로 움직이지 않게 자리를 미리 잡아 둔다 */
+    scrollbar-gutter: stable;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;

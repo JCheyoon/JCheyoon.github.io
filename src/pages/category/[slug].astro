@@ -2,6 +2,7 @@
 // 카테고리 글 목록(SPEC §4). 글이 있는 카테고리만 페이지를 만든다(빈 페이지는 색인 가치가 없다).
 import type { GetStaticPaths } from "astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ListHeader from "../../components/ListHeader.astro";
 import PostList from "../../components/PostList.astro";
 import { site } from "../../site.config";
 import { categories } from "../../data/categories";
@@ -30,7 +31,6 @@ const breadcrumb = {
 ---
 
 <BaseLayout title={name} description={`${site.name}의 ${name} 카테고리 글 ${posts.length}편입니다.`} jsonLd={[breadcrumb]}>
-  <h1 class="mb-1 text-2xl font-bold">{name}</h1>
-  <p class="mb-6 text-sm text-muted-foreground">글 {posts.length}편</p>
+  <ListHeader title={name} count={posts.length} />
   <PostList posts={posts} />
 </BaseLayout>

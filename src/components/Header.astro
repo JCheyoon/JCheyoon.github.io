@@ -28,7 +28,7 @@ const isActive = (href: string) => (href === "/" ? path === "/" || path.startsWi
                 class:list={[
                   "inline-flex h-10 items-center rounded-lg px-3 text-sm font-medium",
                   isActive(link.href)
-                    ? "bg-background text-foreground font-semibold"
+                    ? "bg-muted text-foreground font-semibold"
                     : "text-muted-foreground hover:text-foreground",
                 ]}
               >

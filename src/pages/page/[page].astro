@@ -2,6 +2,7 @@
 // 목록 2페이지부터(SPEC §4: /page/[n]/, n ≥ 2). 1페이지는 홈(/)이다.
 import type { GetStaticPaths } from "astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ListHeader from "../../components/ListHeader.astro";
 import PostList from "../../components/PostList.astro";
 import Pagination from "../../components/Pagination.astro";
 import { site } from "../../site.config";
@@ -15,16 +16,16 @@ export const getStaticPaths = (async () => {
     const start = (page - 1) * site.pageSize;
     return {
       params: { page: String(page) },
-      props: { page, pageCount, posts: posts.slice(start, start + site.pageSize) },
+      props: { page, pageCount, total: posts.length, posts: posts.slice(start, start + site.pageSize) },
     };
   });
 }) satisfies GetStaticPaths;
 
-const { page, pageCount, posts } = Astro.props;
+const { page, pageCount, total, posts } = Astro.props;
 ---
 
 <BaseLayout title={`글 목록 ${page}페이지`} description={`${site.name}의 글 목록 ${page}페이지입니다.`}>
-  <h1 class="mb-6 text-sm text-muted-foreground">글 목록 {page}페이지</h1>
+  <ListHeader title={`전체 글 · ${page}페이지`} count={total} />
   <PostList posts={posts} />
   <Pagination current={page} total={pageCount} />
 </BaseLayout>

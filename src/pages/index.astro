@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ListHeader from "../components/ListHeader.astro";
 import PostList from "../components/PostList.astro";
 import Pagination from "../components/Pagination.astro";
 import { site } from "../site.config";
@@ -10,7 +11,7 @@ const pageCount = totalPages(posts.length, site.pageSize);
 ---
 
 <BaseLayout title={site.name} description={site.description} isHome>
-  <h1 class="sr-only">{site.name} 최신 글</h1>
+  <ListHeader title="전체 글" count={posts.length} />
   <PostList posts={posts.slice(0, site.pageSize)} />
   <Pagination current={1} total={pageCount} />
 </BaseLayout>

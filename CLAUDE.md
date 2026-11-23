@@ -3,23 +3,27 @@
 ## 현재 상태: Astro 이전 진행 중 (먼저 읽을 것)
 
 - 무엇을 만들고, 어떤 순서로 하는지는 [docs/SPEC.md](docs/SPEC.md)와 [docs/ROADMAP.md](docs/ROADMAP.md)가 기준이다. 작업 전에 ROADMAP의 "현재 단계"를 확인한다.
-- 아래 Overview부터 끝까지는 **레거시 SPA**(Vite + React, 관리자 포함)에 대한 설명이다.
-  - 이 앱은 Phase 1에서 `legacy/spa/`로 옮기고 은퇴한다(SPEC D6, D7).
-  - 레거시 SPA의 버그는 고치지 않는다.
+- 아래 "Legacy SPA" 섹션은 **레거시 SPA**(Vite + React, 관리자 포함)에 대한 설명이다.
+  - 이 앱은 `legacy/spa/`로 옮겨 은퇴했다(SPEC D6, D7). 섹션에 나오는 경로는 모두 `legacy/spa/` 기준이다.
+  - 레거시 SPA의 버그는 고치지 않고, 빌드하거나 배포하지 않는다.
 - 글은 Markdown + git으로 관리하고, draft → reviewed → published를 거친다.
   - 규칙: [.claude/rules/content.md](.claude/rules/content.md)
   - 스킬: `draft-post`, `review-post`, `publish-post`
 - push와 PR 생성은 `create-pr` 스킬로 한다(한글 PR, AI 작성 표시 없음). push 전에 반드시 PR 초안을 보여 주고 승인을 받는다. merge와 배포는 사람이 한다.
 - 라이브 사이트는 `gh-pages` 브랜치에서 서빙된다. Phase 1 전환 전까지 `npm run deploy`를 실행하지 않는다(SPEC §3.1).
 
-## Overview
+## Legacy SPA (`legacy/spa/`)
+
+All paths in this section and the sections below up to "Claude Workspace" are relative to `legacy/spa/`.
+
+### Overview
 
 This repository is a Vite + React + TypeScript blog application.
 The app boots from [index.html](index.html), loads [src/main.tsx](src/main.tsx), and renders [src/App.tsx](src/App.tsx).
 
 The public site uses nested React Router routes for the main pages, and there is a separate admin area for login, post management, and category management.
 
-## Tech Stack
+### Tech Stack
 
 - Language: TypeScript
 - Framework: React 19, Vite
@@ -29,7 +33,7 @@ The public site uses nested React Router routes for the main pages, and there is
 - Editors and icons: Tiptap, lucide-react
 - UI primitives: Radix Select and Popover
 
-## Directory Structure
+### Directory Structure
 
 - `src/App.tsx`: creates the router and wraps the app with API, query, and admin auth providers.
 - `src/components/pages/`: public pages such as Home, About, Archive, Portfolio, and Post.
@@ -44,7 +48,7 @@ The public site uses nested React Router routes for the main pages, and there is
 - `public/`: static assets served directly by Vite, including `site.webmanifest`.
 - Root config files: `vite.config.ts`, `tsconfig*.json`, `eslint.config.js`, `tailwind.config.js`, and `components.json`.
 
-## Build, Run, and Preview
+### Build, Run, and Preview
 
 - `npm run dev`: start the Vite development server.
 - `npm run build`: run TypeScript build mode and create the production bundle.
@@ -56,7 +60,7 @@ Note: as of 2026-11-23, `npm run build` fails on two TypeScript errors (`src/com
 
 There is no dedicated `test` script in `package.json`.
 
-## Coding Conventions and Architecture
+### Coding Conventions and Architecture
 
 - Use the `@/` alias for imports from `src/`. The repo also maps `@repo/` to `src/` in Vite and TypeScript config.
 - TypeScript is strict. `noUnusedLocals`, `noUnusedParameters`, and other strict compiler checks are enabled.

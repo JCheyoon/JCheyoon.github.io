@@ -1,0 +1,51 @@
+---
+import "../styles/global.css";
+import SeoHead from "../components/SeoHead.astro";
+import Header from "../components/Header.astro";
+import Sidebar from "../components/Sidebar.astro";
+import Footer from "../components/Footer.astro";
+import { getVisiblePosts } from "../lib/posts";
+import type { Props as SeoProps } from "../components/SeoHead.astro";
+
+type Props = SeoProps & {
+  /** false면 사이드바 없이 본문만 넓게 쓴다(404 등) */
+  sidebar?: boolean;
+};
+
+const { sidebar = true, ...seo } = Astro.props;
+const posts = sidebar ? await getVisiblePosts() : [];
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <SeoHead {...seo} />
+  </head>
+  <body class="min-h-screen">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-20 focus:rounded focus:bg-card focus:px-3 focus:py-2"
+      >본문으로 건너뛰기</a
+    >
+    <Header />
+    <div
+      class:list={[
+        "mx-auto max-w-[1200px] px-4 py-6 md:px-6",
+        sidebar && "grid gap-6 md:grid-cols-[17rem_minmax(0,1fr)]",
+      ]}
+    >
+      <!-- 모바일에서는 본문이 먼저, 사이드바가 아래에 온다 -->
+      <main id="main" class:list={["min-w-0", sidebar && "md:order-2"]}>
+        <slot />
+      </main>
+      {
+        sidebar && (
+          <div class="md:order-1">
+            <Sidebar posts={posts} />
+          </div>
+        )
+      }
+    </div>
+    <Footer />
+  </body>
+</html>

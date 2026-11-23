@@ -1,0 +1,70 @@
+---
+// 프로필과 카테고리. 글이 없는 카테고리는 페이지가 없으므로 목록에 넣지 않는다(죽은 링크 방지).
+import { site } from "../site.config";
+import { categories } from "../data/categories";
+import { filterByCategory, type Post } from "../lib/posts";
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+const path = Astro.url.pathname;
+
+const listed = categories
+  .map((c) => ({ ...c, count: filterByCategory(posts, c.slug).length }))
+  .filter((c) => c.count > 0);
+---
+
+<aside class="flex flex-col gap-6" aria-label="사이드바">
+  <section class="rounded-2xl border bg-card px-5 py-5 text-center">
+    <p class="text-2xl font-bold tracking-wide">WELCOME</p>
+    <p class="mt-1 text-sm font-semibold">{site.author.name}</p>
+    <p class="mt-2 text-xs text-muted-foreground">{site.tagline}</p>
+    <ul class="mt-4 flex justify-center gap-3">
+      {
+        site.social.map((s) => (
+          <li>
+            <a href={s.href} rel="me noopener" class="text-sm font-bold hover:underline">
+              {s.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  {
+    listed.length > 0 && (
+      <nav class="rounded-2xl border bg-card px-3 py-4" aria-label="카테고리">
+        <h2 class="mb-3 flex items-center px-2 text-base font-semibold text-muted-foreground">
+          <span class="mr-2 h-5 w-1 rounded bg-accent-bar" aria-hidden="true" />
+          카테고리
+        </h2>
+        <ul class="flex flex-col gap-1">
+          {listed.map((c) => {
+            const href = `/category/${c.slug}/`;
+            const active = path === href;
+            return (
+              <li>
+                <a
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  class:list={[
+                    "flex items-center justify-between rounded-lg px-3 py-2 text-sm",
+                    active
+                      ? "bg-background font-semibold text-foreground"
+                      : "text-muted-foreground hover:bg-background hover:text-foreground",
+                  ]}
+                >
+                  <span>{c.name}</span>
+                  <span class="text-xs">{c.count}</span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    )
+  }
+</aside>

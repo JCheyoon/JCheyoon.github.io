@@ -1,0 +1,81 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/*
+ * 색상 토큰은 레거시 SPA(legacy/spa/src/index.css)의 값을 그대로 가져왔다.
+ * Phase 1은 시스템 설정(prefers-color-scheme)으로만 다크 모드를 적용한다.
+ * 사용자가 고르는 테마 토글은 Phase 2에서 추가한다.
+ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent-bar: var(--accent-bar);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --font-sans: system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.9511 0.0097 189.06);
+  --foreground: oklch(0.13 0.028 261.692);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.13 0.028 261.692);
+  --primary: oklch(0.21 0.034 264.665);
+  --primary-foreground: oklch(0.985 0.002 247.839);
+  --secondary: oklch(0.87 0.015 189);
+  --secondary-foreground: oklch(0.21 0.034 264.665);
+  --muted: oklch(0.967 0.003 264.542);
+  --muted-foreground: oklch(0.551 0.027 264.364);
+  --accent-bar: oklch(0.6594 0.0659 194.387);
+  --border: oklch(0.928 0.006 264.531);
+  --ring: oklch(0.707 0.022 261.325);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0.13 0.028 261.692);
+    --foreground: oklch(0.985 0.002 247.839);
+    --card: oklch(0.21 0.034 264.665);
+    --card-foreground: oklch(0.985 0.002 247.839);
+    --primary: oklch(0.928 0.006 264.531);
+    --primary-foreground: oklch(0.21 0.034 264.665);
+    --secondary: oklch(0.22 0.035 260);
+    --secondary-foreground: oklch(0.985 0.002 247.839);
+    --muted: oklch(0.278 0.033 256.848);
+    --muted-foreground: oklch(0.707 0.022 261.325);
+    --accent-bar: oklch(0.7 0.07 195);
+    --border: oklch(1 0 0 / 10%);
+    --ring: oklch(0.551 0.027 264.364);
+    color-scheme: dark;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    /* 한국어 문장이 단어 중간에서 끊기지 않게 한다 */
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  a:focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+}

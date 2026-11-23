@@ -1,0 +1,12 @@
+---
+// 개인정보 처리방침·이용약관 링크는 페이지가 생기는 Phase 3에서 추가한다.
+import { site } from "../site.config";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-12 border-t bg-background py-10 text-sm text-muted-foreground">
+  <p class="text-center">
+    © {year} <span class="font-semibold text-foreground">{site.author.name}</span>. All Rights Reserved.
+  </p>
+</footer>

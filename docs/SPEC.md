@@ -1,6 +1,6 @@
 # 블로그 사양서 (SPEC)
 
-- 상태: 승인된 초안 (2026-11-23). D1, D2, D3, D6, D7, D8 결정. D4, D5 대기.
+- 상태: 승인된 초안 (2026-11-23). D1~D3, D5~D8 결정. D4는 Phase 5에서 논의.
 - 관련 문서: `docs/ROADMAP.md`, `.claude/rules/`
 - 표시: [결정 필요]는 §11 열린 결정 표에 있는 항목
 
@@ -85,12 +85,12 @@ Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 �
 | 경로 | 내용 | 비고 |
 |---|---|---|
 | `/` | 최신 글 목록 1페이지 | |
-| `/page/[n]` | 목록 n페이지 | n ≥ 2 |
-| `/post/[slug]` | 글 | 기존 경로 유지 |
-| `/category/[slug]` | 카테고리 글 목록 | 하위 카테고리 글 포함 |
-| `/tag/[tag]` | 태그 글 목록 | |
-| `/archive` | 연·월별 전체 목록 | |
-| `/about`, `/contact`, `/privacy`, `/terms` | 고정 페이지 | |
+| `/page/[n]/` | 목록 n페이지 | n ≥ 2 |
+| `/post/[slug]/` | 글 | 기존 `/post/:slug` 경로 구조 유지 |
+| `/category/[slug]/` | 카테고리 글 목록 | 하위 카테고리 글 포함 |
+| `/tag/[tag]/` | 태그 글 목록 | |
+| `/archive/` | 연·월별 전체 목록 | |
+| `/about/`, `/contact/`, `/privacy/`, `/terms/` | 고정 페이지 | |
 | `/rss.xml`, `/sitemap-index.xml`, `/robots.txt` | 빌드 시 자동 생성 | |
 | 그 밖의 경로 | `404.html` | 실제 404 상태 |
 
@@ -101,7 +101,7 @@ slug 규칙:
 
 기타:
 
-- 끝 슬래시 정책은 GitHub Pages 동작을 확인한 뒤 정한다 [결정 필요].
+- 끝 슬래시(D5): 페이지 주소는 모두 `/`로 끝난다(예: `/post/slug/`). 빌드는 디렉터리 방식(`post/slug/index.html`)으로 하고, canonical과 내부 링크도 끝 슬래시를 붙인다. 파일 주소(`/rss.xml` 등)는 예외다.
 - 도메인 연결(Phase 5)은 모든 URL의 호스트가 바뀌는 변경이다. 그래서 다음을 지킨다.
   - canonical, sitemap, RSS, OG의 절대 URL은 전부 `SITE_URL` 하나에서 만든다. 하드코딩하지 않는다.
   - 도메인을 연결할 때 `jcheyoon.github.io` → 새 도메인 리다이렉트가 동작하는지 확인한다.
@@ -147,7 +147,7 @@ slug 규칙:
 | 파일 | 내용 |
 |---|---|
 | `src/site.config.ts` | 사이트 이름, URL, 설명, 작성자, 소셜 링크. 작성자 이름 하드코딩 금지 |
-| `src/data/categories.ts` | 카테고리 `{slug, name, parent?, description?}` |
+| `src/data/categories.ts` | 카테고리 `{slug, name, parent?, description?}`. 초기값(2026-11-23 결정): `ai` AI 활용, `frontend` 프론트엔드, `backend` 백엔드, `etc` 기타 |
 | `src/data/affiliate-domains.ts` | 제휴 링크로 판정할 도메인 목록 |
 
 ### 5.4 공개 범위
@@ -265,7 +265,7 @@ slug 규칙:
 | D2 | 프레임워크 | B Astro | 승인 (2026-11-23) |
 | D3 | 커스텀 도메인 | 보유 중인 도메인을 Phase 5에서 연결. 주소는 그때 받는다 | 승인 (2026-11-23) |
 | D4 | 호스팅 | 우선 GitHub Pages, 광고 도입 전(Phase 5) 재검토(GitHub Pages 상업 이용 제한 문구 때문) | 대기 |
-| D5 | 끝 슬래시 | GitHub Pages 동작 확인 후 결정 (Phase 1) | 대기 |
+| D5 | 끝 슬래시 | `/post/slug/` (디렉터리 방식, 끝 슬래시 있음) | 승인 (2026-11-23) |
 | D6 | 관리자 SPA | 은퇴. 번역과 LinkedIn은 git 파이프라인에서 처리(§9.2, §9.3) | 승인 (2026-11-23) |
 | D7 | legacy 보관 위치 | `legacy/spa/` | 승인 (2026-11-23) |
 | D8 | 번역 대상 언어 | 영어(en) | 승인 (2026-11-23) |

@@ -4,6 +4,7 @@ Development conventions and work guidelines live in `CLAUDE.md` and the `.claude
 
 ## General Guidelines
 
+0. Check `docs/ROADMAP.md` (current phase) and `docs/SPEC.md` before starting feature work.
 1. Always follow the guidelines in the root `CLAUDE.md` when working.
 2. For multi-step workflows (verification, refactoring, deployment, etc.), load the skill specs defined in `.claude/skills/`.
 3. Present a clear change plan before modifying code, then proceed.

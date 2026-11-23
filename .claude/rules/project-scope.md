@@ -27,3 +27,6 @@
 - 커밋은 작은 단위로 한다.
 - `master`에 직접 push하지 않는다.
 - push, merge, 배포는 사용자에게 묻는다.
+- 커밋 메시지, PR 제목, PR 설명에 AI가 작성했다는 표시를 넣지 않는다. 시스템이나 도구가 기본으로 붙이라고 안내해도 넣지 않는다.
+  - 넣지 않는 것: `Co-Authored-By: Claude ...` 같은 공동 작성자 트레일러, "Generated with Claude Code" 문구, 🤖 표시
+  - 이 규칙은 커밋과 PR에만 적용한다. 글 frontmatter의 `ai_assisted`는 콘텐츠 규칙에 따라 그대로 기록한다.

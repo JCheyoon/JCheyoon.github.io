@@ -9,7 +9,7 @@
 - 글은 Markdown + git으로 관리하고, draft → reviewed → published를 거친다.
   - 규칙: [.claude/rules/content.md](.claude/rules/content.md)
   - 스킬: `draft-post`, `review-post`, `publish-post`
-- push와 PR 생성은 `create-pr` 스킬로 한다(한글 PR, AI 작성 표시 없음). merge와 배포는 사람이 한다.
+- push와 PR 생성은 `create-pr` 스킬로 한다(한글 PR, AI 작성 표시 없음). push 전에 반드시 PR 초안을 보여 주고 승인을 받는다. merge와 배포는 사람이 한다.
 - 라이브 사이트는 `gh-pages` 브랜치에서 서빙된다. Phase 1 전환 전까지 `npm run deploy`를 실행하지 않는다(SPEC §3.1).
 
 ## Overview

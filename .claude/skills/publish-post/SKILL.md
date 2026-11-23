@@ -26,5 +26,5 @@ description: status가 reviewed인 블로그 글만 published로 바꾸고, 빌�
 
 ## 5. 커밋과 PR
 - `publish/<slug>` 브랜치에 커밋한다.
-- `create-pr` 스킬로 push하고 PR을 연다.
+- `create-pr` 스킬로 PR 초안을 보여 주고, 사용자가 승인하면 push하고 PR을 연다.
 - merge와 배포는 사용자가 한다. merge가 곧 발행 승인이다.

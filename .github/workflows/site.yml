@@ -1,0 +1,63 @@
+# 사이트 검증·빌드·배포 (SPEC §3.1, §10)
+#
+# - PR: 검증(npm run verify)만 한다. 배포하지 않는다.
+# - 수동 실행(workflow_dispatch): 검증 후 GitHub Pages에 배포한다.
+#   Pages 설정의 Source가 "GitHub Actions"일 때만 배포가 성공한다.
+# - master merge 시 자동 배포는 전환(Phase 1 마지막) 때 아래 push 주석을 풀어서 켠다.
+#   전환 전에는 라이브 사이트가 gh-pages 브랜치에서 그대로 서빙된다.
+name: Site
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+  # push:
+  #   branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  ASTRO_TELEMETRY_DISABLED: "1"
+
+jobs:
+  verify:
+    name: 검증과 빌드
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # 콘텐츠 검사 → 타입 검사 → 템플릿 검증 빌드와 HTML 검사 → 배포 빌드와 HTML 검사
+      - run: npm run verify
+
+      - name: Pages 아티팩트 업로드
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    name: GitHub Pages 배포
+    if: github.event_name != 'pull_request'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

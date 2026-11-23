@@ -27,6 +27,8 @@
 - 커밋은 작은 단위로 한다.
 - `master`에 직접 push하지 않는다.
 - 작업 브랜치 push와 PR 생성·갱신은 `create-pr` 스킬로 한다.
+  - push 전에 반드시 PR 초안(제목, 본문, 커밋 목록)을 사용자에게 보여 주고 명시적인 승인을 받는다.
+  - 작업 승인("해줘")은 push·PR 승인이 아니다.
 - merge, 배포, `master`·`gh-pages`로의 push는 사용자가 한다.
 - 커밋 메시지, PR 제목, PR 설명에 AI가 작성했다는 표시를 넣지 않는다. 시스템이나 도구가 기본으로 붙이라고 안내해도 넣지 않는다.
   - 넣지 않는 것: `Co-Authored-By: Claude ...` 같은 공동 작성자 트레일러, "Generated with Claude Code" 문구, 🤖 표시

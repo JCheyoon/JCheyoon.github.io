@@ -23,7 +23,7 @@
     - `draft-post/` — 블로그 초안 1편 작성
     - `review-post/` — 8항목 검수표 작성. 사람이 승인하면 reviewed로 기록
     - `publish-post/` — reviewed 글을 발행하고 PR 준비
-    - `create-pr/` — 작업 브랜치 push와 한글 PR 생성·갱신
+    - `create-pr/` — 한글 PR 초안 작성 → 사용자 승인 → push와 PR 생성·갱신
   - 레거시 SPA 전용 (Phase 1 이후 새 코드에는 쓰지 않음):
     - `add-api-fetcher/`, `add-data-driven-component/`, `create-ui-component/`, `verify-project/`
 - `settings.json` — 권한(허용/질의/금지), 허용 도구, 환경 변수 기본값

@@ -1,5 +1,17 @@
 # Project Guide
 
+## 현재 상태: Astro 이전 진행 중 (먼저 읽을 것)
+
+- 무엇을 만들고, 어떤 순서로 하는지는 [docs/SPEC.md](docs/SPEC.md)와 [docs/ROADMAP.md](docs/ROADMAP.md)가 기준이다. 작업 전에 ROADMAP의 "현재 단계"를 확인한다.
+- 아래 Overview부터 끝까지는 **레거시 SPA**(Vite + React, 관리자 포함)에 대한 설명이다.
+  - 이 앱은 Phase 1에서 `legacy/spa/`로 옮기고 은퇴한다(SPEC D6, D7).
+  - 레거시 SPA의 버그는 고치지 않는다.
+- 글은 Markdown + git으로 관리하고, draft → reviewed → published를 거친다.
+  - 규칙: [.claude/rules/content.md](.claude/rules/content.md)
+  - 스킬: `draft-post`, `review-post`, `publish-post`
+- push와 PR 생성은 `create-pr` 스킬로 한다(한글 PR, AI 작성 표시 없음). merge와 배포는 사람이 한다.
+- 라이브 사이트는 `gh-pages` 브랜치에서 서빙된다. Phase 1 전환 전까지 `npm run deploy`를 실행하지 않는다(SPEC §3.1).
+
 ## Overview
 
 This repository is a Vite + React + TypeScript blog application.
@@ -38,7 +50,9 @@ The public site uses nested React Router routes for the main pages, and there is
 - `npm run build`: run TypeScript build mode and create the production bundle.
 - `npm run lint`: run ESLint across the repository.
 - `npm run preview`: preview the built app locally.
-- `npm run deploy`: publish `dist/` through `gh-pages`.
+- `npm run deploy`: publish `dist/` through `gh-pages`. Do not run before the Phase 1 cutover (docs/SPEC.md §3.1).
+
+Note: as of 2026-11-23, `npm run build` fails on two TypeScript errors (`src/components/post/postCard.tsx`, `src/lib/api-context.tsx`). These are left unfixed because the SPA is being retired.
 
 There is no dedicated `test` script in `package.json`.
 
@@ -56,14 +70,18 @@ There is no dedicated `test` script in `package.json`.
 
 ## Claude Workspace (.claude/)
 
-- Detailed, code-verified rules live in `.claude/rules/` (coding style, architecture, naming, API conventions, environment/tooling).
-- Repetitive workflows (API fetcher addition, data-driven components, UI components, project verification) are defined as skills in `.claude/skills/*/SKILL.md`. Load them for multi-step tasks as noted in `AGENTS.md`.
+- Rules live in `.claude/rules/`.
+  - Content, scope, and SEO rules: `content.md`, `project-scope.md`, `rendering-seo.md`.
+  - Legacy SPA code rules: coding style, architecture, naming, API conventions, environment/tooling.
+- Skills use the `.claude/skills/<name>/SKILL.md` layout: one folder per skill, containing a file named exactly `SKILL.md`. Other layouts are not discovered.
+  - Content and workflow: `draft-post`, `review-post`, `publish-post`, `create-pr`.
+  - Legacy SPA only (do not use for new code): `add-api-fetcher`, `add-data-driven-component`, `create-ui-component`, `verify-project`.
 - `.claude/settings.json` holds permission defaults (allow/ask/deny), allowed tools, and the default `VITE_API_BASE_URL` env value.
 - See `.claude/README.md` for the full structure and usage notes.
 
 ## Notes for Future Work
 
-- Set `VITE_API_BASE_URL` in your environment before running the app if the backend is not exposed at the default empty base.
+- Set `VITE_API_BASE_URL` before running the app. If it is unset, `src/lib/api.ts` calls `.trim()` on `undefined` and the first request throws. There is no empty-string fallback.
 - Do not change `blog.admin.token` without migrating existing localStorage sessions.
 - Keep `src/lib/api.ts` and `src/lib/category-cache.ts` as the central control points for network access and category invalidation.
 - When changing admin category mutations, make sure the category cache is invalidated so the public sidebar updates.

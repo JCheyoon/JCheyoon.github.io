@@ -1,4 +1,8 @@
-# 환경 및 도구
+# 환경 및 도구 (레거시 SPA 전용)
+
+> 레거시 SPA(`src/`의 Vite + React 앱) 전용 규칙이다.
+> 이 앱은 Phase 1에서 `legacy/spa/`로 옮기고 은퇴한다(docs/SPEC.md D6, D7).
+> 새 기능을 이 구조로 만들지 않는다.
 
 ## 스크립트 (package.json)
 
@@ -7,12 +11,17 @@
 - `npm run lint` — `eslint .`
 - `npm run preview` — 빌드 결과 로컬 프리뷰
 - `npm run deploy` — `gh-pages -d dist` (homepage: https://JCheyoon.github.io)
+  - Phase 1 전환 전까지 실행하지 않는다(docs/SPEC.md §3.1). 라이브 사이트를 덮어쓴다.
 - 테스트 스크립트는 없음 (package.json 확인 완료) → 자동 검증은 build + lint가 유일
+- 2026-11-23 기준 `npm run build`는 타입 에러 2개로, `npm run lint`는 에러 9개로 실패한다.
+  - 타입 에러 위치: `postCard.tsx:31`, `api-context.tsx:15`
+  - SPA 은퇴 예정이라 고치지 않는다.
 
 ## 환경 변수
 
 - `.env` 파일 (gitignore 대상)에 `VITE_API_BASE_URL=http://localhost:8080` 존재
-- `src/lib/api.ts`가 `import.meta.env.VITE_API_BASE_URL`로 읽음. 미설정 시 빈 문자열(동일 오리진)
+- `src/lib/api.ts`가 `import.meta.env.VITE_API_BASE_URL`로 읽음.
+  - 미설정이면 `undefined`가 되어 첫 요청에서 예외가 난다. 빈 문자열로 대체되지 않는다.
 
 ## 인증/저장
 

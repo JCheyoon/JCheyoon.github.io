@@ -213,7 +213,7 @@ slug 규칙:
 | 발행 | AI가 실행, 사람이 merge | `publish-post` 스킬 → PR | `published`, `published_at` |
 | 배포 | CI | GitHub Actions | merge 시 자동 배포 |
 
-- main 브랜치는 보호한다. 직접 push를 막고, PR merge는 사람만 한다. 이 설정은 사람이 GitHub에서 직접 한다.
+- `master` 브랜치는 보호한다. 직접 push를 막고, PR merge는 사람만 한다. 이 설정은 사람이 GitHub에서 직접 한다.
 - PR 템플릿에 검수 체크리스트 8항목을 넣는다.
 - 발행 속도 상한은 주 3편이다.
 
@@ -251,7 +251,7 @@ slug 규칙:
 
 ## 10. 배포
 
-- 흐름: main merge → install → `astro check` → build → HTML 검사 스크립트 → Pages 배포
+- 흐름: `master` merge → install → `astro check` → build → HTML 검사 스크립트 → Pages 배포
 - HTML 검사 스크립트는 다음을 확인한다.
   - dist의 모든 글 HTML에 title, description, canonical, h1, 본문이 있는지
   - draft와 reviewed 글이 dist에 없는지

@@ -64,7 +64,8 @@
 ### 스택
 - Astro 7(정적 생성), TypeScript, Tailwind CSS 4 + typography 플러그인
 - 통합: `@astrojs/sitemap`, `@astrojs/rss`
-- 버전은 `package.json`에 정확히 고정한다. Node 22.23.4 이상(CI는 24)
+- 버전은 `package.json`에 정확히 고정한다.
+- Node는 24.22.2로 고정한다. 값의 기준은 `.nvmrc`이고, `package.json`의 `engines`와 CI(`node-version-file: .nvmrc`)가 같은 값을 쓴다. 버전을 올릴 때는 세 곳을 같은 커밋에서 바꾼다.
 
 ### 명령
 - `npm run dev`: 개발 서버. draft 글도 보인다.

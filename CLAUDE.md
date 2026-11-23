@@ -9,6 +9,7 @@
 - 글은 Markdown + git으로 관리하고, draft → reviewed → published를 거친다.
   - 규칙: [.claude/rules/content.md](.claude/rules/content.md)
   - 스킬: `draft-post`, `review-post`, `publish-post`
+- push와 PR 생성은 `create-pr` 스킬로 한다(한글 PR, AI 작성 표시 없음). merge와 배포는 사람이 한다.
 - 라이브 사이트는 `gh-pages` 브랜치에서 서빙된다. Phase 1 전환 전까지 `npm run deploy`를 실행하지 않는다(SPEC §3.1).
 
 ## Overview
@@ -72,9 +73,9 @@ There is no dedicated `test` script in `package.json`.
 - Rules live in `.claude/rules/`.
   - Content, scope, and SEO rules: `content.md`, `project-scope.md`, `rendering-seo.md`.
   - Legacy SPA code rules: coding style, architecture, naming, API conventions, environment/tooling.
-- Skills must use the `.claude/skills/<name>/SKILL.md` layout to be discovered.
-  - Active skills: `draft-post`, `review-post`, `publish-post`.
-  - The older flat files (`add-api-fetcher.md`, `add-data-driven-component.md`, `create-ui-component.md`, `verify-project.md`) are not loaded as skills. They are kept for reference only.
+- Skills use the `.claude/skills/<name>/SKILL.md` layout: one folder per skill, containing a file named exactly `SKILL.md`. Other layouts are not discovered.
+  - Content and workflow: `draft-post`, `review-post`, `publish-post`, `create-pr`.
+  - Legacy SPA only (do not use for new code): `add-api-fetcher`, `add-data-driven-component`, `create-ui-component`, `verify-project`.
 - `.claude/settings.json` holds permission defaults (allow/ask/deny), allowed tools, and the default `VITE_API_BASE_URL` env value.
 - See `.claude/README.md` for the full structure and usage notes.
 

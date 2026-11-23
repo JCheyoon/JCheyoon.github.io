@@ -1,6 +1,6 @@
 ---
 name: create-ui-component
-description: shadcn 스타일 UI 컴포넌트 생성. Tailwind 시맨틱 토큰과 기존 프리미티브 재사용.
+description: [레거시 SPA 전용 — Phase 1 이후 새 코드에는 쓰지 않는다] shadcn 스타일 UI 컴포넌트 생성. Tailwind 시맨틱 토큰과 기존 프리미티브 재사용.
 ---
 
 # UI 컴포넌트 생성

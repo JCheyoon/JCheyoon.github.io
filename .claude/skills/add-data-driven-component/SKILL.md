@@ -1,6 +1,6 @@
 ---
 name: add-data-driven-component
-description: react-query로 서버 데이터를 불러오는 페이지/컴포넌트 추가. 목록·상세·어드민 화면에 사용.
+description: [레거시 SPA 전용 — Phase 1 이후 새 코드에는 쓰지 않는다] react-query로 서버 데이터를 불러오는 페이지/컴포넌트 추가. 목록·상세·어드민 화면에 사용.
 ---
 
 # 데이터 연동 컴포넌트 추가

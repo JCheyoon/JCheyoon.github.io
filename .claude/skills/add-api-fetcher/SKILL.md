@@ -1,6 +1,6 @@
 ---
 name: add-api-fetcher
-description: src/lib에 API 호출 함수(읽기/쓰기) 추가. 새 백엔드 엔드포인트가 필요할 때 사용.
+description: [레거시 SPA 전용 — Phase 1 이후 새 코드에는 쓰지 않는다] src/lib에 API 호출 함수(읽기/쓰기) 추가. 새 백엔드 엔드포인트가 필요할 때 사용.
 ---
 
 # API fetcher 추가

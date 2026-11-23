@@ -1,4 +1,8 @@
-# 코딩 스타일
+# 코딩 스타일 (레거시 SPA 전용)
+
+> 레거시 SPA(`src/`의 Vite + React 앱) 전용 규칙이다.
+> 이 앱은 Phase 1에서 `legacy/spa/`로 옮기고 은퇴한다(docs/SPEC.md D6, D7).
+> 새 코드의 스타일 규칙은 Phase 1에서 실제 코드를 기준으로 새로 쓴다.
 
 `src/` 코드, `tsconfig.app.json`, `eslint.config.js`에서 실제로 확인된 규칙.
 

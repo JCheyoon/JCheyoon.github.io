@@ -139,7 +139,7 @@ slug 규칙:
 
 - `status: published`인데 `reviewed_at`, `reviewed_by`, `published_at` 중 하나라도 없음
 - reviewed 이상인 글 본문에 `[경험 추가 필요]` 또는 `[출처 확인 필요]`가 남아 있음
-- 본문에 제휴 링크 도메인(`src/data/affiliate-domains.ts`)이 있는데 `disclosure`가 비어 있음
+- 본문에 제휴 링크 도메인(`src/data/affiliate-domains.json`)이 있는데 `disclosure`가 비어 있음
 - 목록에 없는 category, slug 형식 위반, slug 중복, alt 없는 이미지
 
 ### 5.3 단일 소스 파일
@@ -148,9 +148,25 @@ slug 규칙:
 |---|---|
 | `src/site.config.ts` | 사이트 이름, URL, 설명, 작성자, 소셜 링크. 작성자 이름 하드코딩 금지 |
 | `src/data/categories.ts` | 카테고리 `{slug, name, parent?, description?}`. 초기값(2026-11-23 결정): `ai` AI 활용, `frontend` 프론트엔드, `backend` 백엔드, `etc` 기타 |
-| `src/data/affiliate-domains.ts` | 제휴 링크로 판정할 도메인 목록 |
+| `src/data/affiliate-domains.json` | 제휴 링크로 판정할 도메인 목록. 검사 스크립트(Node)가 그대로 읽을 수 있게 JSON으로 둔다 |
 
-### 5.4 공개 범위
+### 5.4 이미지
+
+이미지는 서버에 올리지 않고 글과 같은 저장소에 넣는다. 그래서 별도의 업로드 엔드포인트가 필요 없다.
+
+1. 파일을 `src/assets/posts/<slug>/`에 넣는다. 방법은 둘 중 하나다.
+   - 로컬에서 폴더에 끌어다 놓는다.
+   - GitHub 웹에서 Add file → Upload files로 올린다. 새 브랜치로 커밋하면 PR이 된다.
+2. 본문에서 상대 경로로 참조한다: `![이미지 설명](../../assets/posts/<slug>/파일명.jpg)`
+3. 빌드할 때 Astro가 webp로 변환하고, width·height를 넣고, lazy loading을 붙인다.
+
+규칙:
+- alt(이미지 설명)는 필수다. 이미지를 볼 수 없는 사람에게 무엇이 보이는지 설명한다.
+- 외부 이미지 주소(https://...)는 쓰지 않는다. `check-content`가 잡는다.
+- 올리기 전에 긴 변을 2000px 안팎으로 줄인다(권장값). 원본이 git에 쌓이므로 저장소 크기를 관리하기 위해서다.
+- 대표 이미지(OG)는 frontmatter `cover: { src: ../../assets/posts/<slug>/cover.jpg, alt: ... }`로 지정한다. 없으면 사이트 기본 이미지를 쓴다.
+
+### 5.5 공개 범위
 
 - draft와 reviewed 글은 빌드 결과물, sitemap, RSS에 들어가지 않는다. 로컬 개발 서버에서만 보인다.
 

@@ -16,7 +16,7 @@ paths:
 - 모든 페이지는 공통 SEO head 컴포넌트를 쓴다.
   고유 title, description, 절대 URL canonical, OG 태그가 들어간다.
 - 페이지 이동은 `<a href>`로 한다. onClick 내비게이션은 쓰지 않는다.
-- 사이트 이름, 작성자, URL은 `src/site.config.ts`에서만 읽는다. 하드코딩하지 않는다.
+- 사이트 이름, 작성자, URL은 `src/site.config.ts`에서만 읽는다. 하드코딩하지 않는다. URL 값 자체는 `astro.config.mjs`의 `SITE_URL`에서 온다.
 
 ## 이미지
 - 크기 지정과 alt는 필수다.

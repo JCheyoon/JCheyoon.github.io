@@ -4,7 +4,7 @@
 /*
  * 색상 토큰은 레거시 SPA(legacy/spa/src/index.css)의 값을 그대로 가져왔다.
  * Phase 1은 시스템 설정(prefers-color-scheme)으로만 다크 모드를 적용한다.
- * 사용자가 고르는 테마 토글은 Phase 2에서 추가한다.
+ * 사용자가 고르는 테마 토글은 Phase 3에서 추가한다.
  */
 @theme inline {
   --color-background: var(--background);

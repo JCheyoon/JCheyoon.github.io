@@ -1,6 +1,6 @@
 # 블로그 사양서 (SPEC)
 
-- 상태: 승인된 초안 (2026-11-23). D1~D3, D5~D8 결정. D4는 Phase 5에서 논의.
+- 상태: 승인된 초안 (2026-11-23, 2026-11-24 번역 방식·단계 순서 변경). D1~D3, D5~D8 결정. D4는 Phase 6에서 논의.
 - 관련 문서: `docs/ROADMAP.md`, `.claude/rules/`
 - 표시: [결정 필요]는 §11 열린 결정 표에 있는 항목
 
@@ -24,17 +24,17 @@
 | 기능 | 이유 |
 |---|---|
 | 관리자 웹 에디터 | git과 PR이 작성·검수 도구를 대신한다. 기존 코드는 `legacy/`에 보관 |
-| 다국어 페이지 | 한국어 글이 자리 잡은 뒤 Phase 4에서 영어 번역본을 검수를 거쳐 발행(§9.2) |
+| 다국어 페이지 | Phase 2에서 한국어 ↔ 영어 번역 구조를 만든다(§9.2) |
 | 댓글, 회원, 뉴스레터 발송 | v1 이후 검토 |
 | "Ask my blog"(벡터 검색), MCP 서버 | 보류. 글이 git에 있어 Claude가 파일을 직접 읽을 수 있다 |
 
 ### v1 이후 기능
 
-- LinkedIn 공유 (Phase 3, §9.3)
-- 영어 번역본 (Phase 4, §9.2)
-- 커스텀 도메인 연결, 광고 슬롯과 CMP (Phase 5)
-- "이 글에 질문하기" (Phase 5 선택, 기존 Go 백엔드 재사용)
-- 사이트 내 검색, 포트폴리오 페이지 (Phase 3)
+- LinkedIn 공유 (Phase 4, §9.3)
+- 한국어 ↔ 영어 번역 (Phase 2, §9.2)
+- 커스텀 도메인 연결, 광고 슬롯과 CMP (Phase 6)
+- "이 글에 질문하기" (Phase 6 선택, 기존 Go 백엔드 재사용)
+- 사이트 내 검색, 포트폴리오 페이지 (Phase 4)
 
 ### 어떤 경우에도 하지 않는 것
 
@@ -49,14 +49,14 @@ src/content/posts/*.md (git)
    ▼
 Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 실패
    ▼
-정적 HTML/CSS (+ 최소 JS) ──→ GitHub Pages (https://jcheyoon.github.io, Phase 5에서 커스텀 도메인 연결)
+정적 HTML/CSS (+ 최소 JS) ──→ GitHub Pages (https://jcheyoon.github.io, Phase 6에서 커스텀 도메인 연결)
 
-(Phase 5, 선택) 글 페이지 질문 위젯(React 아일랜드) ──→ Go 백엔드 /api/posts/{slug}/ask
+(Phase 6, 선택) 글 페이지 질문 위젯(React 아일랜드) ──→ Go 백엔드 /api/posts/{slug}/ask
 ```
 
 - 독자가 글을 볼 때 백엔드나 DB를 거치지 않는다.
 - 사이트 저장소는 `JCheyoon.github.io`이다. 기존 Vite SPA는 `legacy/spa/`로 옮겨 보관한다(D7).
-- `blog-backend`는 유지보수 모드로 둔다. 콘텐츠 원본이 아니다. DB에 글이 없어 옮길 콘텐츠도 없다(2026-11-23 작성자 확인). 질문 위젯을 붙이려면 글 본문을 DB 대신 사이트 기준으로 가져오도록 바꿔야 한다(Phase 5).
+- `blog-backend`는 유지보수 모드로 둔다. 콘텐츠 원본이 아니다. DB에 글이 없어 옮길 콘텐츠도 없다(2026-11-23 작성자 확인). 질문 위젯을 붙이려면 글 본문을 DB 대신 사이트 기준으로 가져오도록 바꿔야 한다(Phase 6).
 
 ### 3.1 배포 방식과 브랜치
 
@@ -91,6 +91,7 @@ Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 �
 | `/tag/[tag]/` | 태그 글 목록 | |
 | `/archive/` | 연·월별 전체 목록 | |
 | `/about/`, `/contact/`, `/privacy/`, `/terms/` | 고정 페이지 | |
+| `/en/`, `/en/post/[slug]/` | 영어 글 목록, 영어 글 | Phase 2. 원문이든 번역본이든 영어 글은 여기 |
 | `/rss.xml`, `/sitemap-index.xml`, `/robots.txt` | 빌드 시 자동 생성 | |
 | 그 밖의 경로 | `404.html` | 실제 404 상태 |
 
@@ -102,7 +103,7 @@ slug 규칙:
 기타:
 
 - 끝 슬래시(D5): 페이지 주소는 모두 `/`로 끝난다(예: `/post/slug/`). 빌드는 디렉터리 방식(`post/slug/index.html`)으로 하고, canonical과 내부 링크도 끝 슬래시를 붙인다. 파일 주소(`/rss.xml` 등)는 예외다.
-- 도메인 연결(Phase 5)은 모든 URL의 호스트가 바뀌는 변경이다. 그래서 다음을 지킨다.
+- 도메인 연결(Phase 6)은 모든 URL의 호스트가 바뀌는 변경이다. 그래서 다음을 지킨다.
   - canonical, sitemap, RSS, OG의 절대 URL은 전부 `SITE_URL` 하나에서 만든다. 하드코딩하지 않는다.
   - 도메인을 연결할 때 `jcheyoon.github.io` → 새 도메인 리다이렉트가 동작하는지 확인한다.
   - Search Console 주소 변경 절차를 확인한다(github.io 하위 도메인에서도 쓸 수 있는지 확인 필요).
@@ -134,6 +135,8 @@ slug 규칙:
 | disclosure | string | 조건부 | 제휴·협찬이 있으면 필수 |
 | sources | `{title, url, accessed}[]` | 선택 | 주요 출처 |
 | cover | `{src, alt}` | 선택 | 쓰면 alt 필수 |
+| lang | `ko` \| `en` | 선택 | 글의 언어. 기본 `ko`. 영어 글은 `src/content/posts/en/`에 둔다 (Phase 2) |
+| translated_from | `ko` \| `en` | 번역본만 | 원문의 언어. 원문과 번역본은 같은 slug를 쓴다 (Phase 2) |
 
 ### 5.2 빌드 실패 조건 (스키마와 검사 스크립트)
 
@@ -210,11 +213,11 @@ slug 규칙:
 목표값은 외부 기준이 아니라 이 프로젝트가 스스로 정한 값이다.
 
 - 독자 페이지의 기본 JS는 0이다. 허용하는 아일랜드는 다음 세 가지뿐이다.
-  - 테마 토글 (Phase 2)
-  - 사이트 내 검색 (Phase 3)
-  - 질문 위젯 (Phase 5, 선택)
+  - 테마 토글 (Phase 3)
+  - 사이트 내 검색 (Phase 4)
+  - 질문 위젯 (Phase 6, 선택)
 - 이미지는 Astro 이미지 처리로 크기를 지정하고 lazy loading을 쓴다. alt는 필수다.
-- 광고 슬롯은 높이를 고정한 컨테이너로 미리 자리를 잡는다(Phase 5).
+- 광고 슬롯은 높이를 고정한 컨테이너로 미리 자리를 잡는다(Phase 6).
 - 다크 모드는 `prefers-color-scheme`을 기본으로 하고, 사용자 선택을 저장하며, 첫 화면 깜빡임을 막는다.
 - 목표: Lighthouse 모바일 Performance, SEO, Accessibility 각 90 이상.
 
@@ -232,21 +235,27 @@ slug 규칙:
 - PR 템플릿에 검수 체크리스트 8항목을 넣는다.
 - 발행 속도 상한은 주 3편이다.
 
-### 9.2 번역 (Phase 4, 영어)
+### 9.2 번역 (Phase 2, 한국어 ↔ 영어)
 
-원칙: 번역은 "자동 발행"이 아니라 "번역 초안 생성"이다. 이후 과정은 한국어 글과 똑같이 draft → reviewed → published를 거친다.
+원칙: 번역본 **생성은 자동**, **발행은 사람 검수 후**다. 작성자는 한국어나 영어 중 편한 언어로 원문을 쓴다.
 
-- `translate-post` 스킬이 published 상태인 한국어 글을 받아 번역 초안을 만든다.
-  - 파일: `src/content/posts/en/<slug>.md`
-  - frontmatter: `status: draft`, `ai_assisted: true`, `translation_of: <원문 slug>`, `lang: en`
-- 대상 언어는 영어(en)뿐이다. 작성자가 직접 검수할 수 있는 언어다. 다른 언어를 추가하려면 SPEC을 먼저 바꾼다.
-- 한 번에 원문 1편만 처리한다.
-- URL: `/en/post/<slug>`. 한국어 원문은 기존 `/post/<slug>`를 유지한다.
-- 원문과 번역본에 서로를 가리키는 `hreflang`을 넣는다. sitemap에도 대체 언어를 넣는다.
-- 원문을 고치면 번역본에 "원문 변경됨" 표시를 하고 재검수 대상으로 둔다. 원문 `updated_at`이 번역본 `reviewed_at`보다 나중이면 빌드 경고를 낸다.
-- 근거: Google 스팸 정책은 번역 같은 자동 변환으로 가치 없이 페이지를 대량 생성하는 것을 scaled content abuse로 본다([spam policies](https://developers.google.com/search/docs/essentials/spam-policies)). 번역 페이지 표기 방식은 [localized versions](https://developers.google.com/search/docs/specialty/international/localized-versions) 문서를 따른다.
+- 대상 언어는 한국어(ko)와 영어(en) 둘뿐이다(D8). 원문이 한국어면 영어로, 영어면 한국어로 번역한다.
+- 파일과 주소. 원문과 번역본은 같은 slug를 쓴다.
+  | 언어 | 파일 | 주소 |
+  |---|---|---|
+  | 한국어 | `src/content/posts/<slug>.md` | `/post/<slug>/` |
+  | 영어 | `src/content/posts/en/<slug>.md` | `/en/post/<slug>/` |
+- frontmatter: 모든 글에 `lang`(기본 `ko`). 번역본에는 `translated_from`(원문 언어)과 `status: draft`, `ai_assisted: true`.
+- 자동 생성: `publish-post`가 원문을 발행하면 이어서 `translate-post`를 실행해 반대 언어 번역 초안을 만든다.
+  - 별도의 MCP 서버는 필요 없다. Claude Code 스킬이 저장소 파일을 직접 만든다.
+  - 번역 초안은 발행 PR과 별도 브랜치(`translate/<slug>`)로 만들고, `create-pr` 절차(초안 확인 → 승인 → push)를 따른다.
+- 번역본도 `review-post` → `publish-post`를 거친다. 검수는 두 언어를 읽을 수 있는 작성자가 한다. 번역본에서는 번역을 다시 만들지 않는다.
+- 원문을 고치면 번역본을 재검수 대상으로 둔다. 원문 `updated_at`이 번역본 `reviewed_at`보다 나중이면 빌드 경고를 낸다.
+- 원문과 번역본에 서로를 가리키는 `hreflang`을 넣고, sitemap에도 대체 언어를 넣는다. 언어 전환 링크는 번역본이 있는 글에만 표시한다.
+- 브라우저 언어를 보고 자동으로 이동시키지 않는다. 전환은 링크로만 한다.
+- 근거: Google 스팸 정책은 번역 같은 자동 변환으로 가치 없이 페이지를 대량 생성하는 것을 scaled content abuse로 본다([spam policies](https://developers.google.com/search/docs/essentials/spam-policies)). 그래서 생성은 자동으로 하되 발행 전 검수를 유지한다. 번역 페이지 표기는 [localized versions](https://developers.google.com/search/docs/specialty/international/localized-versions) 문서를 따른다.
 
-### 9.3 LinkedIn 공유 (Phase 3)
+### 9.3 LinkedIn 공유 (Phase 4)
 
 원칙: 검수는 PR에서 사람이 하고, 게시만 자동으로 한다.
 
@@ -271,7 +280,7 @@ slug 규칙:
   - dist의 모든 글 HTML에 title, description, canonical, h1, 본문이 있는지
   - draft와 reviewed 글이 dist에 없는지
   - `404.html`이 있는지
-- 환경 변수: `SITE_URL`. Phase 5 전까지는 `https://jcheyoon.github.io`. 백엔드 URL은 Phase 5에서 추가한다.
+- 환경 변수: `SITE_URL`. Phase 6 전까지는 `https://jcheyoon.github.io`. 백엔드 URL은 Phase 6에서 추가한다.
 
 ## 11. 열린 결정
 
@@ -279,12 +288,12 @@ slug 규칙:
 |---|---|---|---|
 | D1 | 콘텐츠 원본 | git Markdown | 승인 (2026-11-23) |
 | D2 | 프레임워크 | B Astro | 승인 (2026-11-23) |
-| D3 | 커스텀 도메인 | 보유 중인 도메인을 Phase 5에서 연결. 주소는 그때 받는다 | 승인 (2026-11-23) |
-| D4 | 호스팅 | 우선 GitHub Pages, 광고 도입 전(Phase 5) 재검토(GitHub Pages 상업 이용 제한 문구 때문) | 대기 |
+| D3 | 커스텀 도메인 | 보유 중인 도메인을 Phase 6에서 연결. 주소는 그때 받는다 | 승인 (2026-11-23) |
+| D4 | 호스팅 | 우선 GitHub Pages, 광고 도입 전(Phase 6) 재검토(GitHub Pages 상업 이용 제한 문구 때문) | 대기 |
 | D5 | 끝 슬래시 | `/post/slug/` (디렉터리 방식, 끝 슬래시 있음) | 승인 (2026-11-23) |
 | D6 | 관리자 SPA | 은퇴. 번역과 LinkedIn은 git 파이프라인에서 처리(§9.2, §9.3) | 승인 (2026-11-23) |
 | D7 | legacy 보관 위치 | `legacy/spa/` | 승인 (2026-11-23) |
-| D8 | 번역 대상 언어 | 영어(en) | 승인 (2026-11-23) |
+| D8 | 번역 | 한국어 ↔ 영어 양방향. 원문을 발행하면 반대 언어 번역 초안을 자동 생성하고, 검수 후 발행 | 승인 (2026-11-23, 2026-11-24 양방향·자동 생성으로 변경) |
 
 ## 12. 완료 정의 (모든 기능 공통)
 

@@ -19,7 +19,7 @@ description: status가 reviewed인 블로그 글만 published로 바꾸고, 빌�
 - `npm run check:html`을 실행한다. 이 스크립트는 Phase 1에서 만든다.
 - 해당 글의 HTML에 title, description, canonical이 있는지 보고한다.
 
-## 4. 소셜 게시 문구 (Phase 3 이후)
+## 4. 소셜 게시 문구 (Phase 4 이후)
 - `social/linkedin/<slug>.md`에 게시 문구 초안을 만든다.
   - 글 요약 2~3문장과 글 URL을 넣는다. 과장과 해시태그 남발은 하지 않는다.
 - 이 파일은 PR에서 사람이 검수한다. 직접 게시하지 않는다. 게시는 merge 후 Action이 한다.

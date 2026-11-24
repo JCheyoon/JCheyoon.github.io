@@ -1,0 +1,42 @@
+---
+// 목록 페이지네이션. 모든 이동은 링크다(SPEC §6). 1페이지뿐이면 아무것도 그리지 않는다.
+import { listPageUrl } from "../lib/posts";
+
+interface Props {
+  current: number;
+  total: number;
+  /** 페이지 번호 → 주소. 기본은 홈 목록(/, /page/n/). */
+  urlFor?: (page: number) => string;
+}
+
+const { current, total, urlFor = listPageUrl } = Astro.props;
+const pages = Array.from({ length: total }, (_, i) => i + 1);
+---
+
+{
+  total > 1 && (
+    <nav aria-label="페이지" class="mt-8 flex flex-wrap items-center justify-center gap-2 text-sm">
+      {current > 1 && (
+        <a href={urlFor(current - 1)} rel="prev" class="rounded-full px-3 py-2 hover:bg-card">
+          이전
+        </a>
+      )}
+      {pages.map((p) =>
+        p === current ? (
+          <span aria-current="page" class="flex h-9 w-9 items-center justify-center rounded-full bg-primary font-medium text-primary-foreground">
+            {p}
+          </span>
+        ) : (
+          <a href={urlFor(p)} class="flex h-9 w-9 items-center justify-center rounded-full bg-card text-muted-foreground hover:text-foreground">
+            {p}
+          </a>
+        ),
+      )}
+      {current < total && (
+        <a href={urlFor(current + 1)} rel="next" class="rounded-full px-3 py-2 hover:bg-card">
+          다음
+        </a>
+      )}
+    </nav>
+  )
+}

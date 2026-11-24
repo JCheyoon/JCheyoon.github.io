@@ -1,6 +1,6 @@
 # 로드맵
 
-**현재 단계: Phase 0**
+**현재 단계: Phase 1**
 
 진행 원칙:
 
@@ -53,8 +53,8 @@
 
 - [x] D1~D3, D6~D8 결정 (2026-11-23)
 - [x] 글 이전 필요 여부 확인: DB에 글이 없어서 이전하지 않는다 (2026-11-23)
-- [ ] 규칙, 스킬, SPEC, ROADMAP 적용 (PR 1)
-- [ ] 백엔드 문서 정비 (PR 2)
+- [x] 규칙, 스킬, SPEC, ROADMAP 적용 (JCheyoon.github.io #3, #4)
+- [x] 백엔드 문서 정비 (blog-backend #5, #6, #7)
 
 완료 기준: PR 1, PR 2 merge
 
@@ -62,18 +62,24 @@
 
 작업 브랜치: `migrate/astro`
 
-- [ ] 기존 SPA를 `legacy/spa/`로 이동하고, 레거시 규칙에 `paths: ["legacy/**"]` 적용
-- [ ] Astro 골격, `site.config.ts`(`SITE_URL=https://jcheyoon.github.io`), `categories.ts`
-- [ ] 콘텐츠 스키마와 검증 규칙
-- [ ] 반응형 레이아웃, 홈과 페이지네이션, 글, 카테고리, 소개, 404
+- [x] 기존 SPA를 `legacy/spa/`로 이동하고, 레거시 규칙에 `paths: ["legacy/**"]` 적용
+- [x] Astro 골격, `site.config.ts`(`SITE_URL=https://jcheyoon.github.io`), `categories.ts`
+- [x] 콘텐츠 스키마와 검증 규칙 (`src/content.config.ts`, `scripts/check-content.mjs`)
+- [x] 반응형 레이아웃, 홈과 페이지네이션, 글, 카테고리, 소개, 404
 - [ ] 첫 글 1편 발행 (글 템플릿 검증용)
   - 작성자가 직접 쓴다.
   - 파이프라인이 Phase 2에서 검증되므로, 이 글은 `review-post` 점검표만 참고해 수동으로 기록한다.
-- [ ] SEO head, JSON-LD, sitemap, RSS, robots, typography, 이미지 처리
-- [ ] GitHub Actions 배포 워크플로와 HTML 검사 스크립트
-- [ ] 끝 슬래시 정책 결정 (D5)
-- [ ] 새 코드 기준으로 `coding-style` 규칙과 `verify-site` 스킬 작성 (레거시 `verify-project`와 별도)
-- [ ] 전환: `master`에 merge → Pages Source를 GitHub Actions로 변경 (사람이 직접) → 확인. 롤백은 `gh-pages` 브랜치로.
+- [x] SEO head, JSON-LD, sitemap, RSS, robots, typography, 이미지 처리
+- [x] GitHub Actions 워크플로(PR 검증, 수동 배포)와 HTML 검사 스크립트
+- [x] 끝 슬래시 정책 결정 (D5): `/post/slug/` (2026-11-23)
+- [x] 새 코드 기준으로 `site-code` 규칙과 `verify-site` 스킬 작성 (레거시 `verify-project`와 별도)
+- [ ] 전환 (SPEC §3.1)
+  1. Astro 사이트 PR을 `master`에 merge한다. 라이브 사이트는 아직 `gh-pages` 그대로다.
+  2. Settings → Pages → Source를 "GitHub Actions"로 바꾼다 (사람이 직접).
+  3. 바로 Actions 탭에서 Site 워크플로를 수동 실행(Run workflow)해 배포한다.
+  4. 라이브 사이트를 확인한다(아래 완료 기준).
+  5. 확인되면 `site.yml`의 push 트리거 주석을 푸는 PR을 올린다. 이후 master merge 시 자동 배포된다.
+  6. 문제가 생기면 Source를 다시 `gh-pages` 브랜치로 돌린다.
 
 완료 기준:
 - 배포된 글 HTML에 본문, title, description, canonical이 있다 (curl로 확인).

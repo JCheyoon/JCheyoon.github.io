@@ -1,66 +1,58 @@
-import { apiRequest } from "./api";
-import type { Post } from "@/types/types";
+import { getCollection, type CollectionEntry } from "astro:content";
+import { categoryWithChildren } from "../data/categories";
 
-export async function fetchPosts(
-  tag?: string,
-  category?: string,
-): Promise<Post[]> {
-  const params = new URLSearchParams();
-  if (tag) params.set("tag", tag);
-  if (category) params.set("category", category);
-  const qs = params.toString();
-  const data = await apiRequest<Post[] | null>(
-    `/api/posts${qs ? `?${qs}` : ""}`,
-  );
-  return data ?? [];
+export type Post = CollectionEntry<"posts">;
+
+/**
+ * draft·reviewed 글을 보여 줄지 여부(SPEC §5.5).
+ * - 개발 서버(npm run dev): 보여 준다.
+ * - 템플릿 검증 빌드(INCLUDE_DRAFTS=true): 보여 준다. 결과는 dist-drafts/에만 나간다.
+ * - 배포 빌드: published 글만.
+ */
+export const includeDrafts: boolean = import.meta.env.DEV || __INCLUDE_DRAFTS__;
+
+/** 화면, RSS, JSON-LD에 쓰는 날짜. 발행 전 글은 작성일을 쓴다. */
+export function postDate(post: Post): Date {
+  return post.data.published_at ?? post.data.created_at;
 }
 
-/** Admin-only: fetch all posts including drafts */
-export async function fetchAllPosts(): Promise<Post[]> {
-  const data = await apiRequest<Post[] | null>("/api/posts?all=true");
-  return data ?? [];
+export function postUrl(post: Post): string {
+  return `/post/${post.id}/`;
 }
 
-/** Admin-only: fetch a single post by id (for editing) */
-export async function fetchPost(id: number, token: string): Promise<Post> {
-  return apiRequest<Post>(`/api/admin/posts/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+/** 공개 대상 글을 최신순으로 돌려준다. */
+export async function getVisiblePosts(): Promise<Post[]> {
+  const posts = await getCollection("posts", (p) => includeDrafts || p.data.status === "published");
+  return posts.sort((a, b) => postDate(b).getTime() - postDate(a).getTime());
 }
 
-/** Admin-only: update a post */
-export async function updatePost(
-  id: number,
-  payload: {
-    title: string;
-    excerpt: string;
-    content: string;
-    tags: string[];
-    categoryId?: number | null;
-    published: boolean;
-  },
-  token: string,
-): Promise<Post> {
-  return apiRequest<Post>(`/api/posts/${id}`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: payload,
-  });
+/** 카테고리 페이지용: 해당 카테고리와 하위 카테고리의 글 */
+export function filterByCategory(posts: Post[], categorySlug: string): Post[] {
+  const slugs = categoryWithChildren(categorySlug);
+  return posts.filter((p) => slugs.includes(p.data.category));
 }
 
-/** Admin-only: delete a post by id */
-export async function deletePost(id: number, token: string): Promise<void> {
-  await apiRequest<void>(`/api/posts/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export function totalPages(count: number, pageSize: number): number {
+  return Math.max(1, Math.ceil(count / pageSize));
 }
 
-export async function fetchPostBySlug(slug: string): Promise<Post> {
-  return apiRequest<Post>(`/api/posts/${encodeURIComponent(slug)}`);
+/** 목록 n페이지 주소. 1페이지는 홈이다(SPEC §4). */
+export function listPageUrl(page: number): string {
+  return page <= 1 ? "/" : `/page/${page}/`;
+}
+
+const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  timeZone: "Asia/Seoul",
+});
+
+export function formatDate(date: Date): string {
+  return dateFormatter.format(date);
+}
+
+/** <time datetime>와 JSON-LD용 YYYY-MM-DD */
+export function isoDate(date: Date): string {
+  return date.toISOString().slice(0, 10);
 }

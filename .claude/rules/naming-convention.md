@@ -1,7 +1,12 @@
+---
+paths:
+  - "legacy/**"
+---
+
 # 명명 규칙 (레거시 SPA 전용)
 
-> 레거시 SPA(`src/`의 Vite + React 앱) 전용 규칙이다.
-> 이 앱은 Phase 1에서 `legacy/spa/`로 옮기고 은퇴한다(docs/SPEC.md D6, D7).
+> 레거시 SPA(Vite + React 앱) 전용 규칙이다. 코드는 `legacy/spa/`로 옮겨 은퇴했다(docs/SPEC.md D6, D7).
+> 아래의 `src/...` 같은 경로는 모두 `legacy/spa/` 기준이다(예: `legacy/spa/src/lib/api.ts`).
 > 새 코드의 명명 규칙은 Phase 1에서 실제 코드를 기준으로 새로 쓴다.
 
 실제 코드에서 확인된 패턴.

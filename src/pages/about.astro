@@ -1,0 +1,42 @@
+---
+// 소개 페이지(SPEC §6): 운영자, 사이트 목적, 제작 방식, 연락처.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { site } from "../site.config";
+
+const profile = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  mainEntity: {
+    "@type": "Person",
+    name: site.author.name,
+    sameAs: site.social.map((s) => s.href),
+  },
+};
+---
+
+<BaseLayout title="소개" description={`${site.name}와 운영자 ${site.author.name}를 소개합니다.`} jsonLd={[profile]}>
+  <article class="prose prose-slate max-w-3xl dark:prose-invert">
+    <h1>이 블로그에서 다루는 것</h1>
+    <p>{site.description} 직접 써 보고 확인한 내용을 중심으로 씁니다.</p>
+
+    <h2>글을 만드는 방식</h2>
+    <ul>
+      <li>글 초안을 쓸 때 AI 도구의 도움을 받기도 합니다.</li>
+      <li>모든 글은 발행 전에 운영자가 직접 사실, 출처, 경험 여부를 검수합니다.</li>
+      <li>사실과 수치에는 출처를 달고, 바뀔 수 있는 정보에는 기준 날짜를 적습니다.</li>
+    </ul>
+
+    <h2>연락처</h2>
+    <ul>
+      {
+        site.social.map((s) => (
+          <li>
+            <a href={s.href} rel="me noopener">
+              {s.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </article>
+</BaseLayout>

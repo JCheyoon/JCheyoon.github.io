@@ -1,0 +1,4 @@
+{
+  "description": "본문에 이 도메인 링크가 있으면 제휴 링크로 보고 frontmatter disclosure를 요구한다 (scripts/check-content.mjs, SPEC §5.2).",
+  "domains": ["link.coupang.com", "coupa.ng"]
+}

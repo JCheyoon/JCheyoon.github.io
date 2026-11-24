@@ -1,0 +1,36 @@
+---
+// 카테고리 글 목록(SPEC §4). 글이 있는 카테고리만 페이지를 만든다(빈 페이지는 색인 가치가 없다).
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ListHeader from "../../components/ListHeader.astro";
+import PostList from "../../components/PostList.astro";
+import { site } from "../../site.config";
+import { categories } from "../../data/categories";
+import { filterByCategory, getVisiblePosts } from "../../lib/posts";
+
+export const getStaticPaths = (async () => {
+  const posts = await getVisiblePosts();
+  return categories
+    .map((category) => ({ category, posts: filterByCategory(posts, category.slug) }))
+    .filter(({ posts }) => posts.length > 0)
+    .map(({ category, posts }) => ({
+      params: { slug: category.slug },
+      props: { name: category.name, posts },
+    }));
+}) satisfies GetStaticPaths;
+
+const { name, posts } = Astro.props;
+const breadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: site.name, item: new URL("/", site.url).href },
+    { "@type": "ListItem", position: 2, name, item: new URL(Astro.url.pathname, site.url).href },
+  ],
+};
+---
+
+<BaseLayout title={name} description={`${site.name}의 ${name} 카테고리 글 ${posts.length}편입니다.`} jsonLd={[breadcrumb]}>
+  <ListHeader title={name} count={posts.length} />
+  <PostList posts={posts} />
+</BaseLayout>

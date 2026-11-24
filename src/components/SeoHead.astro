@@ -1,0 +1,65 @@
+---
+// 모든 페이지가 쓰는 공통 head(SPEC §7). title, description, canonical, OG, JSON-LD를 넣는다.
+import { site } from "../site.config";
+
+export interface Props {
+  /** 페이지 제목. 홈이면 사이트 이름만 쓴다. */
+  title: string;
+  description: string;
+  type?: "website" | "article";
+  /** public/ 기준 경로 또는 빌드된 이미지 경로 */
+  image?: string;
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  /** 검색에 노출하지 않을 페이지(404, 초안 미리보기) */
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+  isHome?: boolean;
+}
+
+const {
+  title,
+  description,
+  type = "website",
+  image = site.defaultOgImage,
+  publishedTime,
+  modifiedTime,
+  noindex = false,
+  jsonLd = [],
+  isHome = false,
+} = Astro.props;
+
+const fullTitle = isHome ? `${site.name} | ${site.tagline}` : `${title} | ${site.name}`;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const imageUrl = new URL(image, site.url).href;
+const rssUrl = new URL("rss.xml", site.url).href;
+
+// </script>가 JSON 안에 들어가도 태그가 닫히지 않게 < 를 이스케이프한다.
+const serialize = (data: Record<string, unknown>) => JSON.stringify(data).replace(/</g, "\\u003c");
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex" />}
+
+<meta property="og:site_name" content={site.name} />
+<meta property="og:locale" content="ko_KR" />
+<meta property="og:type" content={type} />
+<meta property="og:title" content={isHome ? site.name : title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={imageUrl} />
+<meta name="twitter:card" content="summary" />
+{publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime.toISOString()} />}
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="alternate" type="application/rss+xml" title={site.name} href={rssUrl} />
+
+{jsonLd.map((data) => <script type="application/ld+json" set:html={serialize(data)} />)}

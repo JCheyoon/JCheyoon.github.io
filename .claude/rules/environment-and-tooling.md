@@ -1,7 +1,12 @@
+---
+paths:
+  - "legacy/**"
+---
+
 # 환경 및 도구 (레거시 SPA 전용)
 
-> 레거시 SPA(`src/`의 Vite + React 앱) 전용 규칙이다.
-> 이 앱은 Phase 1에서 `legacy/spa/`로 옮기고 은퇴한다(docs/SPEC.md D6, D7).
+> 레거시 SPA(Vite + React 앱) 전용 규칙이다. 코드는 `legacy/spa/`로 옮겨 은퇴했다(docs/SPEC.md D6, D7).
+> 아래의 `src/...` 같은 경로는 모두 `legacy/spa/` 기준이다(예: `legacy/spa/src/lib/api.ts`).
 > 새 기능을 이 구조로 만들지 않는다.
 
 ## 스크립트 (package.json)

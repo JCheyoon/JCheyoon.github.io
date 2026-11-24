@@ -14,7 +14,6 @@
 ## 작업 원칙
 
 모든 작업에 적용한다. LLM이 자주 하는 실수(근거 없는 가정, 과한 설계, 요청과 무관한 수정)를 줄이기 위한 원칙이다.
-출처: Andrej Karpathy의 관찰을 정리한 [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills)를 이 저장소에 맞게 옮겼다.
 
 ### 1. 코딩 전에 생각한다
 가정하지 않는다. 헷갈리는 것을 숨기지 않는다. 장단점을 드러낸다.

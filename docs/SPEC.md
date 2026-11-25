@@ -70,21 +70,11 @@ Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 �
 | 브랜치 | 역할 |
 |---|---|
 | `master` | 소스, 기본 브랜치 |
-| `gh-pages` | 이전 배포본 (2025-12-17 골격). 롤백용으로 보존한다 |
 | 작업 브랜치 | `docs/*`, `migrate/astro`, `feat/*`, `publish/<slug>` 등. PR로 `master`에 merge한다 |
 
-현재 Pages 설정(2026-11-25 GitHub API로 확인): 배포 방식 GitHub Actions(`site.yml`), 커스텀 도메인 없음. 2026-11-25에 `gh-pages` 브랜치에서 전환했다.
+현재 Pages 설정(2026-11-25 GitHub API로 확인): 배포 방식 GitHub Actions(`site.yml`), 커스텀 도메인 없음. `master`에 merge하면 자동 배포된다.
 
-전환 시점은 Phase 1 완료 시다. 전환 절차:
-
-1. `migrate/astro`를 `master`에 merge하기 전에 Actions 배포 워크플로를 준비한다.
-2. Settings → Pages → Source를 "GitHub Actions"로 바꾼다. 이 설정은 사람이 직접 한다.
-3. 배포 결과를 확인한다.
-4. 문제가 생기면 Source를 다시 `gh-pages` 브랜치로 되돌린다.
-
-전환 전까지 지킬 것:
-- `npm run deploy`(gh-pages 업로드)를 실행하지 않는다.
-- `gh-pages` 브랜치는 삭제하지 않는다.
+- 롤백: 문제가 된 merge를 되돌리는 PR을 merge한다. 급하면 Actions에서 이전에 성공한 `master` 배포 실행을 다시 실행(Re-run)한다. 그 실행의 커밋으로 다시 빌드·배포된다.
 - Astro 버전은 설치 시점의 최신 안정 버전을 쓰고, 버전을 고정한다.
 
 ## 4. URL 규칙
@@ -120,7 +110,7 @@ slug 규칙:
   - canonical, sitemap, RSS, OG의 절대 URL은 전부 `SITE_URL` 하나에서 만든다. 하드코딩하지 않는다.
   - 도메인을 연결할 때 `jcheyoon.github.io` → 새 도메인 리다이렉트가 동작하는지 확인한다.
   - Search Console 주소 변경 절차를 확인한다(github.io 하위 도메인에서도 쓸 수 있는지 확인 필요).
-- 기존 `/?category=이름` 주소는 리다이렉트하지 않는다. 배포본에 해당 기능이 없었기 때문이다(로컬 `origin/gh-pages` 기준).
+- 기존 `/?category=이름` 주소는 리다이렉트하지 않는다. 이전 사이트에 해당 기능이 없었기 때문이다.
 
 ## 5. 콘텐츠 모델
 

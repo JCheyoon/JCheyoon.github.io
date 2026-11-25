@@ -9,7 +9,7 @@ PR 제목과 설명은 한글로 쓴다. 코드 식별자, 경로, 명령어는 
 
 ## 1. 사전 확인 (하나라도 실패하면 중단하고 이유를 보고한다)
 
-- 현재 브랜치가 `master`나 `gh-pages`가 아니다.
+- 현재 브랜치가 `master`가 아니다.
 - 이 PR이 따로 열 만한 변경인지 확인한다(`project-scope.md`의 "PR을 따로 열지 않는 변경"). 문서 상태만 바꾸는 변경이면 멈추고, 다음 작업 브랜치에 합치자고 제안한다.
 - `git status`에 커밋하지 않은 변경이 없다. 있으면 멈추고 사용자에게 묻는다.
 - `git fetch origin`을 한 뒤, `git log origin/master..HEAD`에 커밋이 1개 이상 있다.
@@ -45,7 +45,7 @@ PR 제목과 설명은 한글로 쓴다. 코드 식별자, 경로, 명령어는 
 (커밋마다 한 줄. `git log --reverse origin/master..HEAD`와 `git show --stat <커밋>`을 보고 쓴다)
 
 ## 영향 범위
-- 라이브 사이트·배포: (gh-pages, Pages 설정을 건드렸는지)
+- 라이브 사이트·배포: (Pages 설정, 배포 워크플로를 건드렸는지)
 - 코드: (바뀐 코드 경로. 없으면 "문서만 변경")
 - 데이터·URL: (slug나 URL이 바뀌는지)
 
@@ -81,7 +81,7 @@ push, PR 생성, PR 수정 전에는 반드시 사용자에게 아래 내용을 
 
 1. `git push -u origin <브랜치>`
    - force push 하지 않는다.
-   - `master`나 `gh-pages`로 push 하지 않는다.
+   - `master`로 push 하지 않는다.
 2. 본문을 임시 파일에 저장한다.
 3. PR을 연다.
    - 같은 브랜치에 열린 PR이 없으면: `gh pr create --base master --head <브랜치> --title "<제목>" --body-file <파일>`

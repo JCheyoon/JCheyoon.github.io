@@ -10,7 +10,7 @@
   - 스킬: `draft-post`, `review-post`, `publish-post`
   - 초안·번역 파일은 블로그 MCP 서버(`cheyoon-blog`, `mcp/`)의 도구로 만든다. 이 저장소에서 Claude Code를 열면 `.mcp.json`으로 연결된다
 - push와 PR 생성은 `create-pr` 스킬로 한다(한글 PR, AI 작성 표시 없음). push 전에 반드시 PR 초안을 보여 주고 승인을 받는다. merge와 배포는 사람이 한다.
-- 라이브 사이트는 GitHub Actions(`site.yml`)로 배포된다. `master`에 merge하면 자동 배포된다(2026-11-25 전환). `gh-pages` 브랜치는 롤백용이다. `legacy/spa/`에서 `npm run deploy`를 실행하지 않는다. SPEC §3.1 참고.
+- 라이브 사이트는 GitHub Actions(`site.yml`)로 배포된다. `master`에 merge하면 자동 배포된다(2026-11-25 전환). 롤백 방법은 SPEC §3.1.
 
 ## 작업 원칙
 

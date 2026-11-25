@@ -15,8 +15,6 @@ paths:
 - `npm run build` — `tsc -b && vite build` (타입체크 포함)
 - `npm run lint` — `eslint .`
 - `npm run preview` — 빌드 결과 로컬 프리뷰
-- `npm run deploy` — `gh-pages -d dist` (homepage: https://JCheyoon.github.io)
-  - Phase 1 전환 전까지 실행하지 않는다(docs/SPEC.md §3.1). 라이브 사이트를 덮어쓴다.
 - 테스트 스크립트는 없음 (package.json 확인 완료) → 자동 검증은 build + lint가 유일
 - 2026-11-23 기준 `npm run build`는 타입 에러 2개로, `npm run lint`는 에러 9개로 실패한다.
   - 타입 에러 위치: `postCard.tsx:31`, `api-context.tsx:15`
@@ -41,4 +39,4 @@ paths:
   `tailwind.config.js`는 존재하지만 theme extend가 비어 있음
 - shadcn `components.json`의 `utils` alias는 `@/lib/utils`로 되어 있으나 해당 파일은 없고,
   실제 `cn()`은 `src/shadcn-ui/lib/utils.ts`에 있음 (TODO: alias 정리 여부 검토)
-- `dist/`는 gitignore 대상이며 `npm run deploy`가 `dist/`를 gh-pages로 배포
+- `dist/`는 gitignore 대상

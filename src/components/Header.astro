@@ -42,8 +42,8 @@ const isActive = (href: string) =>
                 class:list={[
                   "inline-flex h-10 items-center rounded-lg px-3 text-sm font-medium",
                   isActive(link.href)
-                    ? "bg-muted text-foreground font-semibold"
-                    : "text-muted-foreground hover:text-foreground",
+                    ? "bg-background text-foreground font-semibold"
+                    : "text-muted-foreground hover:bg-background hover:text-foreground",
                 ]}
               >
                 {link.label}

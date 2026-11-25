@@ -18,6 +18,8 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent-bar: var(--accent-bar);
+  --color-logo: var(--logo);
+  --color-on-logo: var(--on-logo);
   --color-border: var(--border);
   --color-ring: var(--ring);
   --radius-lg: var(--radius);
@@ -39,8 +41,31 @@
   --muted: oklch(0.967 0.003 264.542);
   --muted-foreground: oklch(0.52 0.027 264.364); /* 레거시 0.551은 배경색 위 대비 4.21:1로 WCAG AA(4.5:1) 미달 */
   --accent-bar: oklch(0.6594 0.0659 194.387);
+  /* 로고 색(Logo.astro의 #5f9e9f)과 그 위에 올리는 아이콘. 라이트·다크 모두 같은 값(대비 3.05:1, 아이콘 기준 3:1 이상) */
+  --logo: #5f9e9f;
+  --on-logo: #ffffff;
   --border: oklch(0.928 0.006 264.531);
   --ring: oklch(0.707 0.022 261.325);
+  /* 본문(SPEC §6.1). 글자색으로 쓰는 값은 카드 배경 위 대비 4.5:1 이상으로 맞췄다 */
+  --link: oklch(0.47 0.08 195);
+  --inline-code: oklch(0.45 0.08 195);
+  /* 안내 상자 5색은 참고 블로그의 값을 그대로 쓴다(2026-11-25 작성자 결정) */
+  --callout-note: oklch(0.7 0.14 250);
+  --callout-tip: oklch(0.7 0.14 180);
+  --callout-important: oklch(0.7 0.14 310);
+  --callout-warning: oklch(0.7 0.14 60);
+  --callout-caution: oklch(0.6 0.2 25);
+  /* 라이트 모드 제목 글자만 같은 색을 검정과 섞어 진하게 한다(흰 배경 위 4.5:1 이상, 2026-11-25 Lighthouse 지적).
+     막대와 아이콘은 참고 블로그 색 그대로다 */
+  --callout-title-strength: 75%;
+  --callout-title-mix: oklch(0 0 0);
+  /* 목차(SPEC §6.1): 강조색을 옅게 섞은 배경. 라이트·다크 모두 같은 식을 쓴다 */
+  --toc-hover: color-mix(in oklch, var(--accent-bar) 12%, transparent);
+  --toc-active: color-mix(in oklch, var(--accent-bar) 24%, transparent);
+  --toc-badge: color-mix(in oklch, var(--accent-bar) 18%, transparent);
+  /* 코드 블록은 라이트·다크 모두 어두운 배경이라 배지 색도 하나다 */
+  --code-badge: oklch(0.8 0.08 195);
+  --code-badge-bg: oklch(1 0 0 / 10%);
   color-scheme: light;
 }
 
@@ -59,6 +84,14 @@
     --accent-bar: oklch(0.7 0.07 195);
     --border: oklch(1 0 0 / 10%);
     --ring: oklch(0.551 0.027 264.364);
+    --link: oklch(0.8 0.08 195);
+    --inline-code: oklch(0.82 0.07 195);
+    --callout-note: oklch(0.75 0.14 250);
+    --callout-tip: oklch(0.75 0.14 180);
+    --callout-important: oklch(0.75 0.14 310);
+    --callout-warning: oklch(0.75 0.14 60);
+    --callout-caution: oklch(0.65 0.2 25);
+    --callout-title-strength: 100%;
     color-scheme: dark;
   }
 }
@@ -68,6 +101,8 @@
     @apply border-border;
   }
   html {
+    /* 목차·맨 위로 버튼으로 이동할 때 부드럽게 스크롤한다 */
+    scroll-behavior: smooth;
     /* 한국어 문장이 단어 중간에서 끊기지 않게 한다 */
     word-break: keep-all;
     overflow-wrap: anywhere;
@@ -78,4 +113,212 @@
   a:focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
   }
+}
+
+/*
+ * 글 본문(SPEC §6.1). typography(prose) 위에 덧입힌다.
+ * 아이콘은 직접 그린 16×16 선 아이콘을 mask로 칠한다(색은 토큰을 따른다).
+ */
+/* 층(@layer) 밖에 둔다. typography(prose) 규칙은 utilities 층에 있어서, 층 안에 두면 우선순위와 관계없이 prose가 이긴다 */
+  .post-body {
+    /* 제목 앵커: 제목에 마우스를 올리면 보인다 */
+    /* 위에 붙어 있는 헤더(h-16)에 제목이 가리지 않게 한다 */
+    & :is(h2, h3, h4) {
+      scroll-margin-top: 5rem;
+    }
+    & :is(h2, h3, h4) .heading-anchor::after {
+      content: "#";
+    }
+    & :is(h2, h3, h4) .heading-anchor {
+      margin-left: 0.4ch;
+      color: var(--accent-bar);
+      text-decoration: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    & :is(h2, h3, h4):hover .heading-anchor,
+    & .heading-anchor:focus-visible {
+      opacity: 1;
+    }
+
+    /* 링크: 강조색, 점선 밑줄, 마우스를 올리면 배경 */
+    & a:not(.heading-anchor) {
+      color: var(--link);
+      font-weight: 500;
+      text-decoration-line: underline;
+      text-decoration-style: dashed;
+      text-decoration-color: var(--accent-bar);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+      border-radius: 0.25rem;
+      box-decoration-break: clone;
+      transition: background-color 0.15s;
+    }
+    & a:not(.heading-anchor):hover {
+      background-color: var(--muted);
+      text-decoration-color: transparent;
+    }
+
+    /* 인라인 코드: 배경색 칩. typography가 붙이는 앞뒤 백틱은 지운다 */
+    & :not(pre) > code {
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.375rem;
+      background-color: color-mix(in oklch, var(--accent-bar) 14%, transparent);
+      color: var(--inline-code);
+      font-weight: 500;
+    }
+    & :not(pre) > code::before,
+    & :not(pre) > code::after {
+      content: none;
+    }
+
+    /* 목록 기호 */
+    & li::marker {
+      color: var(--accent-bar);
+    }
+
+    /* 인용문: 기울임·따옴표 없이 왼쪽 둥근 막대 */
+    & blockquote {
+      position: relative;
+      border-left: 0;
+      padding-left: 1.25rem;
+      font-style: normal;
+      font-weight: inherit;
+      color: var(--muted-foreground);
+    }
+    & blockquote::before {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      left: 0;
+      width: 0.25rem;
+      border-radius: 9999px;
+      background-color: var(--secondary);
+    }
+    & blockquote p::before,
+    & blockquote p::after {
+      content: none;
+    }
+
+    /* 이미지와 구분선 */
+    & img {
+      border-radius: 0.75rem;
+    }
+    & hr {
+      border-top-style: dashed;
+      border-color: var(--border);
+    }
+
+    /* 코드 블록 언어 배지(오른쪽 위). 복사 버튼과 겹치지 않게 마우스를 올리면 숨긴다.
+       배지 위치의 기준이 코드 블록이 되도록 frame을 기준 상자로 만든다 */
+    & .expressive-code .frame {
+      position: relative;
+    }
+    & .expressive-code .frame:not(.has-title):not(.is-terminal) pre[data-language]::before {
+      content: attr(data-language);
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.375rem;
+      background-color: var(--code-badge-bg);
+      color: var(--code-badge);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      pointer-events: none;
+      transition: opacity 0.15s;
+    }
+    & .expressive-code .frame:hover pre[data-language]::before {
+      opacity: 0;
+    }
+  }
+
+  /* 글 메타 줄의 아이콘 상자 */
+  .meta-icon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    background-color: color-mix(in oklch, var(--accent-bar) 14%, transparent);
+    color: var(--accent-bar);
+  }
+
+  /* 안내 상자(SPEC §5.6): > [!NOTE] 제목. 배경 없이 왼쪽 둥근 막대와 색깔 제목만 쓴다 */
+  .callout {
+    --callout: var(--callout-note);
+    position: relative;
+    margin-block: 1.5em;
+    padding-left: 1.25rem;
+
+    & > :first-child {
+      margin-top: 0;
+    }
+    & > :last-child {
+      margin-bottom: 0;
+    }
+  }
+  .callout::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 0.25rem;
+    border-radius: 9999px;
+    background-color: var(--callout);
+  }
+  .callout-tip {
+    --callout: var(--callout-tip);
+    --callout-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 1.75a4.5 4.5 0 0 0-2.6 8.17c.37.27.6.7.6 1.16v.67h4v-.67c0-.46.23-.89.6-1.16A4.5 4.5 0 0 0 8 1.75z'/%3E%3Cpath d='M6.5 14.25h3'/%3E%3C/svg%3E");
+  }
+  .callout-important {
+    --callout: var(--callout-important);
+    --callout-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.75' y='1.75' width='12.5' height='12.5' rx='3'/%3E%3Cpath d='M8 4.75v4'/%3E%3Cpath d='M8 11.25h.01'/%3E%3C/svg%3E");
+  }
+  .callout-warning {
+    --callout: var(--callout-warning);
+    --callout-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 1.75 14.5 13.5h-13z'/%3E%3Cpath d='M8 6.25v3.25'/%3E%3Cpath d='M8 11.5h.01'/%3E%3C/svg%3E");
+  }
+  .callout-caution {
+    --callout: var(--callout-caution);
+    --callout-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5.25 1.75h5.5l3.5 3.5v5.5l-3.5 3.5h-5.5l-3.5-3.5v-5.5z'/%3E%3Cpath d='M8 4.75v4'/%3E%3Cpath d='M8 11.25h.01'/%3E%3C/svg%3E");
+  }
+  .callout-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: color-mix(in oklch, var(--callout) var(--callout-title-strength), var(--callout-title-mix));
+  }
+  .callout-title::before {
+    --callout-icon-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6.25'/%3E%3Cpath d='M8 7.25v4'/%3E%3Cpath d='M8 4.75h.01'/%3E%3C/svg%3E");
+    content: "";
+    flex: none;
+    width: 1em;
+    height: 1em;
+    background-color: var(--callout);
+    mask: var(--callout-icon, var(--callout-icon-default)) center / contain no-repeat;
+  }
+/* 본문 스타일 블록 끝 */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/*
+ * 맨 위로 버튼(SPEC §6.1, §8). 스크립트가 없으면 늘 보이는 #top 링크다.
+ * 스크립트가 돌면(<html class="js">) 위쪽에서는 숨기고, 숨긴 동안에는 Tab으로도 가지 않게 visibility를 쓴다.
+ */
+.js [data-back-to-top]:not([data-visible]) {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }

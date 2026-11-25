@@ -23,13 +23,21 @@ sources:
     accessed: 2026-11-25
 ---
 
-This is the English translation of the template check sample. It stays `status: draft`, so it never reaches the deployed build. It only shows up on the dev server (`npm run dev`) and in the template check build (`INCLUDE_DRAFTS=true`). scripts/check-content.ts makes sure this file stays a draft and that its Korean original exists.
+This is the English translation of the template check sample. It stays `status: draft`, so it never reaches the deployed build. It only shows up on the dev server (`npm run dev`) and in the template check build (`INCLUDE_DRAFTS=true`). scripts/check-content.ts makes sure this file stays a draft and that its Korean original exists. It contains every body element (SPEC §6.1).
 
 ## Headings and paragraphs
 
-Body text is styled with Tailwind typography (`prose`). This paragraph checks how longer English sentences wrap inside the post column.
+Body text uses Tailwind typography (`prose`) with our own styles on top. Text with colons must stay intact: 10:30, localhost:4321, 16:9.
 
-### Lists
+### Third-level heading
+
+Hover over a heading to see a `#` link at its end.
+
+#### Fourth-level heading
+
+Fourth-level headings get the link too.
+
+## Lists
 
 - First item of an unordered list
 - Second item
@@ -40,16 +48,52 @@ Body text is styled with Tailwind typography (`prose`). This paragraph checks ho
 
 ## Quotes and links
 
-> A paragraph for checking the blockquote style.
+> A paragraph for checking the blockquote style. It has no italics or quote marks, just a bar on the left.
 
-External link example: [Astro Docs](https://docs.astro.build/)
+External link example: [Astro Docs](https://docs.astro.build/). Links have a dashed underline and get a background on hover.
+
+## Callouts
+
+> [!NOTE]
+> Without a title, the callout uses its type name (Note).
+
+> [!TIP] Speeding up builds
+> Text on the same line becomes the title. The body can have **bold**, `code`, and [links to the Astro Docs](https://docs.astro.build/).
+
+> [!IMPORTANT]
+> Something important.
+
+> [!WARNING] A command you cannot undo
+> Something to be careful about.
+
+> [!CAUTION]
+> Something dangerous.
 
 ## Code
 
-```ts
+```ts title="src/lib/posts.ts" {2}
 export function postUrl(slug: string): string {
   return `/en/post/${slug}/`;
 }
+```
+
+```js ins={2} del={3}
+const site = {
+  url: "https://jcheyoon.github.io",
+  url: "http://localhost:4321",
+};
+```
+
+```ts collapse={1-3}
+// collapsed line 1
+// collapsed line 2
+// collapsed line 3
+export const visible = true;
+```
+
+```shellsession
+$ npm run verify
+check-content: 3 posts, 0 errors, 0 warnings
 ```
 
 ## Table
@@ -58,6 +102,8 @@ export function postUrl(slug: string): string {
 |---|---|
 | URL format | `/en/post/slug/` |
 | Published when | `status: published` |
+
+---
 
 ## Image
 

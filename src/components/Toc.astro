@@ -1,0 +1,94 @@
+---
+// 글 목차(SPEC §6.1). h2(번호 상자)와 h3(작은 사각형)만 넣는다.
+// 링크만으로도 동작한다. 스크립트는 지금 화면에 보이는 구간을 점선 상자로 감싸는 일만 한다(SPEC §8).
+import type { MarkdownHeading } from "astro";
+import { ui, type Lang } from "../i18n";
+
+interface Props {
+  headings: MarkdownHeading[];
+  lang: Lang;
+}
+
+const { headings, lang } = Astro.props;
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+let section = 0;
+---
+
+{
+  items.length > 0 && (
+    <nav aria-label={ui[lang].toc} class="toc group relative isolate" data-toc>
+      {items.map((h) => (
+        <a
+          href={`#${h.slug}`}
+          data-toc-link={h.slug}
+          class="relative flex min-h-9 w-full gap-2 rounded-xl px-2 py-2 transition hover:bg-[var(--toc-hover)] active:bg-[var(--toc-active)]"
+        >
+          {h.depth === 2 ? (
+            <span class="flex h-5 w-5 flex-none items-center justify-center rounded-lg bg-[var(--toc-badge)] text-xs font-bold text-accent-bar">
+              {++section}
+            </span>
+          ) : (
+            <span class="ml-4 flex h-5 w-5 flex-none items-center justify-center" aria-hidden="true">
+              <span class="h-2 w-2 rounded-[0.1875rem] bg-[var(--toc-badge)]" />
+            </span>
+          )}
+          <span class="text-sm text-muted-foreground">{h.text}</span>
+        </a>
+      ))}
+      <div
+        data-toc-indicator
+        aria-hidden="true"
+        class="pointer-events-none absolute right-0 left-0 -z-10 rounded-xl border-2 border-dashed border-[var(--toc-hover)] bg-[var(--toc-hover)] opacity-0 transition-all group-hover:border-[var(--toc-active)] group-hover:bg-transparent"
+      />
+    </nav>
+  )
+}
+
+<script>
+  // 각 제목에서 다음 제목 전까지를 한 구간으로 보고, 화면과 겹치는 구간의 목차 항목들을 상자로 감싼다.
+  const toc = document.querySelector<HTMLElement>("[data-toc]");
+  const indicator = toc?.querySelector<HTMLElement>("[data-toc-indicator]");
+  const links = [...(toc?.querySelectorAll<HTMLAnchorElement>("[data-toc-link]") ?? [])];
+  const headings = links.map((a) => document.getElementById(a.dataset.tocLink ?? ""));
+  const article = document.querySelector<HTMLElement>(".post-body");
+
+  function update() {
+    if (!indicator || !article) return;
+    const viewBottom = innerHeight;
+    const articleBottom = article.getBoundingClientRect().bottom;
+    const visible: number[] = [];
+    headings.forEach((h, i) => {
+      if (!h) return;
+      const top = h.getBoundingClientRect().top;
+      const bottom = headings[i + 1]?.getBoundingClientRect().top ?? articleBottom;
+      if (bottom > 0 && top < viewBottom) visible.push(i);
+    });
+    if (visible.length === 0) {
+      indicator.style.opacity = "0";
+      return;
+    }
+    const first = links[visible[0]];
+    const last = links[visible[visible.length - 1]];
+    indicator.style.top = `${first.offsetTop}px`;
+    indicator.style.height = `${last.offsetTop + last.offsetHeight - first.offsetTop}px`;
+    indicator.style.opacity = "1";
+  }
+
+  if (toc) {
+    let queued = false;
+    addEventListener(
+      "scroll",
+      () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => {
+          queued = false;
+          update();
+        });
+      },
+      { passive: true },
+    );
+    addEventListener("resize", update);
+    update();
+  }
+</script>

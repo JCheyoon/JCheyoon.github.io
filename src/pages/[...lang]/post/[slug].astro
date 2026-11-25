@@ -5,6 +5,8 @@ import type { GetStaticPaths } from "astro";
 import { render } from "astro:content";
 import { Image } from "astro:assets";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import Icon from "../../../components/Icon.astro";
+import Toc from "../../../components/Toc.astro";
 import { site } from "../../../site.config";
 import { categoryName, categoryUrl, getCategory } from "../../../data/categories";
 import { formatDate, getVisiblePosts, isoDate, postDate, postUrl, type Post } from "../../../lib/posts";
@@ -42,7 +44,7 @@ const { post, newer, older, translation } = Astro.props;
 const { data } = post;
 const lang = data.lang;
 const t = ui[lang];
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 const category = getCategory(data.category);
 const published = postDate(post);
@@ -89,7 +91,10 @@ const jsonLd = [
   lang={lang}
   alternate={translation ? postUrl(translation) : null}
 >
-  <article class="max-w-3xl">
+  <Toc slot="toc" headings={headings} lang={lang} />
+
+  {/* 글 전체를 흰 카드 하나에 담는다(SPEC §6.1). 이전·다음 글은 카드 밖에 따로 둔다 */}
+  <article class="rounded-2xl border bg-card px-6 pt-6 pb-8 md:px-9">
     {
       isDraft && (
         <p class="mb-6 rounded-xl border border-dashed px-4 py-3 text-sm text-muted-foreground">
@@ -98,52 +103,74 @@ const jsonLd = [
       )
     }
 
-    <nav aria-label={t.breadcrumb} class="mb-4 text-xs text-muted-foreground">
-      <a href={localizePath(lang, "/")} class="hover:text-foreground">{t.home}</a>
-      {
-        category && (
-          <>
-            <span aria-hidden="true"> / </span>
-            <a href={categoryUrl(category.slug, lang)} class="hover:text-foreground">
-              {categoryName(category, lang)}
-            </a>
-          </>
-        )
-      }
-    </nav>
-
-    <header class="space-y-3">
-      <h1 class="text-3xl font-bold leading-tight">{data.title}</h1>
-      <p class="text-sm text-muted-foreground">
-        {site.author.name} · <time datetime={isoDate(published)}>{formatDate(published, lang)}</time>
+    <header>
+      {/* 작은 이동 경로. BreadcrumbList 구조화 데이터와 같은 내용을 화면에도 보여 준다(SPEC §7) */}
+      <nav aria-label={t.breadcrumb} class="mb-3 text-xs text-muted-foreground">
+        <a href={localizePath(lang, "/")} class="hover:text-accent-bar">{t.home}</a>
         {
-          data.updated_at && (
+          category && (
             <>
-              {` · ${t.updated} `}
-              <time datetime={isoDate(data.updated_at)}>{formatDate(data.updated_at, lang)}</time>
+              <span aria-hidden="true"> › </span>
+              <a href={categoryUrl(category.slug, lang)} class="hover:text-accent-bar">
+                {categoryName(category, lang)}
+              </a>
             </>
           )
         }
-      </p>
+      </nav>
+      <h1
+        class="relative mb-3 text-3xl font-bold leading-tight md:text-[2.25rem] md:leading-[2.75rem] md:before:absolute md:before:top-3 md:before:-left-[1.125rem] md:before:h-5 md:before:w-1 md:before:rounded-full md:before:bg-accent-bar"
+      >
+        {data.title}
+      </h1>
+      <ul class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-muted-foreground">
+        <li class="flex items-center gap-2">
+          <span class="meta-icon"><Icon name="calendar" class="h-5 w-5" /></span>
+          <time datetime={isoDate(published)}>{formatDate(published, lang)}</time>
+        </li>
+        {
+          data.updated_at && (
+            <li class="flex items-center gap-2">
+              <span class="meta-icon"><Icon name="edit" class="h-5 w-5" /></span>
+              <span class="sr-only">{t.updated}</span>
+              <time datetime={isoDate(data.updated_at)}>{formatDate(data.updated_at, lang)}</time>
+            </li>
+          )
+        }
+        {
+          category && (
+            <li class="flex items-center gap-2">
+              <span class="meta-icon"><Icon name="folder" class="h-5 w-5" /></span>
+              <a href={categoryUrl(category.slug, lang)} class="hover:text-accent-bar">
+                {categoryName(category, lang)}
+              </a>
+            </li>
+          )
+        }
+        <li class="flex items-center gap-2">
+          <span class="meta-icon"><Icon name="user" class="h-5 w-5" /></span>
+          {site.author.name}
+        </li>
+      </ul>
     </header>
 
     {
       data.disclosure && (
-        <p class="mt-5 rounded-xl border-2 border-accent-bar bg-card px-4 py-3 text-sm font-semibold" role="note">
+        <p class="mt-5 rounded-xl border-2 border-accent-bar px-4 py-3 text-sm font-semibold" role="note">
           {data.disclosure}
         </p>
       )
     }
 
     {
-      data.cover && (
-        <Image src={data.cover.src} alt={data.cover.alt} class="mt-6 w-full rounded-2xl" loading="eager" />
+      data.cover ? (
+        <Image src={data.cover.src} alt={data.cover.alt} class="mt-6 mb-8 w-full rounded-xl" loading="eager" />
+      ) : (
+        <hr class="my-5 border-dashed" />
       )
     }
 
-    <hr class="my-6" />
-
-    <div class="prose prose-slate max-w-none dark:prose-invert">
+    <div class="post-body prose prose-slate max-w-none dark:prose-invert">
       <Content />
     </div>
 
@@ -176,26 +203,36 @@ const jsonLd = [
         </ul>
       )
     }
-
-    {
-      (newer || older) && (
-        <nav aria-label={t.prevNextNav} class="mt-10 grid gap-3 border-t pt-6 text-sm sm:grid-cols-2">
-          {older ? (
-            <a href={postUrl(older)} rel="prev" class="rounded-xl bg-card px-4 py-3 hover:shadow">
-              <span class="block text-xs text-muted-foreground">{t.prevPost}</span>
-              {older.data.title}
-            </a>
-          ) : (
-            <span />
-          )}
-          {newer && (
-            <a href={postUrl(newer)} rel="next" class="rounded-xl bg-card px-4 py-3 text-right hover:shadow">
-              <span class="block text-xs text-muted-foreground">{t.nextPost}</span>
-              {newer.data.title}
-            </a>
-          )}
-        </nav>
-      )
-    }
   </article>
+
+  {
+    (newer || older) && (
+      <nav aria-label={t.prevNextNav} class="mt-4 grid gap-4 font-bold sm:grid-cols-2">
+        {older ? (
+          <a
+            href={postUrl(older)}
+            rel="prev"
+            aria-label={`${t.prevPost}: ${older.data.title}`}
+            class="flex h-15 items-center gap-4 rounded-2xl bg-card px-4 transition hover:bg-muted active:scale-95"
+          >
+            <Icon name="chevron-left" class="h-7 w-7 flex-none text-accent-bar" />
+            <span class="truncate">{older.data.title}</span>
+          </a>
+        ) : (
+          <span />
+        )}
+        {newer && (
+          <a
+            href={postUrl(newer)}
+            rel="next"
+            aria-label={`${t.nextPost}: ${newer.data.title}`}
+            class="flex h-15 items-center justify-end gap-4 rounded-2xl bg-card px-4 transition hover:bg-muted active:scale-95"
+          >
+            <span class="truncate">{newer.data.title}</span>
+            <Icon name="chevron-right" class="h-7 w-7 flex-none text-accent-bar" />
+          </a>
+        )}
+      </nav>
+    )
+  }
 </BaseLayout>

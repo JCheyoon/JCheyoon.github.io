@@ -17,6 +17,7 @@ Phase 1에서 만든 코드를 기준으로 정리했다(2026-11-23). 레거시 
 | `src/layouts/BaseLayout.astro` | 모든 페이지의 껍데기(SEO head, 헤더, 사이드바, 푸터) |
 | `src/components/` | `.astro` 컴포넌트. 파일명은 PascalCase |
 | `src/lib/posts.ts` | 글 조회·정렬·주소·날짜 헬퍼 |
+| `src/lib/markdown.ts` | 본문 Markdown 플러그인(Sätteri mdast·hast). remark·rehype 플러그인은 쓰지 않는다. 바꾼 뒤에는 `node_modules/.astro`를 지우고 빌드한다(글 내용이 그대로면 Astro가 이전 변환 결과를 캐시에서 다시 쓴다) |
 | `src/content.config.ts` | frontmatter 스키마 |
 | `src/site.config.ts`, `src/data/` | 사이트 정보, 카테고리 등 단일 소스 |
 | `scripts/` | 검사 스크립트. Node가 빌드 없이 실행한다(`.ts`는 type stripping). 외부 패키지는 `yaml`과 `astro/zod`만 쓴다 |
@@ -31,7 +32,7 @@ Phase 1에서 만든 코드를 기준으로 정리했다(2026-11-23). 레거시 
 - 기본은 JS 없는 정적 HTML이다. `client:*` 아일랜드는 SPEC §8에 적힌 것만 쓴다.
 - 링크는 `<a href>`이고, 주소는 끝 슬래시를 붙인다(D5).
 - 스타일은 Tailwind 유틸리티와 `src/styles/global.css`의 토큰(`bg-card`, `text-muted-foreground`, `bg-accent-bar` 등)을 쓴다. 색을 하드코딩하지 않는다. 로고의 청록색(#5f9e9f)만 예외다.
-- 본문은 `prose prose-slate dark:prose-invert`로 감싼다.
+- 본문은 `prose prose-slate dark:prose-invert`로 감싼다. 글 본문에는 `post-body`를 더해 SPEC §6.1 스타일을 입힌다(`global.css`).
 - 컴포넌트 Props는 `interface Props`로 선언한다. 다른 파일에서 쓸 때만 `export`한다.
 
 ## 문자열

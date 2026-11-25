@@ -17,12 +17,17 @@
     "build:drafts": "INCLUDE_DRAFTS=true astro build"
   },
   "dependencies": {
+    "@astrojs/markdown-satteri": "0.4.10",
     "@astrojs/rss": "4.0.19",
     "@astrojs/sitemap": "3.7.6",
+    "@expressive-code/plugin-collapsible-sections": "0.44.3",
+    "@expressive-code/plugin-line-numbers": "0.44.3",
     "@modelcontextprotocol/server": "2.4.0",
     "@tailwindcss/typography": "0.5.20",
     "@tailwindcss/vite": "4.3.5",
     "astro": "7.4.13",
+    "astro-expressive-code": "0.44.3",
+    "satteri": "0.11.7",
     "tailwindcss": "4.3.5"
   },
   "devDependencies": {

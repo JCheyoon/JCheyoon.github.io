@@ -4,7 +4,7 @@
 // 왼쪽부터 날짜(월·일) → 점선 타임라인의 점 → 제목 → 태그.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { site } from "../site.config";
-import { getVisiblePosts, isoDate, postDate, postUrl } from "../lib/posts";
+import { formatMonthDay, getVisiblePosts, isoDate, postDate, postUrl, yearOf } from "../lib/posts";
 import { localizePath, otherLang, ui, type Lang } from "../i18n";
 
 interface Props {
@@ -15,9 +15,6 @@ const { lang } = Astro.props;
 const t = ui[lang];
 const posts = await getVisiblePosts(lang);
 
-// 연도는 서울 기준 날짜로 나눈다(화면 날짜와 맞춘다)
-const yearOf = (d: Date) => Number(new Intl.DateTimeFormat("en", { year: "numeric", timeZone: "Asia/Seoul" }).format(d));
-const monthDay = new Intl.DateTimeFormat("en-CA", { month: "2-digit", day: "2-digit", timeZone: "Asia/Seoul" });
 const groups = [...Map.groupBy(posts, (p) => yearOf(postDate(p)))].sort(([a], [b]) => b - a);
 ---
 
@@ -45,7 +42,7 @@ const groups = [...Map.groupBy(posts, (p) => yearOf(postDate(p)))].sort(([a], [b
               <li>
                 <a href={postUrl(post)} class="group flex h-10 items-center rounded-lg transition hover:bg-background">
                   <time datetime={isoDate(postDate(post))} class="w-[18%] text-right text-sm text-muted-foreground md:w-[12%]">
-                    {monthDay.format(postDate(post))}
+                    {formatMonthDay(postDate(post))}
                   </time>
                   <span class="archive-line relative flex h-full w-[12%] items-center justify-center md:w-[8%]" aria-hidden="true">
                     <span class="z-10 h-1 w-1 rounded bg-muted-foreground outline-4 outline-card transition-all group-hover:h-5 group-hover:bg-accent-bar group-hover:outline-background" />

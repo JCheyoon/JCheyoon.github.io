@@ -19,5 +19,5 @@ export const site = {
   social: [{ label: "GitHub", href: "https://github.com/JCheyoon" }],
   /** 글을 지정하지 않은 페이지의 OG 이미지 (public/ 기준 경로) */
   defaultOgImage: "/web-app-manifest-512x512.png",
-  pageSize: 10,
+  pageSize: 5,
 } as const;

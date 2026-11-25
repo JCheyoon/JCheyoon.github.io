@@ -72,6 +72,19 @@ export function formatDate(date: Date, lang: Lang = "ko"): string {
   return dateFormatters[lang].format(date);
 }
 
+// 아카이브의 월·일(MM-DD). 연도는 아카이브가 묶음 제목으로 따로 보여 준다
+const monthDayFormatter = new Intl.DateTimeFormat("en-CA", { month: "2-digit", day: "2-digit", timeZone: "Asia/Seoul" });
+const yearFormatter = new Intl.DateTimeFormat("en", { year: "numeric", timeZone: "Asia/Seoul" });
+
+export function formatMonthDay(date: Date): string {
+  return monthDayFormatter.format(date);
+}
+
+/** 서울 기준 연도(화면 날짜와 같은 기준) */
+export function yearOf(date: Date): number {
+  return Number(yearFormatter.format(date));
+}
+
 /** <time datetime>와 JSON-LD용 YYYY-MM-DD */
 export function isoDate(date: Date): string {
   return date.toISOString().slice(0, 10);

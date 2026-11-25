@@ -3,7 +3,7 @@
 
 /*
  * 색상 토큰은 레거시 SPA(legacy/spa/src/index.css)의 값을 그대로 가져왔다.
- * 토큰마다 light-dark(라이트 값, 다크 값)으로 한 줄에 쓴다. 어느 쪽을 쓸지는 color-scheme이 정한다.
+ * 라이트 값은 :root, 다크 값은 아래 다크 블록에 둔다.
  * 기본은 시스템 설정, 테마 토글(D14)을 쓰면 <html data-theme="light|dark">로 고정한다.
  */
 
@@ -13,7 +13,7 @@
     @slot;
   }
   @media (prefers-color-scheme: dark) {
-    &:where(:root:not([data-theme]), :root:not([data-theme]) *) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
       @slot;
     }
   }
@@ -42,31 +42,31 @@
 
 :root {
   --radius: 0.625rem;
-  --background: light-dark(oklch(0.9511 0.0097 189.06), oklch(0.13 0.028 261.692));
-  --foreground: light-dark(oklch(0.13 0.028 261.692), oklch(0.985 0.002 247.839));
-  --card: light-dark(oklch(1 0 0), oklch(0.21 0.034 264.665));
-  --card-foreground: light-dark(oklch(0.13 0.028 261.692), oklch(0.985 0.002 247.839));
-  --primary: light-dark(oklch(0.21 0.034 264.665), oklch(0.928 0.006 264.531));
-  --primary-foreground: light-dark(oklch(0.985 0.002 247.839), oklch(0.21 0.034 264.665));
-  --secondary: light-dark(oklch(0.87 0.015 189), oklch(0.22 0.035 260));
-  --secondary-foreground: light-dark(oklch(0.21 0.034 264.665), oklch(0.985 0.002 247.839));
-  --muted: light-dark(oklch(0.967 0.003 264.542), oklch(0.278 0.033 256.848));
-  --muted-foreground: light-dark(oklch(0.52 0.027 264.364), oklch(0.707 0.022 261.325)); /* 레거시 0.551은 배경색 위 대비 4.21:1로 WCAG AA(4.5:1) 미달 */
-  --accent-bar: light-dark(oklch(0.6594 0.0659 194.387), oklch(0.7 0.07 195));
+  --background: oklch(0.9511 0.0097 189.06);
+  --foreground: oklch(0.13 0.028 261.692);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.13 0.028 261.692);
+  --primary: oklch(0.21 0.034 264.665);
+  --primary-foreground: oklch(0.985 0.002 247.839);
+  --secondary: oklch(0.87 0.015 189);
+  --secondary-foreground: oklch(0.21 0.034 264.665);
+  --muted: oklch(0.967 0.003 264.542);
+  --muted-foreground: oklch(0.52 0.027 264.364); /* 레거시 0.551은 배경색 위 대비 4.21:1로 WCAG AA(4.5:1) 미달 */
+  --accent-bar: oklch(0.6594 0.0659 194.387);
   /* 로고 색(Logo.astro의 #5f9e9f)과 그 위에 올리는 아이콘. 라이트·다크 모두 같은 값(대비 3.05:1, 아이콘 기준 3:1 이상) */
   --logo: #5f9e9f;
   --on-logo: #ffffff;
-  --border: light-dark(oklch(0.928 0.006 264.531), oklch(1 0 0 / 10%));
-  --ring: light-dark(oklch(0.707 0.022 261.325), oklch(0.551 0.027 264.364));
+  --border: oklch(0.928 0.006 264.531);
+  --ring: oklch(0.707 0.022 261.325);
   /* 본문(SPEC §6.1). 글자색으로 쓰는 값은 카드 배경 위 대비 4.5:1 이상으로 맞췄다 */
-  --link: light-dark(oklch(0.47 0.08 195), oklch(0.8 0.08 195));
-  --inline-code: light-dark(oklch(0.45 0.08 195), oklch(0.82 0.07 195));
+  --link: oklch(0.47 0.08 195);
+  --inline-code: oklch(0.45 0.08 195);
   /* 안내 상자 5색은 참고 블로그의 값을 그대로 쓴다(2026-11-25 작성자 결정) */
-  --callout-note: light-dark(oklch(0.7 0.14 250), oklch(0.75 0.14 250));
-  --callout-tip: light-dark(oklch(0.7 0.14 180), oklch(0.75 0.14 180));
-  --callout-important: light-dark(oklch(0.7 0.14 310), oklch(0.75 0.14 310));
-  --callout-warning: light-dark(oklch(0.7 0.14 60), oklch(0.75 0.14 60));
-  --callout-caution: light-dark(oklch(0.6 0.2 25), oklch(0.65 0.2 25));
+  --callout-note: oklch(0.7 0.14 250);
+  --callout-tip: oklch(0.7 0.14 180);
+  --callout-important: oklch(0.7 0.14 310);
+  --callout-warning: oklch(0.7 0.14 60);
+  --callout-caution: oklch(0.6 0.2 25);
   /* 라이트 모드 제목 글자만 같은 색을 검정과 섞어 진하게 한다(흰 배경 위 4.5:1 이상, 2026-11-25 Lighthouse 지적).
      막대와 아이콘은 참고 블로그 색 그대로다. 사용하는 곳은 .callout-title */
   --callout-title-mix: oklch(0 0 0);
@@ -77,14 +77,63 @@
   /* 코드 블록은 라이트·다크 모두 어두운 배경이라 배지 색도 하나다 */
   --code-badge: oklch(0.8 0.08 195);
   --code-badge-bg: oklch(1 0 0 / 10%);
-  /* 기본은 시스템 설정을 따른다. 테마 토글(D14)이 <html data-theme>로 한쪽을 고정한다 */
-  color-scheme: light dark;
-}
-
-:root[data-theme="light"] {
+  --callout-title-strength: 75%;
   color-scheme: light;
 }
+
+/*
+ * 다크 토큰. 같은 값을 두 곳에 둔다(light-dark()는 Safari 17.5 미만에서 동작하지 않아 쓰지 않는다).
+ * - 테마를 고르지 않았으면(data-theme 없음) 시스템 설정을 실시간으로 따른다
+ * - 토글로 다크를 고르면 data-theme="dark"
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: oklch(0.13 0.028 261.692);
+    --foreground: oklch(0.985 0.002 247.839);
+    --card: oklch(0.21 0.034 264.665);
+    --card-foreground: oklch(0.985 0.002 247.839);
+    --primary: oklch(0.928 0.006 264.531);
+    --primary-foreground: oklch(0.21 0.034 264.665);
+    --secondary: oklch(0.22 0.035 260);
+    --secondary-foreground: oklch(0.985 0.002 247.839);
+    --muted: oklch(0.278 0.033 256.848);
+    --muted-foreground: oklch(0.707 0.022 261.325);
+    --accent-bar: oklch(0.7 0.07 195);
+    --border: oklch(1 0 0 / 10%);
+    --ring: oklch(0.551 0.027 264.364);
+    --link: oklch(0.8 0.08 195);
+    --inline-code: oklch(0.82 0.07 195);
+    --callout-note: oklch(0.75 0.14 250);
+    --callout-tip: oklch(0.75 0.14 180);
+    --callout-important: oklch(0.75 0.14 310);
+    --callout-warning: oklch(0.75 0.14 60);
+    --callout-caution: oklch(0.65 0.2 25);
+    --callout-title-strength: 100%;
+    color-scheme: dark;
+  }
+}
 :root[data-theme="dark"] {
+  --background: oklch(0.13 0.028 261.692);
+  --foreground: oklch(0.985 0.002 247.839);
+  --card: oklch(0.21 0.034 264.665);
+  --card-foreground: oklch(0.985 0.002 247.839);
+  --primary: oklch(0.928 0.006 264.531);
+  --primary-foreground: oklch(0.21 0.034 264.665);
+  --secondary: oklch(0.22 0.035 260);
+  --secondary-foreground: oklch(0.985 0.002 247.839);
+  --muted: oklch(0.278 0.033 256.848);
+  --muted-foreground: oklch(0.707 0.022 261.325);
+  --accent-bar: oklch(0.7 0.07 195);
+  --border: oklch(1 0 0 / 10%);
+  --ring: oklch(0.551 0.027 264.364);
+  --link: oklch(0.8 0.08 195);
+  --inline-code: oklch(0.82 0.07 195);
+  --callout-note: oklch(0.75 0.14 250);
+  --callout-tip: oklch(0.75 0.14 180);
+  --callout-important: oklch(0.75 0.14 310);
+  --callout-warning: oklch(0.75 0.14 60);
+  --callout-caution: oklch(0.65 0.2 25);
+  --callout-title-strength: 100%;
   color-scheme: dark;
 }
 
@@ -128,8 +177,7 @@
       opacity: 0;
       transition: opacity 0.15s;
     }
-    & :is(h2, h3, h4):hover .heading-anchor,
-    & .heading-anchor:focus-visible {
+    & :is(h2, h3, h4):hover .heading-anchor {
       opacity: 1;
     }
 
@@ -286,7 +334,7 @@
     margin-bottom: 0.25rem;
     font-weight: 700;
     text-transform: uppercase;
-    color: light-dark(color-mix(in oklch, var(--callout) 75%, var(--callout-title-mix)), var(--callout));
+    color: color-mix(in oklch, var(--callout) var(--callout-title-strength), var(--callout-title-mix));
   }
   .callout-title::before {
     --callout-icon-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6.25'/%3E%3Cpath d='M8 7.25v4'/%3E%3Cpath d='M8 4.75h.01'/%3E%3C/svg%3E");

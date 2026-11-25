@@ -52,6 +52,9 @@ let section = 0;
   const headings = links.map((a) => document.getElementById(a.dataset.tocLink ?? ""));
   const article = document.querySelector<HTMLElement>(".post-body");
 
+  // 위에 붙어 있는 헤더(h-16)에 가려진 부분은 보이는 것으로 치지 않는다(제목 scroll-margin-top 5rem과 맞춘다)
+  const HEADER = 80;
+
   function update() {
     if (!indicator || !article) return;
     const viewBottom = innerHeight;
@@ -61,7 +64,7 @@ let section = 0;
       if (!h) return;
       const top = h.getBoundingClientRect().top;
       const bottom = headings[i + 1]?.getBoundingClientRect().top ?? articleBottom;
-      if (bottom > 0 && top < viewBottom) visible.push(i);
+      if (bottom > HEADER && top < viewBottom) visible.push(i);
     });
     if (visible.length === 0) {
       indicator.style.opacity = "0";

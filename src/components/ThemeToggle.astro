@@ -26,9 +26,20 @@ const { lang } = Astro.props;
   :global(.js) .theme-toggle {
     display: flex;
   }
+  /* 지금 테마는 data-theme(고른 경우) 또는 시스템 설정(고르지 않은 경우)이다 */
   :global([data-theme="dark"]) .theme-icon-moon,
   :global([data-theme="light"]) .theme-icon-sun {
     display: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .theme-icon-moon {
+      display: none;
+    }
+  }
+  @media not (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme])) .theme-icon-sun {
+      display: none;
+    }
   }
 </style>
 
@@ -36,7 +47,8 @@ const { lang } = Astro.props;
   const root = document.documentElement;
   for (const button of document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]")) {
     button.addEventListener("click", () => {
-      const next = root.dataset.theme === "dark" ? "light" : "dark";
+      const current = root.dataset.theme ?? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      const next = current === "dark" ? "light" : "dark";
       root.dataset.theme = next;
       try {
         localStorage.setItem("theme", next);

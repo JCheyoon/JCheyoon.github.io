@@ -32,6 +32,8 @@ const posts = sidebar ? await getVisiblePosts(lang) : [];
 <html lang={t.htmlLang}>
   <head>
     <SeoHead {...seo} alternate={alternate ?? undefined} />
+    {/* 스크립트가 도는 환경 표시. 스크립트 없이도 동작하는 요소(맨 위로 버튼)가 이 값을 보고 모양을 바꾼다 */}
+    <script is:inline>document.documentElement.classList.add("js");</script>
   </head>
   <body class="min-h-screen">
     <a
@@ -57,7 +59,7 @@ const posts = sidebar ? await getVisiblePosts(lang) : [];
         <div class="absolute top-0 bottom-0 left-full ml-4 hidden w-[min(16rem,calc((100vw-1200px)/2-1rem))] flex-col justify-between min-[1424px]:flex">
           {
             Astro.slots.has("toc") ? (
-              <div class="sticky top-20 hidden 2xl:block">
+              <div class="sticky top-20 hidden max-h-[calc(100vh-11rem)] overflow-y-auto 2xl:block">
                 <slot name="toc" />
               </div>
             ) : (

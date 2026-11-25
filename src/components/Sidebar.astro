@@ -3,7 +3,7 @@
 import { site } from "../site.config";
 import { categories, categoryName, categoryUrl } from "../data/categories";
 import { filterByCategory, type Post } from "../lib/posts";
-import { ui, type Lang } from "../i18n";
+import { localizePath, ui, type Lang } from "../i18n";
 
 interface Props {
   posts: Post[];
@@ -13,6 +13,7 @@ interface Props {
 const { posts, lang } = Astro.props;
 const t = ui[lang];
 const path = Astro.url.pathname;
+const home = localizePath(lang, "/");
 
 const listed = categories
   .map((c) => ({ ...c, count: filterByCategory(posts, c.slug).length }))
@@ -40,14 +41,16 @@ const listed = categories
   {
     listed.length > 0 && (
       <nav class="rounded-2xl border bg-card px-3 py-4" aria-label={t.categories}>
-        <h2 class="mb-3 flex items-center px-2 text-base font-semibold text-muted-foreground">
-          <span class="mr-2 h-5 w-1 rounded bg-accent-bar" aria-hidden="true" />
-          {t.categories}
-        </h2>
+        <h2 class="mb-3 px-2 text-base font-semibold text-muted-foreground">{t.categories}</h2>
         <ul class="flex flex-col gap-1">
-          {listed.map((c) => {
-            const href = categoryUrl(c.slug, lang);
-            const active = path === href;
+          {/* 맨 위는 전체 글(= 홈 목록). 카테고리 페이지에서 전체로 돌아갈 수 있게 한다 */}
+          {[
+            { href: home, name: t.allPosts, count: posts.length, active: path === home || path.startsWith(localizePath(lang, "/page/")) },
+            ...listed.map((c) => {
+              const href = categoryUrl(c.slug, lang);
+              return { href, name: categoryName(c, lang), count: c.count, active: path === href };
+            }),
+          ].map(({ href, name, count, active }) => {
             return (
               <li>
                 <a
@@ -56,15 +59,12 @@ const listed = categories
                   class:list={[
                     "flex items-center justify-between rounded-lg px-3 py-2 text-sm",
                     active
-                      ? "bg-muted font-semibold text-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                      ? "bg-background font-semibold text-foreground"
+                      : "text-muted-foreground hover:bg-background hover:text-foreground",
                   ]}
                 >
-                  <span class="flex items-center gap-2">
-                    {active && <span class="h-3.5 w-0.5 rounded bg-accent-bar" aria-hidden="true" />}
-                    {categoryName(c, lang)}
-                  </span>
-                  <span class="text-xs">{c.count}</span>
+                  <span>{name}</span>
+                  <span class="text-xs">{count}</span>
                 </a>
               </li>
             );

@@ -1,5 +1,6 @@
 ---
-// 맨 위로 버튼(SPEC §6.1). 스크립트는 조금 내려왔을 때 버튼을 보이게 하는 일만 한다(SPEC §8).
+// 맨 위로 버튼(SPEC §6.1). 스크립트가 없으면 늘 보이는 #top 링크다.
+// 스크립트는 페이지 위쪽에서 버튼을 숨기는 일만 한다(SPEC §8, 숨김 스타일은 global.css).
 // - rail: 본문 오른쪽 기둥 아래(BaseLayout). 스크롤 중엔 화면 아래에 붙고, 끝에서는 본문 아랫선에 맞춰 멈춘다.
 // - floating: 본문 옆에 공간이 없는 화면에서 오른쪽 아래에 뜬다.
 import Icon from "./Icon.astro";
@@ -18,7 +19,7 @@ const { lang, variant } = Astro.props;
   data-back-to-top
   aria-label={ui[lang].backToTop}
   class:list={[
-    "pointer-events-none flex items-center justify-center rounded-2xl opacity-0 transition data-[visible]:pointer-events-auto data-[visible]:opacity-100",
+    "flex items-center justify-center rounded-2xl transition-[opacity,visibility,background-color]",
     // 기둥 버튼은 청록 페이지 배경 위라 흰 카드로 충분히 보인다
     variant === "rail" && "h-14 w-14 bg-card text-accent-bar hover:bg-muted",
     // 떠 있는 버튼은 흰 본문 카드 위에 겹치므로 로고 색으로 채워 눈에 띄게 한다

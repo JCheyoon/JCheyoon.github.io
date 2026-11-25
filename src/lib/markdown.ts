@@ -12,29 +12,50 @@ const CALLOUT_LABELS: Record<"ko" | "en", Record<CalloutType, string>> = {
   en: { NOTE: "Note", TIP: "Tip", IMPORTANT: "Important", WARNING: "Warning", CAUTION: "Caution" },
 };
 
-// `[!TIP]` 뒤 같은 줄의 글자는 제목, 줄바꿈 뒤는 본문이다.
-const MARKER = new RegExp(`^\\[!(${CALLOUT_TYPES.join("|")})\\][ \\t]*([^\\n]*)\\n?`);
+// `[!TIP]` 뒤 같은 줄은 제목, 줄바꿈 뒤는 본문이다. GitHub처럼 대소문자를 가리지 않는다.
+const MARKER = new RegExp(`^\\[!(${CALLOUT_TYPES.join("|")})\\][ \\t]*`, "i");
 
 const escapeHtml = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+/** 인라인 노드의 글자만 모은다(제목은 서식 없이 글자로 보여 준다) */
+type Inline = { type: string; value?: string; children?: Inline[] };
+const textOf = (node: Inline): string => node.value ?? (node.children ?? []).map(textOf).join("");
 
 export const callouts = defineMdastPlugin({
   name: "blog-callouts",
   blockquote(node, ctx) {
     const [first, ...restBlocks] = node.children;
     if (first?.type !== "paragraph") return;
-    const [head, ...restInline] = first.children;
+    const [head] = first.children;
     if (head?.type !== "text") return;
     const match = head.value.match(MARKER);
     if (!match) return;
 
-    const type = match[1] as CalloutType;
-    const lang = ctx.fileURL?.pathname.includes("/posts/en/") ? "en" : "ko";
-    const title = match[2].trim() || CALLOUT_LABELS[lang][type];
+    // 표시를 뺀 첫 문단에서, 첫 줄바꿈(글자 속 \n 또는 강제 줄바꿈)까지가 제목이다.
+    // 제목에 `코드`나 **굵게**가 섞여도 잘리지 않게 줄바꿈 전 인라인 노드를 모두 모은다.
+    const inline = [{ ...head, value: head.value.slice(match[0].length) }, ...first.children.slice(1)];
+    const titleNodes: Inline[] = [];
+    let bodyInline: typeof inline = [];
+    for (let i = 0; i < inline.length; i++) {
+      const child = inline[i];
+      if (child.type === "break") {
+        bodyInline = inline.slice(i + 1);
+        break;
+      }
+      if (child.type === "text" && child.value.includes("\n")) {
+        const cut = child.value.indexOf("\n");
+        titleNodes.push({ type: "text", value: child.value.slice(0, cut) });
+        const rest = child.value.slice(cut + 1);
+        bodyInline = [...(rest ? [{ ...child, value: rest }] : []), ...inline.slice(i + 1)];
+        break;
+      }
+      titleNodes.push(child);
+    }
 
-    // 표시 줄을 뺀 첫 문단. 남는 글자가 없으면 문단을 통째로 뺀다.
-    const remaining = head.value.slice(match[0].length);
-    const inline = remaining ? [{ ...head, value: remaining }, ...restInline] : restInline;
-    const body = inline.length > 0 ? [{ ...first, children: inline }, ...restBlocks] : restBlocks;
+    const type = match[1].toUpperCase() as CalloutType;
+    const lang = ctx.fileURL?.pathname.includes("/posts/en/") ? "en" : "ko";
+    const title = titleNodes.map(textOf).join("").trim() || CALLOUT_LABELS[lang][type];
+    const body = bodyInline.length > 0 ? [{ ...first, children: bodyInline }, ...restBlocks] : restBlocks;
 
     const kind = type.toLowerCase();
     ctx.replaceNode(node, [

@@ -104,6 +104,20 @@ const jsonLd = [
     }
 
     <header>
+      {/* 작은 이동 경로. BreadcrumbList 구조화 데이터와 같은 내용을 화면에도 보여 준다(SPEC §7) */}
+      <nav aria-label={t.breadcrumb} class="mb-3 text-xs text-muted-foreground">
+        <a href={localizePath(lang, "/")} class="hover:text-accent-bar">{t.home}</a>
+        {
+          category && (
+            <>
+              <span aria-hidden="true"> › </span>
+              <a href={categoryUrl(category.slug, lang)} class="hover:text-accent-bar">
+                {categoryName(category, lang)}
+              </a>
+            </>
+          )
+        }
+      </nav>
       <h1
         class="relative mb-3 text-3xl font-bold leading-tight md:text-[2.25rem] md:leading-[2.75rem] md:before:absolute md:before:top-3 md:before:-left-[1.125rem] md:before:h-5 md:before:w-1 md:before:rounded-full md:before:bg-accent-bar"
       >

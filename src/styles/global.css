@@ -58,12 +58,14 @@
   /* 라이트 모드 제목 글자만 같은 색을 검정과 섞어 진하게 한다(흰 배경 위 4.5:1 이상, 2026-11-25 Lighthouse 지적).
      막대와 아이콘은 참고 블로그 색 그대로다 */
   --callout-title-strength: 75%;
+  --callout-title-mix: oklch(0 0 0);
   /* 목차(SPEC §6.1): 강조색을 옅게 섞은 배경. 라이트·다크 모두 같은 식을 쓴다 */
   --toc-hover: color-mix(in oklch, var(--accent-bar) 12%, transparent);
   --toc-active: color-mix(in oklch, var(--accent-bar) 24%, transparent);
   --toc-badge: color-mix(in oklch, var(--accent-bar) 18%, transparent);
   /* 코드 블록은 라이트·다크 모두 어두운 배경이라 배지 색도 하나다 */
   --code-badge: oklch(0.8 0.08 195);
+  --code-badge-bg: oklch(1 0 0 / 10%);
   color-scheme: light;
 }
 
@@ -117,7 +119,7 @@
  * 글 본문(SPEC §6.1). typography(prose) 위에 덧입힌다.
  * 아이콘은 직접 그린 16×16 선 아이콘을 mask로 칠한다(색은 토큰을 따른다).
  */
-@layer components {
+/* 층(@layer) 밖에 둔다. typography(prose) 규칙은 utilities 층에 있어서, 층 안에 두면 우선순위와 관계없이 prose가 이긴다 */
   .post-body {
     /* 제목 앵커: 제목에 마우스를 올리면 보인다 */
     /* 위에 붙어 있는 헤더(h-16)에 제목이 가리지 않게 한다 */
@@ -219,7 +221,7 @@
       right: 0.5rem;
       padding: 0.125rem 0.375rem;
       border-radius: 0.375rem;
-      background-color: oklch(1 0 0 / 10%);
+      background-color: var(--code-badge-bg);
       color: var(--code-badge);
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 0.75rem;
@@ -292,7 +294,7 @@
     margin-bottom: 0.25rem;
     font-weight: 700;
     text-transform: uppercase;
-    color: color-mix(in oklch, var(--callout) var(--callout-title-strength), black);
+    color: color-mix(in oklch, var(--callout) var(--callout-title-strength), var(--callout-title-mix));
   }
   .callout-title::before {
     --callout-icon-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6.25'/%3E%3Cpath d='M8 7.25v4'/%3E%3Cpath d='M8 4.75h.01'/%3E%3C/svg%3E");
@@ -303,10 +305,20 @@
     background-color: var(--callout);
     mask: var(--callout-icon, var(--callout-icon-default)) center / contain no-repeat;
   }
-}
+/* 본문 스타일 블록 끝 */
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
+}
+
+/*
+ * 맨 위로 버튼(SPEC §6.1, §8). 스크립트가 없으면 늘 보이는 #top 링크다.
+ * 스크립트가 돌면(<html class="js">) 위쪽에서는 숨기고, 숨긴 동안에는 Tab으로도 가지 않게 visibility를 쓴다.
+ */
+.js [data-back-to-top]:not([data-visible]) {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }

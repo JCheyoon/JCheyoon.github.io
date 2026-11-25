@@ -7,7 +7,7 @@ import Footer from "../components/Footer.astro";
 import BackToTop from "../components/BackToTop.astro";
 import BottomTabs from "../components/BottomTabs.astro";
 import SearchDialog from "../components/SearchDialog.astro";
-import CategoryChips from "../components/CategoryChips.astro";
+import MobileFilters from "../components/MobileFilters.astro";
 import { getVisiblePosts } from "../lib/posts";
 import { localizePath, otherLang, ui } from "../i18n";
 import type { Props as SeoProps } from "../components/SeoHead.astro";
@@ -24,7 +24,7 @@ type Props = Omit<SeoProps, "alternate"> & {
   alternate?: string | null;
   /** 768px 미만 헤더의 뒤로 링크(글 페이지). Header 참고 */
   mobileBack?: { href: string; label: string };
-  /** 768px 미만 목록 위 카테고리 칩. 목록 페이지(홈, n페이지, 카테고리, 태그)만 켠다 */
+  /** 768px 미만 목록 위 필터 버튼(카테고리·태그 시트). 목록 페이지(홈, n페이지, 카테고리, 태그)만 켠다 */
   categoryChips?: boolean;
 };
 
@@ -73,9 +73,9 @@ const searchable = (await getVisiblePosts(lang)).length > 0;
         sidebar && "grid gap-6 md:grid-cols-[17rem_minmax(0,1fr)]",
       ]}
     >
-      {/* 768px 미만에서는 사이드바를 숨기고, 목록 페이지는 위에 카테고리 칩을 둔다(SPEC §6.2) */}
+      {/* 768px 미만에서는 사이드바를 숨기고, 목록 페이지는 위에 필터 버튼을 둔다(SPEC §6.2) */}
       <main id="main" class:list={["relative min-w-0", sidebar && "md:order-2"]}>
-        {categoryChips && <CategoryChips posts={posts} lang={lang} />}
+        {categoryChips && <MobileFilters posts={posts} lang={lang} />}
         <slot />
         {/*
           본문 오른쪽 기둥(SPEC §6.1): 위에는 목차, 아래에는 맨 위로 버튼.

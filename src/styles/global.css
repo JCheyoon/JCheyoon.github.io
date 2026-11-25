@@ -381,3 +381,11 @@
     transform: translateY(-100%);
   }
 }
+
+/* 가로로 넘기는 칩 줄(SPEC §6.2): 넘기는 기능은 두고 스크롤 막대만 숨긴다. 넘길 수 있다는 표시는 오른쪽 끝 흐림이 맡는다 */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

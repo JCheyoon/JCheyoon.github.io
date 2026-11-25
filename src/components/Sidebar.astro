@@ -5,6 +5,7 @@ import { categories, categoryName, categoryUrl } from "../data/categories";
 import { filterByCategory, tagCounts, tagUrl, type Post } from "../lib/posts";
 import { localizePath, ui, type Lang } from "../i18n";
 import CategoryLink from "./CategoryLink.astro";
+import Icon from "./Icon.astro";
 
 interface Props {
   posts: Post[];
@@ -94,18 +95,19 @@ const moreCategories = categoryItems.slice(SHOWN);
           {tags.map(({ tag, count }) => {
             const href = tagUrl(tag, lang);
             const active = path.startsWith(href);
+            // 선택된 태그를 다시 누르면 해제(전체 글로 이동). 카테고리의 "전체 글" 역할
             return (
               <li>
                 <a
-                  href={href}
-                  aria-current={active ? "page" : undefined}
-                  aria-label={`#${tag} (${count})`}
+                  href={active ? home : href}
+                  aria-label={active ? t.tagClear(tag) : `#${tag} (${count})`}
                   class:list={[
-                    "block rounded-lg px-2.5 py-1 text-sm transition",
+                    "flex items-center gap-1 rounded-lg px-2.5 py-1 text-sm transition",
                     active ? "bg-background font-semibold text-foreground" : "bg-background/60 text-muted-foreground hover:bg-background hover:text-foreground",
                   ]}
                 >
                   {tag}
+                  {active && <Icon name="close" class="h-3.5 w-3.5" />}
                 </a>
               </li>
             );

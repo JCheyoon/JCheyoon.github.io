@@ -1,0 +1,140 @@
+---
+// 모바일 목록 필터(SPEC §6.2, D15). 768px 미만에서는 사이드바를 숨기고 목록 위에 두 버튼을 둔다.
+// [📁 카테고리 ▾] [# 태그 ▾]: 누르면 각각 바텀 시트. 버튼 이름에 지금 고른 카테고리·태그를 보인다.
+// 고른 태그는 시트 맨 위 "선택 해제"나 같은 태그를 다시 눌러 해제한다(사이드바와 같은 동작).
+// 스크립트가 없으면 시트를 열 수 없으므로 카테고리 링크 줄을 대신 보인다.
+import Icon from "./Icon.astro";
+import BottomSheet from "./BottomSheet.astro";
+import { categories, categoryName, categoryUrl } from "../data/categories";
+import { filterByCategory, tagCounts, tagUrl, type Post } from "../lib/posts";
+import { localizePath, ui, type Lang } from "../i18n";
+
+interface Props {
+  posts: Post[];
+  lang: Lang;
+}
+
+const { posts, lang } = Astro.props;
+const t = ui[lang];
+const path = Astro.url.pathname;
+const home = localizePath(lang, "/");
+const categoryItems = [
+  { href: home, name: t.allPosts, count: posts.length, active: path === home || path.startsWith(localizePath(lang, "/page/")) },
+  ...categories
+    .map((c) => ({ c, count: filterByCategory(posts, c.slug).length }))
+    .filter(({ count }) => count > 0)
+    .map(({ c, count }) => {
+      const href = categoryUrl(c.slug, lang);
+      return { href, name: categoryName(c, lang), count, active: path.startsWith(href) };
+    }),
+];
+const activeCategory = categoryItems.find((c) => c.active);
+// "전체 글"이 아닌 카테고리를 골랐을 때만 버튼을 강조한다
+const categoryChosen = activeCategory !== undefined && activeCategory.href !== home;
+const tags = tagCounts(posts);
+const activeTag = tags.find(({ tag }) => path.startsWith(tagUrl(tag, lang)))?.tag;
+const filterButton = "hidden h-11 min-w-0 flex-1 items-center gap-2 rounded-xl bg-card px-4 text-sm";
+---
+
+{
+  posts.length > 0 && (
+    <div class="mb-4 md:hidden">
+      <div class="flex gap-2">
+        <button
+          type="button"
+          data-sheet-open="category-sheet"
+          aria-label={`${t.categories}: ${activeCategory?.name ?? t.allPosts}`}
+          class:list={[filterButton, categoryChosen ? "font-semibold text-accent-bar" : "text-foreground"]}
+        >
+          <Icon name="folder" class="h-4 w-4 flex-none" />
+          <span class="truncate">{activeCategory?.name ?? t.allPosts}</span>
+          <Icon name="chevron-down" class="ml-auto h-4 w-4 flex-none" />
+        </button>
+        {tags.length > 0 && (
+          <button
+            type="button"
+            data-sheet-open="tag-sheet"
+            aria-label={activeTag ? `${t.tags}: ${activeTag}` : t.tags}
+            class:list={[filterButton, activeTag ? "font-semibold text-accent-bar" : "text-foreground"]}
+          >
+            <Icon name="tag" class="h-4 w-4 flex-none" />
+            <span class="truncate">{activeTag ?? t.tags}</span>
+            <Icon name="chevron-down" class="ml-auto h-4 w-4 flex-none" />
+          </button>
+        )}
+      </div>
+
+      {/* 스크립트가 없을 때만: 카테고리 링크 줄 */}
+      <ul class="no-js-only scrollbar-none flex gap-2 overflow-x-auto">
+        {categoryItems.map((c) => (
+          <li>
+            <a
+              href={c.href}
+              aria-current={c.active ? "page" : undefined}
+              class:list={["flex h-9 items-center rounded-lg px-3 text-sm whitespace-nowrap", c.active ? "bg-card font-semibold" : "bg-card/60 text-muted-foreground"]}
+            >
+              {c.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <BottomSheet id="category-sheet" title={t.categories} lang={lang}>
+        <ul class="flex flex-col gap-1">
+          {categoryItems.map((c) => (
+            <li>
+              <a
+                href={c.href}
+                aria-current={c.active ? "page" : undefined}
+                class:list={[
+                  "flex h-11 items-center justify-between rounded-xl px-4 text-sm",
+                  c.active ? "bg-logo font-semibold text-on-logo" : "hover:bg-background",
+                ]}
+              >
+                <span>{c.name}</span>
+                <span class:list={["text-xs", c.active ? "opacity-80" : "text-muted-foreground"]}>{c.count}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </BottomSheet>
+
+      {tags.length > 0 && (
+        <BottomSheet id="tag-sheet" title={t.tags} lang={lang}>
+          {activeTag && (
+            <a href={home} class="mb-3 flex h-11 items-center justify-center gap-2 rounded-xl bg-background text-sm font-semibold">
+              <Icon name="close" class="h-4 w-4" />
+              {t.tagClear(activeTag)}
+            </a>
+          )}
+          <ul class="flex flex-wrap gap-2">
+            {tags.map(({ tag, count }) => {
+              const active = tag === activeTag;
+              return (
+                <li>
+                  <a
+                    href={active ? home : tagUrl(tag, lang)}
+                    aria-current={active ? "page" : undefined}
+                    class:list={[
+                      "flex h-11 items-center gap-1.5 rounded-xl px-4 text-sm",
+                      active ? "bg-logo font-semibold text-on-logo" : "bg-background text-foreground",
+                    ]}
+                  >
+                    #{tag}
+                    <span class:list={["text-xs", active ? "opacity-80" : "text-muted-foreground"]}>{count}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </BottomSheet>
+      )}
+    </div>
+  )
+}
+
+<style>
+  :global(.js) .no-js-only {
+    display: none;
+  }
+</style>

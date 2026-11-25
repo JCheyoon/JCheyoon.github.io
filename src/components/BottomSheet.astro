@@ -1,0 +1,80 @@
+---
+// 바텀 시트 공통 부품(SPEC §6.2). 목차 시트와 태그 시트가 쓴다.
+// 브라우저 기본 <dialog>라 Esc·포커스 이동은 브라우저가 맡는다.
+// 여는 버튼: data-sheet-open="<id>". 시트 안의 링크에 data-sheet-dismiss를 붙이면 누를 때 시트를 닫는다.
+import Icon from "./Icon.astro";
+import { ui, type Lang } from "../i18n";
+
+interface Props {
+  id: string;
+  title: string;
+  lang: Lang;
+}
+
+const { id, title, lang } = Astro.props;
+---
+
+<dialog id={id} data-sheet aria-label={title} class="sheet">
+  <div class="mx-auto mb-3 h-1 w-10 rounded-full bg-border" aria-hidden="true"></div>
+  <div class="mb-2 flex items-center justify-between">
+    <p class="font-bold">{title}</p>
+    <button
+      type="button"
+      data-sheet-close
+      aria-label={ui[lang].close}
+      class="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-background"
+    >
+      <Icon name="close" class="h-5 w-5" />
+    </button>
+  </div>
+  <div class="max-h-[60vh] overflow-y-auto">
+    <slot />
+  </div>
+</dialog>
+
+<style>
+  /* 스크립트가 있을 때만 여는 버튼을 보인다 */
+  :global(.js) :global([data-sheet-open]) {
+    display: flex;
+  }
+  .sheet {
+    width: 100%;
+    max-width: 40rem;
+    margin: auto auto 0;
+    padding: 0.75rem 1rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    border: 0;
+    border-radius: 1.25rem 1.25rem 0 0;
+    background: var(--card);
+    color: var(--foreground);
+  }
+  /* ::backdrop은 오래된 브라우저에서 :root 변수를 물려받지 못해 같은 값을 대체값으로 둔다 */
+  .sheet::backdrop {
+    background: var(--scrim, oklch(0 0 0 / 45%));
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .sheet[open] {
+      animation: sheet-up 0.2s ease-out;
+    }
+  }
+  @keyframes sheet-up {
+    from {
+      transform: translateY(100%);
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-sheet-open]").forEach((button) => {
+    button.addEventListener("click", () => {
+      document.getElementById(button.dataset.sheetOpen ?? "")?.closest<HTMLDialogElement>("dialog")?.showModal();
+    });
+  });
+  document.querySelectorAll<HTMLDialogElement>("dialog[data-sheet]").forEach((sheet) => {
+    sheet.querySelector("[data-sheet-close]")?.addEventListener("click", () => sheet.close());
+    // 바깥(어두운 배경)을 누르면 닫는다
+    sheet.addEventListener("click", (e) => {
+      if (e.target === sheet) sheet.close();
+    });
+    sheet.querySelectorAll("[data-sheet-dismiss]").forEach((a) => a.addEventListener("click", () => sheet.close()));
+  });
+</script>

@@ -31,6 +31,20 @@ export async function getVisiblePosts(lang: Lang = "ko"): Promise<Post[]> {
   return posts.sort((a, b) => postDate(b).getTime() - postDate(a).getTime());
 }
 
+/** 태그 페이지 주소(D13). 한국어 `/tag/<tag>/`, 영어 `/en/tag/<tag>/` */
+export function tagUrl(tag: string, lang: Lang = "ko"): string {
+  return localizePath(lang, `/tag/${tag}/`);
+}
+
+/** 글 목록에 쓰인 태그와 글 수. 글이 많은 태그부터, 같으면 이름순 */
+export function tagCounts(posts: Post[]): { tag: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const post of posts) for (const tag of post.data.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+  return [...counts]
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+}
+
 /** 카테고리 페이지용: 해당 카테고리와 하위 카테고리의 글 */
 export function filterByCategory(posts: Post[], categorySlug: string): Post[] {
   const slugs = categoryWithChildren(categorySlug);

@@ -95,8 +95,8 @@ Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 �
 | `/page/[n]/` | 목록 n페이지 | n ≥ 2 |
 | `/post/[slug]/` | 글 | 기존 `/post/:slug` 경로 구조 유지 |
 | `/category/[slug]/` | 카테고리 글 목록 | 하위 카테고리 글 포함 |
-| `/tag/[tag]/` | 태그 글 목록 | |
-| `/archive/` | 연·월별 전체 목록 | |
+| `/tag/[tag]/`, `/en/tag/[tag]/` | 태그 글 목록 | Phase 3. 글이 있는 태그만 만든다 |
+| `/archive/`, `/en/archive/` | 연도별 전체 목록(날짜는 월·일) | Phase 3 |
 | `/about/`, `/contact/`, `/privacy/`, `/terms/` | 고정 페이지 | |
 | `/en/`, `/en/page/[n]/` | 영어 글 목록 | Phase 2a. 영어 사이트는 한국어 사이트와 같은 구조이고 영어 글만 보인다(D11) |
 | `/en/post/[slug]/` | 영어 글 | 원문이든 번역본이든 영어 글은 여기 |

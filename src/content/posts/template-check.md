@@ -3,7 +3,7 @@ title: "템플릿 검증용 샘플 글"
 slug: template-check
 description: "글 페이지 템플릿(제목, 본문 스타일, 이미지, 표, 코드, 출처, 이전·다음 글)을 확인하기 위한 샘플입니다. 배포되지 않습니다."
 category: etc
-tags: [sample]
+tags: [sample, astro]
 status: draft
 ai_assisted: true
 audience: "블로그 템플릿을 확인하는 운영자"

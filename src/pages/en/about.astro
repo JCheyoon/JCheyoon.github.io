@@ -15,7 +15,8 @@ const profile = {
 ---
 
 <BaseLayout title="About" description={`About ${site.name} and its author, ${site.author.name}.`} jsonLd={[profile]} lang="en" alternate="/about/">
-  <article class="prose prose-slate max-w-3xl dark:prose-invert">
+  {/* 글 페이지와 같은 흰 카드와 본문 스타일(SPEC §6.1) */}
+  <article class="post-body prose prose-slate max-w-none rounded-2xl border bg-card px-6 pt-6 pb-8 md:px-9 dark:prose-invert">
     <h1>What this blog covers</h1>
     <p>{site.description.en} I write mainly about things I have tried and verified myself.</p>
 

@@ -1,7 +1,8 @@
 ---
 import { categoryName, categoryUrl, getCategory } from "../data/categories";
-import { formatDate, isoDate, postDate, postUrl, type Post } from "../lib/posts";
+import { formatDate, isoDate, postDate, postUrl, tagUrl, type Post } from "../lib/posts";
 import { ui } from "../i18n";
+import Icon from "./Icon.astro";
 
 interface Props {
   post: Post;
@@ -19,10 +20,34 @@ const lang = post.data.lang;
     <h2 class="text-lg font-bold leading-snug">
       <a href={postUrl(post)} class="hover:underline">{post.data.title}</a>
     </h2>
-    <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-      <time datetime={isoDate(date)}>{formatDate(date, lang)}</time>
-      {category && <a href={categoryUrl(category.slug, lang)} class="hover:text-foreground">{categoryName(category, lang)}</a>}
-      {post.data.status !== "published" && <span class="rounded bg-secondary px-2 py-0.5">{ui[lang].draftBadge}: {post.data.status}</span>}
+    {/* 메타 줄: 글 페이지와 같은 아이콘 상자를 쓴다(SPEC §6.1) */}
+    <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-muted-foreground">
+      <span class="flex items-center gap-2">
+        <span class="meta-icon"><Icon name="calendar" class="h-5 w-5" /></span>
+        <time datetime={isoDate(date)}>{formatDate(date, lang)}</time>
+      </span>
+      {
+        category && (
+          <span class="flex items-center gap-2">
+            <span class="meta-icon"><Icon name="folder" class="h-5 w-5" /></span>
+            <a href={categoryUrl(category.slug, lang)} class="hover:text-accent-bar">{categoryName(category, lang)}</a>
+          </span>
+        )
+      }
+      {
+        post.data.tags.length > 0 && (
+          <span class="hidden items-center gap-2 md:flex">
+            <span class="meta-icon"><Icon name="tag" class="h-5 w-5" /></span>
+            {post.data.tags.map((tag, i) => (
+              <>
+                {i > 0 && <span aria-hidden="true">/</span>}
+                <a href={tagUrl(tag, lang)} class="hover:text-accent-bar">{tag}</a>
+              </>
+            ))}
+          </span>
+        )
+      }
+      {post.data.status !== "published" && <span class="rounded bg-secondary px-2 py-0.5 text-xs">{ui[lang].draftBadge}: {post.data.status}</span>}
     </div>
     <p class="mt-3 line-clamp-2 text-sm text-muted-foreground">{post.data.description}</p>
   </div>

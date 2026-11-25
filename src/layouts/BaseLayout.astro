@@ -25,14 +25,14 @@ type Props = Omit<SeoProps, "alternate"> & {
   /** 768px 미만 헤더의 뒤로 링크(글 페이지). Header 참고 */
   mobileBack?: { href: string; label: string };
   /** 768px 미만 목록 위 필터 버튼(카테고리·태그 시트). 목록 페이지(홈, n페이지, 카테고리, 태그)만 켠다 */
-  categoryChips?: boolean;
+  listFilters?: boolean;
 };
 
-const { sidebar = true, alternate, mobileBack, categoryChips = false, ...seo } = Astro.props;
+const { sidebar = true, alternate, mobileBack, listFilters = false, ...seo } = Astro.props;
 const lang = seo.lang ?? "ko";
 const switchHref = alternate === null ? undefined : (alternate ?? localizePath(otherLang(lang), "/"));
 const t = ui[lang];
-const posts = sidebar || categoryChips ? await getVisiblePosts(lang) : [];
+const posts = sidebar || listFilters ? await getVisiblePosts(lang) : [];
 // 검색 색인은 공개 글이 있을 때만 만들어진다(scripts/build-search.mjs). 글이 없으면 검색 버튼·탭·창을 아예 그리지 않는다
 const searchable = (await getVisiblePosts(lang)).length > 0;
 ---
@@ -75,7 +75,7 @@ const searchable = (await getVisiblePosts(lang)).length > 0;
     >
       {/* 768px 미만에서는 사이드바를 숨기고, 목록 페이지는 위에 필터 버튼을 둔다(SPEC §6.2) */}
       <main id="main" class:list={["relative min-w-0", sidebar && "md:order-2"]}>
-        {categoryChips && <MobileFilters posts={posts} lang={lang} />}
+        {listFilters && <MobileFilters posts={posts} lang={lang} />}
         <slot />
         {/*
           본문 오른쪽 기둥(SPEC §6.1): 위에는 목차, 아래에는 맨 위로 버튼.

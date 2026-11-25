@@ -69,6 +69,8 @@ const { id, title, lang } = Astro.props;
       document.getElementById(button.dataset.sheetOpen ?? "")?.closest<HTMLDialogElement>("dialog")?.showModal();
     });
   });
+  // 뒤로 가기로 페이지가 되살아날 때(bfcache) 시트가 열린 채로 남지 않게 닫는다
+  addEventListener("pageshow", () => document.querySelectorAll<HTMLDialogElement>("dialog[data-sheet][open]").forEach((d) => d.close()));
   document.querySelectorAll<HTMLDialogElement>("dialog[data-sheet]").forEach((sheet) => {
     sheet.querySelector("[data-sheet-close]")?.addEventListener("click", () => sheet.close());
     // 바깥(어두운 배경)을 누르면 닫는다

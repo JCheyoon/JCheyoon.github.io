@@ -1,9 +1,9 @@
 ---
 // 프로필과 카테고리. 글이 없는 카테고리는 페이지가 없으므로 목록에 넣지 않는다(죽은 링크 방지).
 import { site } from "../site.config";
-import { categories, categoryName, categoryUrl } from "../data/categories";
-import { filterByCategory, tagCounts, tagUrl, type Post } from "../lib/posts";
-import { localizePath, ui, type Lang } from "../i18n";
+import { type Post } from "../lib/posts";
+import { categoryItems, tagItems } from "../lib/filters";
+import { ui, type Lang } from "../i18n";
 import CategoryLink from "./CategoryLink.astro";
 import Icon from "./Icon.astro";
 
@@ -15,25 +15,13 @@ interface Props {
 const { posts, lang } = Astro.props;
 const t = ui[lang];
 const path = Astro.url.pathname;
-const home = localizePath(lang, "/");
-const tags = tagCounts(posts);
-const listed = categories
-  .map((c) => ({ ...c, count: filterByCategory(posts, c.slug).length }))
-  .filter((c) => c.count > 0);
-
-// 맨 위는 전체 글(= 홈 목록). 카테고리 페이지에서 전체로 돌아갈 수 있게 한다.
-// 페이지를 나눈 카테고리(/category/x/page/2/)에서도 활성으로 보이게 주소 앞부분으로 비교한다.
-const categoryItems = [
-  { href: home, name: t.allPosts, count: posts.length, active: path === home || path.startsWith(localizePath(lang, "/page/")) },
-  ...listed.map((c) => {
-    const href = categoryUrl(c.slug, lang);
-    return { href, name: categoryName(c, lang), count: c.count, active: path.startsWith(href) };
-  }),
-];
+// 카테고리·태그 항목과 활성 규칙은 모바일 필터와 같이 쓴다(lib/filters.ts)
+const allCategories = categoryItems(posts, lang, path);
+const tags = tagItems(posts, lang, path);
 // 전체 글 + 카테고리 6개까지 보이고, 나머지는 "더보기"로 접는다
 const SHOWN = 7;
-const shownCategories = categoryItems.slice(0, SHOWN);
-const moreCategories = categoryItems.slice(SHOWN);
+const shownCategories = allCategories.slice(0, SHOWN);
+const moreCategories = allCategories.slice(SHOWN);
 
 ---
 
@@ -56,7 +44,7 @@ const moreCategories = categoryItems.slice(SHOWN);
   </section>
 
   {
-    listed.length > 0 && (
+    allCategories.length > 1 && (
       <nav class="rounded-2xl border bg-card px-3 py-4" aria-label={t.categories}>
         <h2 class="mb-3 px-2 text-base font-semibold text-muted-foreground">{t.categories}</h2>
         <ul class="flex flex-col gap-1">
@@ -92,26 +80,22 @@ const moreCategories = categoryItems.slice(SHOWN);
       <nav class="rounded-2xl border bg-card px-3 py-4" aria-label={t.tags}>
         <h2 class="mb-3 px-2 text-base font-semibold text-muted-foreground">{t.tags}</h2>
         <ul class="flex flex-wrap gap-2 px-2">
-          {tags.map(({ tag, count }) => {
-            const href = tagUrl(tag, lang);
-            const active = path.startsWith(href);
-            // 선택된 태그를 다시 누르면 해제(전체 글로 이동). 카테고리의 "전체 글" 역할
-            return (
-              <li>
-                <a
-                  href={active ? home : href}
-                  aria-label={active ? t.tagClear(tag) : `#${tag} (${count})`}
-                  class:list={[
-                    "flex items-center gap-1 rounded-lg px-2.5 py-1 text-sm transition",
-                    active ? "bg-background font-semibold text-foreground" : "bg-background/60 text-muted-foreground hover:bg-background hover:text-foreground",
-                  ]}
-                >
-                  {tag}
-                  {active && <Icon name="close" class="h-3.5 w-3.5" />}
-                </a>
-              </li>
-            );
-          })}
+          {tags.map(({ tag, count, active, href }) => (
+            // 고른 태그를 다시 누르면 해제(전체 글로). 링크가 해제 동작이라 aria-current 대신 이름에 선택 상태를 담는다
+            <li>
+              <a
+                href={href}
+                aria-label={active ? t.tagSelected(tag) : `#${tag} (${count})`}
+                class:list={[
+                  "flex items-center gap-1 rounded-lg px-2.5 py-1 text-sm transition",
+                  active ? "bg-background font-semibold text-foreground" : "bg-background/60 text-muted-foreground hover:bg-background hover:text-foreground",
+                ]}
+              >
+                {tag}
+                {active && <Icon name="close" class="h-3.5 w-3.5" />}
+              </a>
+            </li>
+          ))}
         </ul>
       </nav>
     )

@@ -41,8 +41,8 @@ const { lang, page, pageCount, total, posts, alternate } = Astro.props;
 const t = ui[lang];
 ---
 
-<BaseLayout title={t.listPageTitle(page)} description={t.listPageDescription(site.name, page)} lang={lang} alternate={alternate} categoryChips>
-  <ListHeader title={t.listPageHeading(page)} count={total} lang={lang} />
+<BaseLayout title={t.listPageTitle(page)} description={t.listPageDescription(site.name, page)} lang={lang} alternate={alternate} listFilters>
+  <ListHeader title={t.listPageHeading(page)} count={total} lang={lang} page={page} />
   <PostList posts={posts} lang={lang} />
   <Pagination current={page} total={pageCount} lang={lang} />
 </BaseLayout>

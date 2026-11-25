@@ -37,8 +37,8 @@ const breadcrumb = {
 };
 ---
 
-<BaseLayout title={title} description={description} jsonLd={[breadcrumb]} lang={lang} alternate={alternate} categoryChips>
-  <ListHeader title={title} count={posts.length} lang={lang} />
+<BaseLayout title={title} description={description} jsonLd={[breadcrumb]} lang={lang} alternate={alternate} listFilters>
+  <ListHeader title={title} count={posts.length} lang={lang} page={page} />
   <PostList posts={posts.slice(start, start + site.pageSize)} lang={lang} />
   <Pagination current={page} total={pageCount} lang={lang} base={base} />
 </BaseLayout>

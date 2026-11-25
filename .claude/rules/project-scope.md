@@ -17,8 +17,8 @@
 - 기존 글의 slug와 URL은 바꾸지 않는다. 바꿔야 하면 리다이렉트 계획을 먼저 낸다.
 
 ## 배포와 브랜치 (SPEC §3.1)
-- 라이브 사이트는 `gh-pages` 브랜치에서 서빙된다.
-- Phase 1 전환 전까지 `npm run deploy`를 실행하지 않는다.
+- 라이브 사이트는 GitHub Actions(`site.yml`)로 배포된다. `master` merge가 곧 배포다.
+- `legacy/spa/`에서 `npm run deploy`를 실행하지 않는다(gh-pages 브랜치를 덮어쓴다).
 - `gh-pages` 브랜치는 롤백용이다. 삭제하거나 force push하지 않는다.
 - 모든 작업은 `master`가 아닌 작업 브랜치에서 하고, PR로 merge한다.
 - GitHub Pages 설정(Source, 도메인)은 사람이 바꾼다. 필요한 시점에 절차만 안내한다.

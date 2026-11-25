@@ -70,19 +70,19 @@
 - [x] GitHub Actions 워크플로(PR 검증, 수동 배포)와 HTML 검사 스크립트
 - [x] 끝 슬래시 정책 결정 (D5): `/post/slug/` (2026-11-23)
 - [x] 새 코드 기준으로 `site-code` 규칙과 `verify-site` 스킬 작성 (레거시 `verify-project`와 별도)
-- [ ] 전환 (SPEC §3.1)
+- [x] 전환 (SPEC §3.1, 2026-11-25)
   1. Astro 사이트 PR을 `master`에 merge한다. 라이브 사이트는 아직 `gh-pages` 그대로다. (완료)
-  2. Settings → Pages → Source를 "GitHub Actions"로 바꾼다 (사람이 직접).
-  3. 바로 Actions 탭에서 Site 워크플로를 수동 실행(Run workflow)해 배포한다.
-  4. 라이브 사이트를 확인한다(아래 완료 기준).
-  5. 확인되면 `site.yml`의 push 트리거 주석을 푸는 PR을 올린다. 이후 master merge 시 자동 배포된다.
+  2. Settings → Pages → Source를 "GitHub Actions"로 바꾼다 (사람이 직접). (완료)
+  3. 바로 Actions 탭에서 Site 워크플로를 수동 실행(Run workflow)해 배포한다. (완료)
+  4. 라이브 사이트를 확인한다(아래 완료 기준). (curl 항목 완료)
+  5. 확인되면 `site.yml`의 push 트리거 주석을 푸는 PR을 올린다. 이후 master merge 시 자동 배포된다. (이 PR)
   6. 문제가 생기면 Source를 다시 `gh-pages` 브랜치로 돌린다.
 
 완료 기준:
-- 라이브 홈·소개 페이지 HTML에 title, description, canonical이 있다 (curl로 확인).
-- 없는 URL이 404 상태를 반환한다.
-- 375px 화면에서 확인했다.
-- Lighthouse 목표를 달성했다.
+- [x] 라이브 홈·소개 페이지 HTML에 title, description, canonical이 있다 (curl로 확인, 2026-11-25).
+- [x] 없는 URL이 404 상태를 반환한다 (2026-11-25).
+- [ ] 375px 화면에서 확인했다 (작성자가 직접 확인).
+- [ ] Lighthouse 목표를 달성했다 (작성자가 직접 확인).
 - 글 페이지 템플릿은 샘플 글로 CI에서 검증한다. 라이브 글 페이지 확인은 첫 글을 발행할 때(Phase 5) 한다.
 
 > 2026-11-24 순서 변경: 기능 개발(Phase 2~4)을 먼저 하고, 글 작성(Phase 5)을 그 뒤에 한다.

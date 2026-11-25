@@ -9,7 +9,7 @@
   - 규칙: [.claude/rules/content.md](.claude/rules/content.md)
   - 스킬: `draft-post`, `review-post`, `publish-post`
 - push와 PR 생성은 `create-pr` 스킬로 한다(한글 PR, AI 작성 표시 없음). push 전에 반드시 PR 초안을 보여 주고 승인을 받는다. merge와 배포는 사람이 한다.
-- 라이브 사이트는 전환(Phase 1 마지막) 전까지 `gh-pages` 브랜치에서 서빙된다. `legacy/spa/`에서 `npm run deploy`를 실행하지 않는다(라이브 사이트를 덮어쓴다). SPEC §3.1 참고.
+- 라이브 사이트는 GitHub Actions(`site.yml`)로 배포된다. `master`에 merge하면 자동 배포된다(2026-11-25 전환). `gh-pages` 브랜치는 롤백용이다. `legacy/spa/`에서 `npm run deploy`를 실행하지 않는다. SPEC §3.1 참고.
 
 ## 작업 원칙
 
@@ -80,7 +80,7 @@
 - `src/lib/posts.ts`: 글 조회(`getVisiblePosts`)와 주소·날짜 헬퍼
 - `src/site.config.ts`, `src/data/`: 사이트 정보, 카테고리, 제휴 도메인(단일 소스)
 - `scripts/`: `check-content.mjs`, `check-html.mjs`
-- `.github/workflows/site.yml`: PR 검증, 수동 배포. 전환 때 master push 자동 배포를 켠다.
+- `.github/workflows/site.yml`: PR 검증, master push 자동 배포, 수동 재배포
 - `public/`: 파비콘, 매니페스트
 
 ### 주의

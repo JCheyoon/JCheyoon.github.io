@@ -63,10 +63,10 @@ Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 �
 | 브랜치 | 역할 |
 |---|---|
 | `master` | 소스, 기본 브랜치 |
-| `gh-pages` | 현재 배포본 (2025-12-17 골격). 전환 후에도 롤백용으로 보존한다 |
+| `gh-pages` | 이전 배포본 (2025-12-17 골격). 롤백용으로 보존한다 |
 | 작업 브랜치 | `docs/*`, `migrate/astro`, `feat/*`, `publish/<slug>` 등. PR로 `master`에 merge한다 |
 
-현재 Pages 설정(2026-11-23 GitHub API로 확인): 배포 방식 legacy, 소스 `gh-pages` 브랜치 `/`, 커스텀 도메인 없음, custom 404 없음.
+현재 Pages 설정(2026-11-25 GitHub API로 확인): 배포 방식 GitHub Actions(`site.yml`), 커스텀 도메인 없음. 2026-11-25에 `gh-pages` 브랜치에서 전환했다.
 
 전환 시점은 Phase 1 완료 시다. 전환 절차:
 

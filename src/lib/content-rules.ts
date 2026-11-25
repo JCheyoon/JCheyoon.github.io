@@ -16,6 +16,8 @@ export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 /** 이 이름으로 시작하는 글은 템플릿 검증용 샘플이다. 항상 draft로 둔다. */
 export const TEMPLATE_FIXTURE = "template-check";
 const MARKERS = ["[경험 추가 필요", "[출처 확인 필요"];
+/** 글 템플릿(src/content/templates/)의 작성 안내 주석. 검수 전에 지운다(SPEC §5.7). */
+const TEMPLATE_GUIDE = "<!-- 안내:";
 
 // ── frontmatter 스키마 (SPEC §5.1, §5.2 중 frontmatter로 판단할 수 있는 것) ──
 
@@ -212,6 +214,9 @@ export function checkPosts(sources: PostSource[], { schema = false } = {}): Chec
     for (const marker of MARKERS) {
       if (body.includes(marker)) report(`본문에 '${marker}]' 표시가 남아 있다`);
     }
+
+    // 템플릿 안내 주석은 화면에는 안 보여도 HTML에 남는다. 검수·발행 전에 지운다.
+    if (strict && body.includes(TEMPLATE_GUIDE)) errors.push(`${where}: 템플릿 안내 주석(${TEMPLATE_GUIDE} …)이 남아 있다`);
 
     // 제휴 링크가 있으면 disclosure 필수
     const links = [

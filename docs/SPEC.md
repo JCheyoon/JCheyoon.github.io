@@ -1,6 +1,6 @@
 # 블로그 사양서 (SPEC)
 
-- 상태: 승인된 초안 (2026-11-23, 2026-11-24 번역 방식·단계 순서 변경). D1~D3, D5~D8 결정. D4는 Phase 6에서 논의.
+- 상태: 승인된 초안 (2026-11-23, 2026-11-24 번역 방식·단계 순서 변경, 2026-11-25 MCP 서버·영어 사이트 구조). D1~D3, D5~D11 결정. D4는 Phase 6에서 논의.
 - 관련 문서: `docs/ROADMAP.md`, `.claude/rules/`
 - 표시: [결정 필요]는 §11 열린 결정 표에 있는 항목
 
@@ -9,6 +9,7 @@
 - 개발하면서 직접 겪은 문제와 해결을 기록하는 1인 기술 블로그.
 - 검색 유입을 받고, 장기적으로 광고, 제휴, 자체 디지털 상품으로 수익을 낸다.
 - AI가 초안을 돕고 사람이 검수해서 발행한다. 글 수보다 품질을 우선한다.
+- MCP 활용 기술 블로그다. 블로그 운영(초안, 검사, 번역, 발행 준비)을 직접 만든 MCP 서버로 하고(§9.4), 그 과정을 글로 쓴다.
 
 ## 2. 범위
 
@@ -25,13 +26,16 @@
 |---|---|
 | 관리자 웹 에디터 | git과 PR이 작성·검수 도구를 대신한다. 기존 코드는 `legacy/`에 보관 |
 | 다국어 페이지 | Phase 2에서 한국어 ↔ 영어 번역 구조를 만든다(§9.2) |
-| 댓글, 회원, 뉴스레터 발송 | v1 이후 검토 |
-| "Ask my blog"(벡터 검색), MCP 서버 | 보류. 글이 git에 있어 Claude가 파일을 직접 읽을 수 있다 |
+| 댓글 | Phase 4 후보. 방식(Giscus, Supabase Auth, 백엔드)은 그때 정한다 |
+| 회원, 뉴스레터 발송 | v1 이후 검토 |
+| "Ask my blog"(벡터 검색) | 보류. 글이 git에 있어 Claude가 파일을 직접 읽을 수 있다 |
 
 ### v1 이후 기능
 
 - LinkedIn 공유 (Phase 4, §9.3)
-- 한국어 ↔ 영어 번역 (Phase 2, §9.2)
+- 한국어 ↔ 영어 번역 (Phase 2a, §9.2)
+- 블로그 MCP 서버 (Phase 2b, §9.4)
+- 댓글 (Phase 4 후보)
 - 커스텀 도메인 연결, 광고 슬롯과 CMP (Phase 6)
 - "이 글에 질문하기" (Phase 6 선택, 기존 Go 백엔드 재사용)
 - 사이트 내 검색, 포트폴리오 페이지 (Phase 4)
@@ -52,11 +56,14 @@ Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 �
 정적 HTML/CSS (+ 최소 JS) ──→ GitHub Pages (https://jcheyoon.github.io, Phase 6에서 커스텀 도메인 연결)
 
 (Phase 6, 선택) 글 페이지 질문 위젯(React 아일랜드) ──→ Go 백엔드 /api/posts/{slug}/ask
+
+작성자 ── MCP 클라이언트(Claude Code 등) ── 블로그 MCP 서버(mcp/, 로컬 stdio) ──→ 저장소 파일·검사
 ```
 
 - 독자가 글을 볼 때 백엔드나 DB를 거치지 않는다.
 - 사이트 저장소는 `JCheyoon.github.io`이다. 기존 Vite SPA는 `legacy/spa/`로 옮겨 보관한다(D7).
-- `blog-backend`는 유지보수 모드로 둔다. 콘텐츠 원본이 아니다. DB에 글이 없어 옮길 콘텐츠도 없다(2026-11-23 작성자 확인). 질문 위젯을 붙이려면 글 본문을 DB 대신 사이트 기준으로 가져오도록 바꿔야 한다(Phase 6).
+- `blog-backend`는 댓글(Phase 4 후보)과 질문 위젯(Phase 6)을 위해 유지한다. 그 전까지는 유지보수 모드로 둔다. 콘텐츠 원본이 아니고, DB에 글이 없어 옮길 콘텐츠도 없다(2026-11-23 작성자 확인). 질문 위젯을 붙이려면 글 본문을 DB 대신 사이트 기준으로 가져오도록 바꿔야 한다.
+- 블로그 MCP 서버는 독자에게 보이지 않는 작성자용 도구다. 사이트 저장소의 `mcp/`에 둔다(D10, §9.4).
 
 ### 3.1 배포 방식과 브랜치
 
@@ -91,7 +98,11 @@ Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 �
 | `/tag/[tag]/` | 태그 글 목록 | |
 | `/archive/` | 연·월별 전체 목록 | |
 | `/about/`, `/contact/`, `/privacy/`, `/terms/` | 고정 페이지 | |
-| `/en/`, `/en/post/[slug]/` | 영어 글 목록, 영어 글 | Phase 2. 원문이든 번역본이든 영어 글은 여기 |
+| `/en/`, `/en/page/[n]/` | 영어 글 목록 | Phase 2a. 영어 사이트는 한국어 사이트와 같은 구조이고 영어 글만 보인다(D11) |
+| `/en/post/[slug]/` | 영어 글 | 원문이든 번역본이든 영어 글은 여기 |
+| `/en/category/[slug]/` | 영어 카테고리 글 목록 | |
+| `/en/about/` | 영어 소개 | |
+| `/en/rss.xml` | 영어 글 RSS | `/rss.xml`은 한국어 글만 |
 | `/rss.xml`, `/sitemap-index.xml`, `/robots.txt` | 빌드 시 자동 생성 | |
 | 그 밖의 경로 | `404.html` | 실제 404 상태 |
 
@@ -260,7 +271,7 @@ slug 규칙:
 - PR 템플릿에 검수 체크리스트 8항목을 넣는다.
 - 발행 속도 상한은 주 3편이다.
 
-### 9.2 번역 (Phase 2, 한국어 ↔ 영어)
+### 9.2 번역 (Phase 2a, 한국어 ↔ 영어)
 
 원칙: 번역본 **생성은 자동**, **발행은 사람 검수 후**다. 작성자는 한국어나 영어 중 편한 언어로 원문을 쓴다.
 
@@ -271,12 +282,13 @@ slug 규칙:
   | 한국어 | `src/content/posts/<slug>.md` | `/post/<slug>/` |
   | 영어 | `src/content/posts/en/<slug>.md` | `/en/post/<slug>/` |
 - frontmatter: 모든 글에 `lang`(기본 `ko`). 번역본에는 `translated_from`(원문 언어)과 `status: draft`, `ai_assisted: true`.
-- 자동 생성: `publish-post`가 원문을 발행하면 이어서 `translate-post`를 실행해 반대 언어 번역 초안을 만든다.
-  - 별도의 MCP 서버는 필요 없다. Claude Code 스킬이 저장소 파일을 직접 만든다.
+- 자동 생성: `publish-post`로 원문을 발행하면 이어서 블로그 MCP 서버의 `translate_post` 도구로 반대 언어 번역 초안을 만든다(§9.4). 번역문은 MCP 클라이언트의 모델이 쓰고, 도구는 형식 검사와 파일 저장을 한다.
   - 번역 초안은 발행 PR과 별도 브랜치(`translate/<slug>`)로 만들고, `create-pr` 절차(초안 확인 → 승인 → push)를 따른다.
 - 번역본도 `review-post` → `publish-post`를 거친다. 검수는 두 언어를 읽을 수 있는 작성자가 한다. 번역본에서는 번역을 다시 만들지 않는다.
 - 원문을 고치면 번역본을 재검수 대상으로 둔다. 원문 `updated_at`이 번역본 `reviewed_at`보다 나중이면 빌드 경고를 낸다.
-- 원문과 번역본에 서로를 가리키는 `hreflang`을 넣고, sitemap에도 대체 언어를 넣는다. 언어 전환 링크는 번역본이 있는 글에만 표시한다.
+- 원문과 번역본에 서로를 가리키는 `hreflang`을 넣고, sitemap에도 대체 언어를 넣는다.
+- 언어 전환 링크(헤더 오른쪽): 글은 번역본이 있을 때만 짝 글로 연결한다. 목록, 카테고리, 소개는 항상 다른 언어의 같은 페이지로 연결한다.
+- 한국어 페이지를 새로 만들면 영어판도 `/en/` 아래 같은 경로로 만든다(D11).
 - 브라우저 언어를 보고 자동으로 이동시키지 않는다. 전환은 링크로만 한다.
 - 근거: Google 스팸 정책은 번역 같은 자동 변환으로 가치 없이 페이지를 대량 생성하는 것을 scaled content abuse로 본다([spam policies](https://developers.google.com/search/docs/essentials/spam-policies)). 그래서 생성은 자동으로 하되 발행 전 검수를 유지한다. 번역 페이지 표기는 [localized versions](https://developers.google.com/search/docs/specialty/international/localized-versions) 문서를 따른다.
 
@@ -296,7 +308,24 @@ slug 규칙:
   - 액세스 토큰은 60일 만료다. 자동 갱신(refresh token)은 일부 파트너만 쓸 수 있다.
   - 따라서 토큰은 GitHub Secrets에 넣고, 만료 2주 전에 Action이 이슈로 알린다.
   - 근거: [Share on LinkedIn](https://learn.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/share-on-linkedin), [OAuth 흐름](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow), [refresh token](https://learn.microsoft.com/en-us/linkedin/shared/authentication/programmatic-refresh-tokens)
-- MCP 서버는 이 흐름에 필요하지 않다. Claude Desktop 등에서 블로그를 다루고 싶어지면 그때 다시 검토한다.
+- 게시는 merge 후 Action이 한다. 게시 문구 작성을 블로그 MCP 서버(§9.4)의 도구로 옮길지는 Phase 4에서 정한다.
+
+### 9.4 블로그 MCP 서버 (Phase 2b, D10)
+
+목적: 콘텐츠 규칙을 문서(프롬프트)가 아니라 코드로 강제하고, MCP를 지원하는 어떤 클라이언트에서든 블로그를 운영한다. 만드는 과정 자체가 이 블로그의 글감이다.
+
+- 위치와 실행: 사이트 저장소 `mcp/`, TypeScript, 공식 TypeScript SDK, 로컬 stdio. 호스팅하지 않는다.
+- 규칙의 단일 소스: frontmatter 스키마와 검사 로직을 사이트와 MCP 서버가 함께 쓴다. Astro 전용 부분(`image()` 등)을 뺀 공통 스키마를 분리한다.
+- 도구 (첫 버전)
+  | 도구 | 하는 일 |
+  |---|---|
+  | `list_posts` | 글 목록, 언어, 상태, 번역본 유무 |
+  | `check_post` | 한 편에 대해 스키마와 콘텐츠 검사 |
+  | `translate_post` | published 원문 1편의 반대 언어 번역 초안 저장. `status: draft`, `ai_assisted: true`, `translated_from` 강제 |
+  | `create_draft` | 새 초안 파일 생성. `status: draft`, `ai_assisted: true` 강제 |
+- 하지 않는 것: commit, push, PR 생성, status를 reviewed·published로 바꾸기. 이것들은 기존 절차(사용자 승인, `create-pr`, `publish-post`)를 따른다.
+- 비밀값을 쓰지 않는다. 번역문은 클라이언트의 모델이 쓰고 서버는 API를 호출하지 않는다.
+- 스킬(`draft-post`, `publish-post` 등)은 MCP 도구를 부르는 절차서로 남긴다.
 
 ## 10. 배포
 
@@ -320,6 +349,8 @@ slug 규칙:
 | D7 | legacy 보관 위치 | `legacy/spa/` | 승인 (2026-11-23) |
 | D8 | 번역 | 한국어 ↔ 영어 양방향. 원문을 발행하면 반대 언어 번역 초안을 자동 생성하고, 검수 후 발행 | 승인 (2026-11-23, 2026-11-24 양방향·자동 생성으로 변경) |
 | D9 | 본문 디자인 | §6.1의 요소로 본문을 꾸민다. 저장소 카드·스포일러·수식은 제외 | 승인 (2026-11-25) |
+| D10 | 블로그 MCP 서버 | TypeScript, 사이트 저장소 `mcp/`, 로컬 stdio. 콘텐츠 규칙을 코드로 강제한다(§9.4) | 승인 (2026-11-25) |
+| D11 | 영어 사이트 구조 | 한국어 사이트와 같은 구조를 `/en/` 아래에 둔다. 언어 전환은 같은 페이지로 이동 | 승인 (2026-11-25) |
 
 ## 12. 완료 정의 (모든 기능 공통)
 

@@ -191,3 +191,83 @@ export function createDraft(root: string, input: DraftInput): WriteResult {
   };
   return writeChecked(root, input.lang, input.slug, renderPost(front, body.body));
 }
+
+// ── 번역 초안 (SPEC §9.2) ──
+
+export interface TranslationInput {
+  slug: string;
+  /** 원문 언어. 번역본은 반대 언어로 만든다. */
+  from: Lang;
+  title: string;
+  description: string;
+  audience: string;
+  search_intent: string;
+  /** 번역한 본문 (Markdown, frontmatter 제외) */
+  body: string;
+  /** 원문에 disclosure가 있으면 번역한 문구가 필요하다 */
+  disclosure?: string;
+}
+
+/** posts/<slug>.md와 posts/en/<slug>.md는 폴더 깊이가 달라서 이미지 상대 경로의 ../ 개수가 다르다 */
+function moveRelative(path: string, from: Lang, to: Lang): string {
+  if (!path.startsWith("../")) return path;
+  if (from === "ko" && to === "en") return `../${path}`;
+  if (from === "en" && to === "ko") return path.replace(/^\.\.\//, "");
+  return path;
+}
+
+/**
+ * published 원문 1편의 번역 초안을 반대 언어 폴더에 만든다(SPEC §9.2, §9.4).
+ * 번역문은 클라이언트의 모델이 쓰고, 이 도구는 원문 확인, frontmatter 고정, 검사, 저장만 한다.
+ */
+export function translatePost(root: string, input: TranslationInput): WriteResult {
+  const to: Lang = input.from === "ko" ? "en" : "ko";
+  const original = readPostSources(root).find((s) => s.dirLang === input.from && s.name === input.slug);
+  if (!original) return { ok: false, errors: [`${input.from} 원문 ${input.slug}가 없다`] };
+  const split = splitPost(original.raw);
+  if ("error" in split) return { ok: false, errors: [`${original.path}: ${split.error}`] };
+  const o = split.front;
+  if (o.translated_from) return { ok: false, errors: [`${original.path}는 번역본이다. 번역본을 다시 번역하지 않는다`] };
+  if (o.status !== "published") {
+    return { ok: false, errors: [`${original.path}의 status가 ${o.status}다. 번역은 published 원문만 한다`] };
+  }
+  if (o.disclosure && !input.disclosure?.trim()) {
+    return { ok: false, errors: [`원문에 disclosure가 있다. 번역한 disclosure 문구를 함께 넘긴다`] };
+  }
+
+  // 본문 이미지는 번역본 위치 기준으로 실제 파일이 있어야 한다(Astro 빌드가 실패하기 전에 알려 준다)
+  const targetDir = join(root, LANG_DIRS[to]);
+  for (const [, , src] of input.body.matchAll(/!\[([^\]]*)\]\(([^)\s]+)[^)]*\)/g)) {
+    if (/^https?:\/\//.test(src) || existsSync(join(targetDir, src))) continue;
+    // 원문 경로를 그대로 옮긴 경우가 대부분이므로 번역본 위치에 맞춘 경로를 알려 준다
+    const moved = moveRelative(src, input.from, to);
+    const hint = existsSync(join(targetDir, moved)) ? ` 번역본에서는 ${moved}로 쓴다` : "";
+    return { ok: false, errors: [`본문 이미지 ${src}가 번역본 위치(${LANG_DIRS[to]}/)에서 보이지 않는다.${hint}`] };
+  }
+
+  const cover = o.cover as { src: string; alt: string } | undefined;
+  const front = {
+    title: input.title,
+    slug: input.slug,
+    description: input.description,
+    category: o.category,
+    tags: o.tags ?? [],
+    status: "draft",
+    lang: to,
+    translated_from: input.from,
+    ai_assisted: true,
+    audience: input.audience,
+    search_intent: input.search_intent,
+    created_at: today(),
+    reviewed_at: null,
+    reviewed_by: null,
+    review_notes: null,
+    published_at: null,
+    updated_at: null,
+    disclosure: input.disclosure?.trim() || null,
+    ...(o.sources ? { sources: o.sources } : {}),
+    // cover alt는 원문 언어 그대로다. 검수할 때 번역한다.
+    ...(cover ? { cover: { src: moveRelative(cover.src, input.from, to), alt: cover.alt } } : {}),
+  };
+  return writeChecked(root, to, input.slug, renderPost(front, input.body));
+}

@@ -9,7 +9,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
 import { z } from "astro/zod";
 import { LANGS } from "../src/i18n.ts";
 import { categorySlugs } from "../src/data/categories.ts";
-import { checkPost, createDraft, listPosts, listTemplates, type WriteResult } from "./tools.ts";
+import { checkPost, createDraft, listPosts, listTemplates, translatePost, type WriteResult } from "./tools.ts";
 
 // 저장소 루트. 서버를 어디서 실행해도 이 저장소의 글을 다룬다.
 // BLOG_ROOT는 테스트가 임시 폴더의 글로 서버를 돌릴 때만 쓴다.
@@ -91,6 +91,26 @@ server.registerTool(
     }),
   },
   async (input) => written(createDraft(ROOT, input)),
+);
+
+server.registerTool(
+  "translate_post",
+  {
+    title: "번역 초안 만들기",
+    description:
+      "published 원문 1편의 번역 초안을 반대 언어(ko↔en)로 만든다(SPEC §9.2). 번역문은 호출하는 쪽이 원문을 읽고 직접 써서 넘긴다. 도구는 원문이 published인지, 번역본이 이미 있는지 확인하고, status: draft·ai_assisted: true·translated_from을 고정한다. category, tags, sources, cover는 원문에서 가져온다. 원문에 disclosure가 있으면 번역한 문구가 필요하다. 본문 이미지 상대 경로는 번역본 위치 기준이어야 한다(posts/en/은 한 단계 더 깊다). 번역본도 검수 후에만 발행한다.",
+    inputSchema: z.object({
+      slug: z.string().describe("원문 slug. 번역본도 같은 slug를 쓴다"),
+      from: z.enum(LANGS).default("ko").describe("원문 언어"),
+      title: z.string().describe("번역한 제목"),
+      description: z.string().describe("번역한 요약"),
+      audience: z.string().describe("번역한 대상 독자"),
+      search_intent: z.string().describe("번역한 검색 의도"),
+      body: z.string().describe("번역한 본문(Markdown, frontmatter 제외)"),
+      disclosure: z.string().optional().describe("원문에 disclosure가 있을 때 번역한 문구"),
+    }),
+  },
+  async (input) => written(translatePost(ROOT, input)),
 );
 
 await server.connect(new StdioServerTransport());

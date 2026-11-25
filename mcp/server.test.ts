@@ -28,6 +28,21 @@ before(async () => {
   root = mkdtempSync(join(tmpdir(), "blog-mcp-test-"));
   cpSync(join(REPO, POSTS), join(root, POSTS), { recursive: true });
   cpSync(join(REPO, TEMPLATES), join(root, TEMPLATES), { recursive: true });
+  cpSync(join(REPO, "src/assets/posts"), join(root, "src/assets/posts"), { recursive: true });
+
+  // 번역할 수 있는 published 원문: 하나는 그대로, 하나는 disclosure가 있는 글
+  const published = (slug: string, extra = "") =>
+    readFileSync(join(root, POSTS, "template-check.md"), "utf8")
+      .replace("slug: template-check", `slug: ${slug}`)
+      .replace("status: draft", "status: published")
+      .replace(/^reviewed_at:$/m, "reviewed_at: 2026-11-25")
+      .replace(/^reviewed_by:$/m, "reviewed_by: test")
+      .replace(/^review_notes:$/m, "review_notes: test")
+      .replace(/^published_at:$/m, "published_at: 2026-11-25")
+      .replace(/^disclosure:$/m, `disclosure:${extra}`);
+  writeFileSync(join(root, POSTS, "pub-post.md"), published("pub-post"));
+  writeFileSync(join(root, POSTS, "pub-image.md"), published("pub-image"));
+  writeFileSync(join(root, POSTS, "pub-affiliate.md"), published("pub-affiliate", " 이 글의 링크로 구매하면 작성자가 수수료를 받습니다."));
 
   // 검사가 잡아야 하는 글: published인데 검수 기록과 발행일이 없고, 보완 표시가 남아 있다
   const bad = readFileSync(join(root, POSTS, "template-check.md"), "utf8")
@@ -67,10 +82,7 @@ describe("list_posts", () => {
     const { data: en } = await call("list_posts", { lang: "en" });
     assert.ok(en.length > 0 && en.every((p: any) => p.lang === "en"));
     const { data: published } = await call("list_posts", { status: "published" });
-    assert.deepEqual(
-      published.map((p: any) => p.slug),
-      ["broken-post"],
-    );
+    assert.deepEqual(published.map((p: any) => p.slug).sort(), ["broken-post", "pub-affiliate", "pub-image", "pub-post"]);
   });
 });
 
@@ -167,4 +179,50 @@ describe("create_draft", () => {
   });
 
   test("본문도 템플릿도 없으면 거부한다", () => rejects({ slug: "t4" }, /body나 template/, `${POSTS}/t4.md`));
+});
+
+describe("translate_post", () => {
+  const translation = {
+    from: "ko",
+    title: "Published post",
+    description: "A translated description",
+    audience: "Test readers",
+    search_intent: "Testing translation drafts",
+    body: "This is the translated body.",
+  };
+  const read = (path: string) => readFileSync(join(root, path), "utf8");
+  const rejects = async (args: Record<string, unknown>, pattern: RegExp) => {
+    const { isError, data } = await call("translate_post", { ...translation, ...args });
+    assert.equal(isError, true, JSON.stringify(data));
+    assert.match(data.errors.join("\n"), pattern);
+  };
+
+  test("published 원문의 번역 초안을 반대 언어 폴더에 만들고 frontmatter를 고정한다", async () => {
+    const { isError, data } = await call("translate_post", { ...translation, slug: "pub-post" });
+    assert.equal(isError, false, JSON.stringify(data));
+    assert.equal(data.path, `${POSTS}/en/pub-post.md`);
+    const text = read(data.path);
+    for (const line of ["status: draft", "lang: en", "translated_from: ko", "ai_assisted: true", "category: etc", "title: Published post"]) {
+      assert.match(text, new RegExp(`^${line}$`, "m"));
+    }
+    const { data: check } = await call("check_post", { slug: "pub-post", lang: "en" });
+    assert.equal(check.ok, true, check.errors.join("\n"));
+    const { data: list } = await call("list_posts", { lang: "ko" });
+    assert.equal(list.find((p: any) => p.slug === "pub-post").has_counterpart, true);
+  });
+
+  test("번역본이 이미 있으면 거부한다", () => rejects({ slug: "pub-post" }, /이미 있다/));
+  test("원문이 published가 아니면 거부한다", () => rejects({ slug: "template-check" }, /published 원문만/));
+  test("번역본을 다시 번역하지 않는다", () => rejects({ slug: "template-check", from: "en" }, /번역본이다/));
+  test("원문이 없으면 거부한다", () => rejects({ slug: "no-such-post" }, /원문 no-such-post가 없다/));
+  test("원문에 disclosure가 있으면 번역한 문구가 필요하다", () =>
+    rejects({ slug: "pub-affiliate" }, /disclosure/));
+
+  test("본문 이미지 경로가 번역본 위치에서 보이지 않으면 바른 경로를 알려 주고 거부한다", async () => {
+    const img = (path: string) => `![Site icon](${path}/assets/posts/template-check/sample-icon.png)`;
+    await rejects({ slug: "pub-image", body: img("../..") }, /\.\.\/\.\.\/\.\.\/assets/);
+    assert.equal(existsSync(join(root, POSTS, "en/pub-image.md")), false);
+    const { isError, data } = await call("translate_post", { ...translation, slug: "pub-image", body: img("../../..") });
+    assert.equal(isError, false, JSON.stringify(data));
+  });
 });

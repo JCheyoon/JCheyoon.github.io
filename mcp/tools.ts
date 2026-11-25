@@ -1,6 +1,9 @@
 // 블로그 MCP 서버의 도구 동작(SPEC §9.4). MCP와 상관없는 순수 함수로 두어 테스트하기 쉽게 한다.
 // 규칙은 모두 src/lib/content-rules.ts에서 가져온다. 여기서 규칙을 새로 정하지 않는다.
-import { checkPosts, readPostSources, splitPost, type PostSource } from "../src/lib/content-rules.ts";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { basename, join } from "node:path";
+import { stringify } from "yaml";
+import { LANG_DIRS, checkPosts, readPostSources, splitPost, type PostSource } from "../src/lib/content-rules.ts";
 import type { Lang } from "../src/i18n.ts";
 
 export interface PostSummary {
@@ -61,4 +64,130 @@ export function checkPost(root: string, slug: string, lang: Lang): PostCheck | u
   const mine = (m: string) => m.startsWith(`${target.path}:`);
   const e = errors.filter(mine);
   return { path: target.path, ok: e.length === 0, errors: e, warnings: warnings.filter(mine) };
+}
+
+// ── 글 템플릿 (SPEC §5.7) ──
+
+const TEMPLATES_DIR = "src/content/templates";
+
+export interface Template {
+  name: string;
+  label: string;
+  /** base: 기본 템플릿, option: 기본 템플릿 뒤에 붙이는 선택 블록 */
+  kind: "base" | "option";
+  /** 언제 쓰는지. 주제에 맞는 템플릿을 고르는 근거 */
+  when: string;
+  /** 본문 뼈대 */
+  body: string;
+}
+
+export function listTemplates(root: string): Template[] {
+  const dir = join(root, TEMPLATES_DIR);
+  return readdirSync(dir)
+    .filter((f) => f.endsWith(".md"))
+    .map((file) => {
+      const split = splitPost(readFileSync(join(dir, file), "utf8"));
+      if ("error" in split) throw new Error(`${TEMPLATES_DIR}/${file}: ${split.error}`);
+      const f = split.front;
+      return {
+        name: String(f.name ?? basename(file, ".md")),
+        label: String(f.label),
+        kind: f.kind === "option" ? "option" : "base",
+        when: String(f.when),
+        body: split.body.trim(),
+      } satisfies Template;
+    });
+}
+
+// ── 초안 만들기 ──
+
+export interface DraftInput {
+  slug: string;
+  lang: Lang;
+  title: string;
+  description: string;
+  category: string;
+  tags?: string[];
+  audience: string;
+  search_intent: string;
+  /** 작성한 본문. 없으면 템플릿 뼈대를 넣는다. */
+  body?: string;
+  template?: string;
+  options?: string[];
+}
+
+export type WriteResult = { ok: true; path: string; warnings: string[] } | { ok: false; errors: string[] };
+
+/** 작성자 기준 날짜(서울) YYYY-MM-DD */
+function today(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date());
+}
+
+/** frontmatter를 저장소의 글과 같은 순서·모양으로 쓴다. 빈 값은 `key:`로 둔다. */
+function renderPost(front: Record<string, unknown>, body: string): string {
+  return `---\n${stringify(front, { nullStr: "", lineWidth: 0 })}---\n\n${body.trim()}\n`;
+}
+
+/**
+ * 새 글 파일을 검사한 뒤에만 쓴다. 다른 글과 엮인 규칙(slug 중복, 언어 짝)도 함께 본다.
+ * 언어 짝 오류처럼 다른 파일 이름으로 보고되는 오류도 있으므로,
+ * "이 파일을 넣었을 때 새로 생기는 오류"가 하나라도 있으면 파일을 만들지 않는다.
+ */
+function writeChecked(root: string, lang: Lang, slug: string, content: string): WriteResult {
+  const path = `${LANG_DIRS[lang]}/${slug}.md`;
+  if (existsSync(join(root, path))) return { ok: false, errors: [`${path}가 이미 있다. 기존 글을 고치려면 파일을 직접 수정한다`] };
+  const existing = readPostSources(root);
+  const before = checkPosts(existing, { schema: true });
+  const after = checkPosts([...existing, { path, dirLang: lang, name: slug, raw: content }], { schema: true });
+  const added = (list: string[], prev: string[]) => list.filter((m) => !prev.includes(m));
+  const errors = added(after.errors, before.errors);
+  if (errors.length > 0) return { ok: false, errors };
+  writeFileSync(join(root, path), content);
+  return { ok: true, path, warnings: added(after.warnings, before.warnings) };
+}
+
+/** 본문: 직접 준 본문, 아니면 기본 템플릿 + 선택 블록의 뼈대 */
+function draftBody(root: string, input: DraftInput): { body: string } | { error: string } {
+  if (input.body?.trim()) return { body: input.body };
+  if (!input.template) return { error: "body나 template 중 하나는 있어야 한다" };
+  const templates = listTemplates(root);
+  const find = (name: string, kind: Template["kind"]) => templates.find((t) => t.name === name && t.kind === kind);
+  const base = find(input.template, "base");
+  if (!base) return { error: `기본 템플릿 ${input.template}이 없다. list_templates로 이름을 확인한다` };
+  const parts = [base.body];
+  for (const name of input.options ?? []) {
+    const option = find(name, "option");
+    if (!option) return { error: `선택 블록 ${name}이 없다. list_templates로 이름을 확인한다` };
+    parts.push(option.body);
+  }
+  return { body: parts.join("\n\n") };
+}
+
+/**
+ * 새 초안(원문)을 만든다(SPEC §9.4). 상태는 항상 draft, ai_assisted는 항상 true다.
+ * 번역본은 translate_post로 만든다.
+ */
+export function createDraft(root: string, input: DraftInput): WriteResult {
+  const body = draftBody(root, input);
+  if ("error" in body) return { ok: false, errors: [body.error] };
+  const front = {
+    title: input.title,
+    slug: input.slug,
+    description: input.description,
+    category: input.category,
+    tags: input.tags ?? [],
+    status: "draft",
+    lang: input.lang,
+    ai_assisted: true,
+    audience: input.audience,
+    search_intent: input.search_intent,
+    created_at: today(),
+    reviewed_at: null,
+    reviewed_by: null,
+    review_notes: null,
+    published_at: null,
+    updated_at: null,
+    disclosure: null,
+  };
+  return writeChecked(root, input.lang, input.slug, renderPost(front, body.body));
 }

@@ -8,7 +8,8 @@ import { McpServer } from "@modelcontextprotocol/server";
 import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
 import { z } from "astro/zod";
 import { LANGS } from "../src/i18n.ts";
-import { checkPost, listPosts } from "./tools.ts";
+import { categorySlugs } from "../src/data/categories.ts";
+import { checkPost, createDraft, listPosts, listTemplates, type WriteResult } from "./tools.ts";
 
 // 저장소 루트. 서버를 어디서 실행해도 이 저장소의 글을 다룬다.
 // BLOG_ROOT는 테스트가 임시 폴더의 글로 서버를 돌릴 때만 쓴다.
@@ -52,6 +53,44 @@ server.registerTool(
     if (!result) return { ...json({ error: `${lang} 글 ${slug}가 없다` }), isError: true };
     return json(result);
   },
+);
+
+/** 쓰기 도구의 결과. 거부되면 isError로 이유를 돌려준다. */
+const written = (result: WriteResult) => (result.ok ? json(result) : { ...json(result), isError: true });
+
+server.registerTool(
+  "list_templates",
+  {
+    title: "글 템플릿 목록",
+    description:
+      "글 템플릿(SPEC §5.7)과 각각 언제 쓰는지, 본문 뼈대를 돌려준다. kind가 base인 것 중 하나를 고르고, 필요하면 kind가 option인 선택 블록(트러블슈팅, 버그 해결)을 붙인다. 주제와 작성자 메모를 when과 비교해 템플릿을 제안하고, 작성자 확인을 받은 뒤 create_draft에 넘긴다.",
+    inputSchema: z.object({}),
+    annotations: { readOnlyHint: true },
+  },
+  async () => json(listTemplates(ROOT)),
+);
+
+server.registerTool(
+  "create_draft",
+  {
+    title: "초안 만들기",
+    description:
+      "새 원문 초안 파일을 만든다. status는 항상 draft, ai_assisted는 항상 true로 기록된다. body를 주면 그 본문을, 없으면 template(+options)의 뼈대를 넣는다. 경험이 필요한 자리는 [경험 추가 필요: …], 출처가 없는 사실은 [출처 확인 필요]로 남긴다. 같은 slug의 글이 있거나 규칙에 어긋나면 파일을 만들지 않고 이유를 돌려준다. 번역본은 translate_post로 만든다.",
+    inputSchema: z.object({
+      slug: z.string().describe("영문 소문자, 숫자, 하이픈. 파일명과 주소가 된다"),
+      lang: z.enum(LANGS).default("ko").describe("원문 언어"),
+      title: z.string().describe("본문과 일치하고 과장하지 않는 제목"),
+      description: z.string().describe("검색 결과와 OG에 쓰는 요약"),
+      category: z.enum(categorySlugs),
+      tags: z.array(z.string()).optional().describe("소문자"),
+      audience: z.string().describe("대상 독자"),
+      search_intent: z.string().describe("검색 의도 한 문장"),
+      body: z.string().optional().describe("작성한 본문(Markdown, frontmatter 제외)"),
+      template: z.string().optional().describe("기본 템플릿 이름 (list_templates의 name, kind: base)"),
+      options: z.array(z.string()).optional().describe("선택 블록 이름 (kind: option)"),
+    }),
+  },
+  async (input) => written(createDraft(ROOT, input)),
 );
 
 await server.connect(new StdioServerTransport());

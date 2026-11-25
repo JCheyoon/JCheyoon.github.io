@@ -3,7 +3,7 @@
 // 실행: npm run test:mcp
 import { after, before, describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,6 +12,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 
 const REPO = fileURLToPath(new URL("..", import.meta.url));
 const POSTS = "src/content/posts";
+const TEMPLATES = "src/content/templates";
 
 let root: string;
 let client: Client;
@@ -26,6 +27,7 @@ async function call(name: string, args: Record<string, unknown> = {}) {
 before(async () => {
   root = mkdtempSync(join(tmpdir(), "blog-mcp-test-"));
   cpSync(join(REPO, POSTS), join(root, POSTS), { recursive: true });
+  cpSync(join(REPO, TEMPLATES), join(root, TEMPLATES), { recursive: true });
 
   // 검사가 잡아야 하는 글: published인데 검수 기록과 발행일이 없고, 보완 표시가 남아 있다
   const bad = readFileSync(join(root, POSTS, "template-check.md"), "utf8")
@@ -93,4 +95,76 @@ describe("check_post", () => {
     assert.equal(isError, true);
     assert.match(data.error, /no-such-post/);
   });
+});
+
+describe("list_templates", () => {
+  test("기본 템플릿 4개와 선택 블록 2개를 언제 쓰는지와 함께 돌려준다", async () => {
+    const { data } = await call("list_templates");
+    const names = (kind: string) => data.filter((t: any) => t.kind === kind).map((t: any) => t.name).sort();
+    assert.deepEqual(names("base"), ["devlog", "implementation", "measurement", "summary"]);
+    assert.deepEqual(names("option"), ["bugfix", "troubleshooting"]);
+    assert.ok(data.every((t: any) => t.when.length > 0 && t.body.length > 0));
+  });
+});
+
+describe("create_draft", () => {
+  const draft = {
+    slug: "new-draft",
+    title: "새 초안",
+    description: "create_draft 테스트용 초안",
+    category: "etc",
+    audience: "테스트",
+    search_intent: "테스트",
+  };
+  const read = (path: string) => readFileSync(join(root, path), "utf8");
+
+  test("템플릿과 선택 블록으로 초안을 만들고, draft·ai_assisted를 강제한다", async () => {
+    // status를 넘겨도 입력 스키마에 없는 값이라 무시된다
+    const { isError, data } = await call("create_draft", { ...draft, template: "devlog", options: ["bugfix"], status: "published" });
+    assert.equal(isError, false, JSON.stringify(data));
+    assert.equal(data.path, `${POSTS}/new-draft.md`);
+    const text = read(data.path);
+    assert.match(text, /^status: draft$/m);
+    assert.match(text, /^ai_assisted: true$/m);
+    assert.match(text, /^lang: ko$/m);
+    assert.match(text, /^created_at: \d{4}-\d{2}-\d{2}$/m);
+    assert.match(text, /^reviewed_at:$/m);
+    assert.match(text, /## 막힌 점/);
+    assert.match(text, /## 버그 해결/);
+    const { data: check } = await call("check_post", { slug: "new-draft" });
+    assert.equal(check.ok, true, check.errors.join("\n"));
+  });
+
+  test("영어 원문은 posts/en/에 만든다", async () => {
+    const { data } = await call("create_draft", { ...draft, slug: "english-draft", lang: "en", body: "An English original." });
+    assert.equal(data.path, `${POSTS}/en/english-draft.md`);
+    assert.match(read(data.path), /^lang: en$/m);
+  });
+
+  const rejects = async (args: Record<string, unknown>, pattern: RegExp, path: string) => {
+    const { isError, data } = await call("create_draft", { ...draft, ...args });
+    assert.equal(isError, true);
+    assert.match(data.errors.join("\n"), pattern);
+    assert.equal(existsSync(join(root, path)), false, `${path}가 만들어지면 안 된다`);
+  };
+
+  test("같은 언어에 같은 slug가 있으면 거부한다", async () => {
+    const before = read(`${POSTS}/template-check.md`);
+    const { isError } = await call("create_draft", { ...draft, slug: "template-check", body: "덮어쓰기" });
+    assert.equal(isError, true);
+    assert.equal(read(`${POSTS}/template-check.md`), before);
+  });
+
+  test("반대 언어에 같은 slug의 원문이 있으면 거부한다(번역은 translate_post)", () =>
+    rejects({ slug: "template-check-en", body: "본문" }, /translated_from이 없다/, `${POSTS}/template-check-en.md`));
+
+  test("slug 형식이 틀리면 거부한다", () => rejects({ slug: "Bad_Slug", body: "본문" }, /slug/, `${POSTS}/Bad_Slug.md`));
+
+  test("없는 템플릿이나 선택 블록이면 거부한다", async () => {
+    await rejects({ slug: "t1", template: "nope" }, /기본 템플릿 nope/, `${POSTS}/t1.md`);
+    await rejects({ slug: "t2", template: "devlog", options: ["nope"] }, /선택 블록 nope/, `${POSTS}/t2.md`);
+    await rejects({ slug: "t3", template: "bugfix" }, /기본 템플릿 bugfix/, `${POSTS}/t3.md`);
+  });
+
+  test("본문도 템플릿도 없으면 거부한다", () => rejects({ slug: "t4" }, /body나 template/, `${POSTS}/t4.md`));
 });

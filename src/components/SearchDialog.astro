@@ -19,6 +19,10 @@ const t = ui[lang];
     <input
       data-search-input
       type="search"
+      role="combobox"
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-controls="search-results"
       placeholder={t.searchPlaceholder}
       aria-label={t.searchPlaceholder}
       autocomplete="off"
@@ -38,7 +42,11 @@ const t = ui[lang];
   >
     {t.searchEmpty}
   </p>
-  <ul data-search-results class="flex max-h-[60vh] flex-col gap-1 overflow-y-auto p-3 empty:hidden" role="listbox" aria-label={t.search}></ul>
+  {/*
+    결과 목록은 콤보박스 패턴(ARIA APG): 포커스는 입력창에 둔 채 화살표로 고르고,
+    고른 항목을 입력창의 aria-activedescendant로 화면 읽기 프로그램에 알린다
+  */}
+  <ul id="search-results" data-search-results class="flex max-h-[60vh] flex-col gap-1 overflow-y-auto p-3 empty:hidden" role="listbox" aria-label={t.search}></ul>
   <div class="hidden flex-wrap gap-4 border-t px-4 py-2.5 text-xs text-muted-foreground md:flex">
     <span>{t.searchKeys}</span>
   </div>
@@ -130,13 +138,22 @@ const t = ui[lang];
     if (items.length === 0) return;
     selected = (index + items.length) % items.length;
     items.forEach((a, i) => a.setAttribute("aria-selected", String(i === selected)));
+    input.setAttribute("aria-activedescendant", items[selected].id);
     items[selected].scrollIntoView({ block: "nearest" });
+  }
+
+  // 결과 목록을 바꿀 때마다 입력창의 콤보박스 상태(펼침, 고른 항목)를 맞춘다
+  function setResults(items: HTMLLIElement[]) {
+    list.replaceChildren(...items);
+    selected = -1;
+    input.removeAttribute("aria-activedescendant");
+    input.setAttribute("aria-expanded", String(items.length > 0));
   }
 
   async function search(query: string) {
     latest = query;
     if (!query.trim()) {
-      list.replaceChildren();
+      setResults([]);
       status.textContent = text.empty;
       status.hidden = false;
       return;
@@ -146,11 +163,14 @@ const t = ui[lang];
     if (!found || query !== latest) return; // 더 새 입력에 밀려 취소됐거나 그사이 입력이 바뀐 검색
     const results = await Promise.all(found.results.slice(0, 8).map((r) => r.data()));
     if (query !== latest) return;
-    list.replaceChildren(
-      ...results.map((r) => {
+    setResults(
+      results.map((r, i) => {
+        // listbox 안에는 option만 둔다. li는 목록 의미를 지운다
         const li = document.createElement("li");
+        li.setAttribute("role", "none");
         const a = document.createElement("a");
         a.href = r.url;
+        a.id = `search-option-${i}`;
         a.setAttribute("role", "option");
         a.className = "block rounded-xl px-4 py-3 hover:bg-background";
         const title = document.createElement("span");
@@ -166,7 +186,6 @@ const t = ui[lang];
     );
     status.textContent = text.none;
     status.hidden = results.length > 0;
-    selected = -1;
     if (results.length > 0) select(0);
   }
 

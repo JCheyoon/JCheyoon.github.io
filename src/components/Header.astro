@@ -88,8 +88,9 @@ const isActive = (href: string) => (href === home ? isListPage(path, lang) : pat
           <button
             type="button"
             data-search-open
-            aria-label={`${t.search} (⌘K)`}
-            title={`${t.search} ⌘K`}
+            aria-label={t.search}
+            aria-keyshortcuts="Meta+K Control+K"
+            title={t.search}
             class="hidden h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition hover:bg-[var(--toc-hover)] hover:text-foreground max-md:!hidden"
           >
             <Icon name="search" class="h-5 w-5" />
@@ -126,5 +127,7 @@ const isActive = (href: string) => (href === home ? isListPage(path, lang) : pat
     last = y;
   };
   addEventListener("scroll", update, { passive: true });
+  // 숨은 헤더 안으로 키보드 포커스가 들어오면 화면 밖에 포커스가 머물지 않게 다시 보인다
+  header?.addEventListener("focusin", () => header.removeAttribute("data-hidden"));
   update();
 </script>

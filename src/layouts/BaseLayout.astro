@@ -32,9 +32,10 @@ const { sidebar = true, alternate, mobileBack, listFilters = false, ...seo } = A
 const lang = seo.lang ?? "ko";
 const switchHref = alternate === null ? undefined : (alternate ?? localizePath(otherLang(lang), "/"));
 const t = ui[lang];
-const posts = sidebar || listFilters ? await getVisiblePosts(lang) : [];
+const visiblePosts = await getVisiblePosts(lang);
+const posts = sidebar || listFilters ? visiblePosts : [];
 // 검색 색인은 공개 글이 있을 때만 만들어진다(scripts/build-search.mjs). 글이 없으면 검색 버튼·탭·창을 아예 그리지 않는다
-const searchable = (await getVisiblePosts(lang)).length > 0;
+const searchable = visiblePosts.length > 0;
 ---
 
 <!doctype html>
@@ -59,7 +60,8 @@ const searchable = (await getVisiblePosts(lang)).length > 0;
       })();
     </script>
   </head>
-  <body class="min-h-screen">
+  <body class="min-h-screen pb-[calc(4rem+env(safe-area-inset-bottom,0px))] md:pb-0">
+    {/* body 아래 여백: 768px 미만은 하단 탭 바(h-16 + 아래 안전 영역)가 푸터를 가리지 않게 페이지 맨 아래에 그만큼 둔다 */}
     <a
       href="#main"
       class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-20 focus:rounded focus:bg-card focus:px-3 focus:py-2"
@@ -68,8 +70,7 @@ const searchable = (await getVisiblePosts(lang)).length > 0;
     <Header lang={lang} switchHref={switchHref} mobileBack={mobileBack} searchable={searchable} />
     <div
       class:list={[
-        // 768px 미만은 하단 탭 바(h-16)만큼 아래 여백을 더 둔다
-        "mx-auto max-w-[1200px] px-4 pt-6 pb-24 md:px-6 md:pb-6",
+        "mx-auto max-w-[1200px] px-4 py-6 md:px-6",
         sidebar && "grid gap-6 md:grid-cols-[17rem_minmax(0,1fr)]",
       ]}
     >

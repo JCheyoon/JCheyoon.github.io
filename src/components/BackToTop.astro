@@ -24,8 +24,8 @@ const { lang, variant } = Astro.props;
     variant === "rail" && "h-14 w-14 bg-card text-accent-bar hover:bg-muted",
     // 떠 있는 버튼은 흰 본문 카드 위에 겹치므로 로고 색으로 채워 눈에 띄게 한다
     variant === "floating" &&
-      // 768px 미만은 하단 탭 바 위로 올린다
-      "fixed right-4 bottom-20 z-10 h-12 w-12 bg-logo text-on-logo shadow-lg ring-2 ring-card hover:opacity-90 md:bottom-4 min-[1424px]:hidden",
+      // 768px 미만은 하단 탭 바(아래 안전 영역 포함) 위로 올린다
+      "fixed right-4 bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] z-10 h-12 w-12 bg-logo text-on-logo shadow-lg ring-2 ring-card hover:opacity-90 md:bottom-4 min-[1424px]:hidden",
   ]}
 >
   <Icon name="arrow-up" class="h-6 w-6" />

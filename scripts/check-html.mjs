@@ -129,6 +129,11 @@ for (const file of htmlFiles) {
     const article = html.match(/<article\b[\s\S]*<\/article>/)?.[0] ?? "";
     if (stripTags(article).length < MIN_ARTICLE_TEXT) fail(route, `본문 텍스트가 ${MIN_ARTICLE_TEXT}자 미만이다`);
     if (!DRAFTS_MODE && noindex) fail(route, "배포 빌드의 글 페이지에 noindex가 있다");
+    // og:image(D12)가 빌드 결과물에 실제로 있어야 공유 미리보기가 보인다
+    const ogImage = meta(html, "property", "og:image");
+    if (ogImage && new URL(ogImage).origin === origin && !existsSync(join(DIR, decodeURI(new URL(ogImage).pathname)))) {
+      fail(route, `og:image 파일이 빌드 결과물에 없다(${new URL(ogImage).pathname})`);
+    }
   }
 }
 

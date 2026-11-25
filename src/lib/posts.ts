@@ -22,6 +22,16 @@ export function postUrl(post: Post): string {
   return localizePath(post.data.lang, `/post/${post.data.slug}/`);
 }
 
+/** 자동 생성 OG 이미지의 경로 부분(D12). 한국어 `<slug>`, 영어 `en/<slug>` → /og/<경로>.png */
+export function ogImagePath(post: Post): string {
+  return post.data.lang === "en" ? `en/${post.data.slug}` : post.data.slug;
+}
+
+/** 글의 OG 이미지 주소. cover가 있으면 cover, 없으면 빌드가 만든 /og/….png */
+export function ogImageUrl(post: Post): string {
+  return post.data.cover ? post.data.cover.src.src : `/og/${ogImagePath(post)}.png`;
+}
+
 /** 공개 대상 글 중 한 언어의 글을 최신순으로 돌려준다. 언어별 사이트는 자기 언어 글만 보여 준다(D11). */
 export async function getVisiblePosts(lang: Lang = "ko"): Promise<Post[]> {
   const posts = await getCollection(

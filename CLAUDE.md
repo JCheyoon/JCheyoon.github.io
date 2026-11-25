@@ -81,6 +81,7 @@
 - `src/i18n.ts`: 언어 목록, 언어별 화면 문구, `localizePath`(주소에 `/en` 붙이기)
 - `src/layouts/`, `src/components/`: 레이아웃과 `.astro` 컴포넌트
 - `src/lib/posts.ts`: 글 조회(`getVisiblePosts`)와 주소·날짜 헬퍼
+- `src/lib/og.ts`, `src/pages/og/[...path].png.ts`: cover가 없는 글의 OG 이미지(D12)를 빌드 때 만든다. 폰트는 `src/assets/fonts/`(Pretendard, OFL)
 - `src/lib/markdown.ts`: 본문 Markdown 플러그인(안내 상자 `> [!NOTE]`, 제목 앵커). Astro 기본 처리기 Sätteri의 플러그인 API를 쓴다. 코드 블록은 `astro-expressive-code`(설정은 `astro.config.mjs`)
 - `src/site.config.ts`, `src/data/`: 사이트 정보, 카테고리, 제휴 도메인(단일 소스)
 - `scripts/`: `check-content.ts`(규칙은 `src/lib/content-rules.ts`), `check-html.mjs`

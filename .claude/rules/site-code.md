@@ -31,7 +31,7 @@ Phase 1에서 만든 코드를 기준으로 정리했다(2026-11-23). 레거시 
 ## 마크업과 스타일
 - 기본은 JS 없는 정적 HTML이다. `client:*` 아일랜드는 SPEC §8에 적힌 것만 쓴다.
 - 링크는 `<a href>`이고, 주소는 끝 슬래시를 붙인다(D5).
-- 스타일은 Tailwind 유틸리티와 `src/styles/global.css`의 토큰(`bg-card`, `text-muted-foreground`, `bg-accent-bar` 등)을 쓴다. 색을 하드코딩하지 않는다. 로고의 청록색(#5f9e9f)만 예외다.
+- 스타일은 Tailwind 유틸리티와 `src/styles/global.css`의 토큰(`bg-card`, `text-muted-foreground`, `bg-accent-bar` 등)을 쓴다. 색을 하드코딩하지 않는다. 로고의 청록색(#5f9e9f)과, CSS 변수를 쓸 수 없는 OG 이미지(`src/lib/og.ts`, 토큰 값을 옮겨 적고 토큰 이름을 주석으로 단다)만 예외다.
 - 본문은 `prose prose-slate dark:prose-invert`로 감싼다. 글 본문에는 `post-body`를 더해 SPEC §6.1 스타일을 입힌다(`global.css`).
 - 컴포넌트 Props는 `interface Props`로 선언한다. 다른 파일에서 쓸 때만 `export`한다.
 

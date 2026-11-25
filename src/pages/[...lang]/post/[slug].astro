@@ -9,7 +9,7 @@ import Icon from "../../../components/Icon.astro";
 import Toc from "../../../components/Toc.astro";
 import { site } from "../../../site.config";
 import { categoryName, categoryUrl, getCategory } from "../../../data/categories";
-import { formatDate, getVisiblePosts, isoDate, postDate, postUrl, tagUrl, type Post } from "../../../lib/posts";
+import { formatDate, getVisiblePosts, isoDate, ogImageUrl, postDate, postUrl, tagUrl, type Post } from "../../../lib/posts";
 import { langPaths, localizePath, otherLang, ui } from "../../../i18n";
 
 export const getStaticPaths = (async () => {
@@ -50,7 +50,7 @@ const category = getCategory(data.category);
 const published = postDate(post);
 const isDraft = data.status !== "published";
 const pageUrl = new URL(postUrl(post), site.url).href;
-const ogImage = data.cover ? data.cover.src.src : site.defaultOgImage;
+const ogImage = ogImageUrl(post);
 
 const jsonLd = [
   {

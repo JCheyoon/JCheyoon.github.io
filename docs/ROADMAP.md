@@ -95,11 +95,11 @@
 
 ### 2a. 사이트 번역 구조 (한국어 ↔ 영어, 2~3일)
 
-- [ ] frontmatter `lang`, `translated_from` 필드와 검증 (SPEC §5.1, §9.2)
-- [ ] 영어 사이트 (D11): `/en/`, `/en/page/[n]/`, `/en/post/[slug]/`, `/en/category/[slug]/`, `/en/about/`, `/en/rss.xml`
-- [ ] 영어 화면 문구(메뉴, 날짜 형식 등), hreflang, sitemap 대체 언어
-- [ ] 헤더 오른쪽 언어 전환 링크: 글은 번역본이 있을 때만, 나머지는 항상 같은 페이지로
-- [ ] 원문이 바뀌면 번역본을 재검수 대상으로 표시하는 빌드 경고
+- [x] frontmatter `lang`, `translated_from` 필드와 검증 (SPEC §5.1, §9.2)
+- [x] 영어 사이트 (D11): `/en/`, `/en/page/[n]/`, `/en/post/[slug]/`, `/en/category/[slug]/`, `/en/about/`, `/en/rss.xml`
+- [x] 영어 화면 문구(메뉴, 날짜 형식 등), hreflang, sitemap 대체 언어
+- [x] 헤더 오른쪽 언어 전환 링크: 글은 번역본이 있을 때만, 나머지는 항상 같은 페이지로
+- [x] 원문이 바뀌면 번역본을 재검수 대상으로 표시하는 빌드 경고
 
 완료 기준: 샘플 글(한국어 원문, 영어 원문, 번역본)로 템플릿 검증 빌드가 통과하고, hreflang과 전환 링크가 HTML에 들어간다.
 

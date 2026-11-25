@@ -20,6 +20,7 @@ const warnings = [];
 const slugs = new Map(); // "<lang>/<slug>" → 파일 경로
 const translations = []; // 번역본: 원문이 있는지는 모든 글을 읽은 뒤 확인한다
 const translatedKeys = new Map(); // "<lang>/<slug>" → 번역본인지
+const frontByKey = new Map(); // "<lang>/<slug>" → frontmatter (원문·번역본 날짜 비교용)
 
 function isAffiliate(url) {
   try {
@@ -71,9 +72,10 @@ for (const { dirLang, dir, file } of files) {
   // 번역본은 반대 언어 폴더에 같은 slug의 원문이 있어야 한다
   if (data.translated_from) translations.push({ where, slug: data.slug, from: data.translated_from });
   translatedKeys.set(key, Boolean(data.translated_from));
+  frontByKey.set(key, data);
 
-  // 템플릿 검증용 샘플은 절대 발행하지 않는다
-  if (name === TEMPLATE_FIXTURE && data.status !== "draft") {
+  // 템플릿 검증용 샘플(template-check로 시작하는 파일)은 절대 발행하지 않는다
+  if (name.startsWith(TEMPLATE_FIXTURE) && data.status !== "draft") {
     errors.push(`${where}: 템플릿 검증용 샘플은 status: draft로 둔다`);
   }
 
@@ -98,7 +100,20 @@ for (const { dirLang, dir, file } of files) {
 }
 
 for (const { where, slug, from } of translations) {
-  if (!slugs.has(`${from}/${slug}`)) errors.push(`${where}: 원문(${from}, slug ${slug})이 없다`);
+  if (!slugs.has(`${from}/${slug}`)) {
+    errors.push(`${where}: 원문(${from}, slug ${slug})이 없다`);
+    continue;
+  }
+  // 검수를 마친 번역본인데 그 뒤에 원문이 고쳐졌으면 재검수 대상이다(SPEC §9.2). 발행은 막지 않고 경고만 낸다.
+  const original = frontByKey.get(`${from}/${slug}`);
+  const translation = frontByKey.get(`${from === "ko" ? "en" : "ko"}/${slug}`);
+  const updated = original.updated_at ? new Date(original.updated_at) : undefined;
+  const reviewed = translation.reviewed_at ? new Date(translation.reviewed_at) : undefined;
+  if (updated && reviewed && updated > reviewed) {
+    warnings.push(
+      `${where}: 원문이 번역 검수 뒤에 고쳐졌다(원문 updated_at ${original.updated_at} > 번역본 reviewed_at ${translation.reviewed_at}). 번역본을 원문에 맞춰 고치고 다시 검수한다`,
+    );
+  }
 }
 
 // 두 언어에 같은 slug가 있으면 원문·번역본 짝이어야 한다. 사이트는 같은 slug를 짝으로 보고 서로 연결한다.

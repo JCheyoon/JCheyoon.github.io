@@ -85,7 +85,8 @@
 - `public/`: 파비콘, 매니페스트
 
 ### 주의
-- `src/content/posts/template-check.md`는 템플릿 검증용 샘플이다. 항상 `status: draft`로 둔다(check-content가 확인한다).
+- `template-check`로 시작하는 글은 템플릿 검증용 샘플이다. 항상 `status: draft`로 둔다(check-content가 확인한다).
+  - `posts/template-check.md`(한국어 원문), `posts/en/template-check.md`(그 영어 번역본), `posts/en/template-check-en.md`(영어 원문, 번역본 없음)
 - 주소는 끝 슬래시를 붙인다(D5): `/post/slug/`.
 - 코드 규칙: `.claude/rules/site-code.md`, `.claude/rules/rendering-seo.md`
 

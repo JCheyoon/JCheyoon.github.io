@@ -31,7 +31,7 @@ const groups = [...Map.groupBy(posts, (p) => yearOf(postDate(p)))].sort(([a], [b
       groups.map(([year, list]) => (
         <div>
           <div class="flex h-15 items-center">
-            <p class="w-[18%] text-right text-2xl font-bold md:w-[12%]">{year}</p>
+            <h2 class="w-[18%] text-right text-2xl font-bold md:w-[12%]">{year}</h2>
             <div class="flex w-[12%] justify-center md:w-[8%]">
               <span class="h-3 w-3 rounded-full border-[3px] border-accent-bar" aria-hidden="true" />
             </div>

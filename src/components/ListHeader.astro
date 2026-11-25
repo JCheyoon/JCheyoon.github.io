@@ -1,20 +1,27 @@
 ---
-// 목록 페이지(홈, n페이지, 카테고리) 맨 위의 제목 카드.
-// 모든 목록 페이지가 같은 높이의 카드로 시작해야 페이지를 옮겨도 사이드바와 윗선이 맞는다.
+// 목록 페이지(홈, n페이지, 카테고리, 태그) 맨 위의 제목.
+// - 768px 이상: 제목 카드(제목 + 글 수). 페이지를 옮겨도 사이드바와 윗선이 맞도록 모든 목록이 같은 카드로 시작한다
+// - 768px 미만: 위 필터 버튼이 지금 보는 목록을 이미 보여 주므로 카드는 숨기고 "글 12편 · 2페이지" 한 줄만 보인다.
+//   제목(h1)은 화면에서만 숨기고 화면 읽기 프로그램과 검색 엔진에는 남긴다
 import { ui, type Lang } from "../i18n";
 
 interface Props {
   title: string;
   count: number;
   lang: Lang;
+  /** 몇 번째 페이지인지(모바일 한 줄에 보인다) */
+  page?: number;
 }
 
-const { title, count, lang } = Astro.props;
+const { title, count, lang, page = 1 } = Astro.props;
+const t = ui[lang];
 ---
 
-<header class="mb-6 flex items-center justify-between gap-4 rounded-2xl border bg-card px-6 py-5">
-  <div>
-    <h1 class="text-lg font-bold leading-7">{title}</h1>
-  </div>
-  <p class="shrink-0 text-sm text-muted-foreground">{ui[lang].postCount(count)}</p>
+<header class="mb-5 md:mb-6 md:flex md:items-center md:justify-between md:gap-4 md:rounded-2xl md:border md:bg-card md:px-6 md:py-5">
+  <h1 class="text-lg leading-7 font-bold max-md:sr-only">{title}</h1>
+  {/* 데스크톱: 카드 오른쪽 "글 12편". 모바일: 필터 버튼 바로 아래, 버튼 안 아이콘과 같은 왼쪽 선(16px)에 "글 12편 · 2페이지" */}
+  <p class="hidden shrink-0 text-sm text-muted-foreground md:block">{t.postCount(count)}</p>
+  <p class="px-4 text-xs text-muted-foreground md:hidden">
+    {t.postCountParts(count)[0]}<strong class="font-semibold text-foreground">{count}</strong>{t.postCountParts(count)[1]}{t.pageSuffix(page)}
+  </p>
 </header>

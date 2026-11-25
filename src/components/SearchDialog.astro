@@ -1,0 +1,211 @@
+---
+// 검색 창(SPEC §6.3, D16). 헤더 검색 버튼(데스크톱), 하단 탭의 검색(모바일), ⌘K/Ctrl+K로 연다.
+// 색인은 빌드 뒤 Pagefind가 만든다(/pagefind/). 지금 페이지 언어(<html lang>)의 글만 찾는다.
+// 스크립트와 색인은 창을 처음 열 때만 불러온다. 스크립트가 없으면 여는 버튼들을 숨긴다(.js에서만 보임).
+import Icon from "./Icon.astro";
+import { ui, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+---
+
+<dialog data-search aria-label={t.search} class="search-dialog">
+  <div class="flex items-center gap-3 border-b px-4 py-3 text-muted-foreground">
+    <Icon name="search" class="h-5 w-5 flex-none" />
+    <input
+      data-search-input
+      type="search"
+      role="combobox"
+      aria-autocomplete="list"
+      aria-expanded="false"
+      aria-controls="search-results"
+      placeholder={t.searchPlaceholder}
+      aria-label={t.searchPlaceholder}
+      autocomplete="off"
+      class="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
+    />
+    <button type="button" data-search-close class="rounded-lg px-2 py-1 text-sm hover:bg-background">
+      <span class="md:hidden">{t.cancel}</span>
+      <kbd class="hidden rounded-md border px-1.5 py-0.5 font-mono text-xs md:inline">Esc</kbd>
+    </button>
+  </div>
+  <p
+    data-search-status
+    data-none={t.searchNone}
+    data-failed={t.searchFailed}
+    class="px-5 py-6 text-center text-sm text-muted-foreground"
+    aria-live="polite"
+  >
+    {t.searchEmpty}
+  </p>
+  {/*
+    결과 목록은 콤보박스 패턴(ARIA APG): 포커스는 입력창에 둔 채 화살표로 고르고,
+    고른 항목을 입력창의 aria-activedescendant로 화면 읽기 프로그램에 알린다
+  */}
+  <ul id="search-results" data-search-results class="flex max-h-[60vh] flex-col gap-1 overflow-y-auto p-3 empty:hidden" role="listbox" aria-label={t.search}></ul>
+  <div class="hidden flex-wrap gap-4 border-t px-4 py-2.5 text-xs text-muted-foreground md:flex">
+    <span>{t.searchKeys}</span>
+  </div>
+</dialog>
+
+<style>
+  .search-dialog {
+    width: min(36rem, calc(100% - 2rem));
+    max-height: min(36rem, calc(100% - 6rem));
+    margin: 4.5rem auto auto;
+    padding: 0;
+    border: 0;
+    border-radius: 1rem;
+    background: var(--card);
+    color: var(--foreground);
+    box-shadow: 0 20px 50px var(--scrim);
+  }
+  .search-dialog::backdrop {
+    background: var(--scrim, oklch(0 0 0 / 45%));
+  }
+  /* 모바일: 화면 전체가 검색 창 */
+  @media (max-width: 767.98px) {
+    .search-dialog {
+      width: 100%;
+      max-width: none;
+      height: 100%;
+      max-height: none;
+      margin: 0;
+      border-radius: 0;
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+  }
+  :global(.js) :global([data-search-open]) {
+    display: flex;
+  }
+  .search-dialog :global(mark) {
+    border-radius: 0.2rem;
+    background: var(--toc-active);
+    color: inherit;
+    padding: 0 0.1rem;
+  }
+  .search-dialog :global([aria-selected="true"]) {
+    background: var(--background);
+  }
+</style>
+
+<script>
+  type Result = { url: string; meta: { title?: string }; excerpt: string };
+  type Pagefind = { debouncedSearch: (q: string) => Promise<{ results: { data: () => Promise<Result> }[] } | null> };
+
+  const dialog = document.querySelector<HTMLDialogElement>("[data-search]")!;
+  const input = dialog.querySelector<HTMLInputElement>("[data-search-input]")!;
+  const list = dialog.querySelector<HTMLUListElement>("[data-search-results]")!;
+  const status = dialog.querySelector<HTMLParagraphElement>("[data-search-status]")!;
+  const text = {
+    empty: status.textContent?.trim() ?? "",
+    none: status.dataset.none ?? "",
+    failed: status.dataset.failed ?? "",
+  };
+  let pagefind: Pagefind | undefined;
+  let selected = -1;
+  // 마지막으로 보낸 검색어. 늦게 끝난 이전 검색 결과가 지금 입력을 덮지 않게 한다
+  let latest = "";
+
+  async function load(): Promise<Pagefind | undefined> {
+    if (pagefind) return pagefind;
+    try {
+      // 빌드 결과물에만 있는 파일이라 번들에 넣지 않는다
+      const path = "/pagefind/pagefind.js";
+      pagefind = (await import(/* @vite-ignore */ path)) as Pagefind;
+    } catch {
+      // 개발 서버에는 색인이 없다(빌드 결과물에만 있다). 고장으로 오해하지 않게 개발 중에는 확인 방법을 알려 준다
+      status.textContent = import.meta.env.DEV
+        ? "개발 서버에는 검색 색인이 없습니다. npm run build:drafts 후 INCLUDE_DRAFTS=true npx astro preview로 확인하세요."
+        : text.failed;
+    }
+    return pagefind;
+  }
+
+  function open() {
+    if (!dialog.open) dialog.showModal();
+    input.focus();
+    input.select();
+    load();
+  }
+
+  function select(index: number) {
+    const items = [...list.querySelectorAll<HTMLAnchorElement>("a")];
+    if (items.length === 0) return;
+    selected = (index + items.length) % items.length;
+    items.forEach((a, i) => a.setAttribute("aria-selected", String(i === selected)));
+    input.setAttribute("aria-activedescendant", items[selected].id);
+    items[selected].scrollIntoView({ block: "nearest" });
+  }
+
+  // 결과 목록을 바꿀 때마다 입력창의 콤보박스 상태(펼침, 고른 항목)를 맞춘다
+  function setResults(items: HTMLLIElement[]) {
+    list.replaceChildren(...items);
+    selected = -1;
+    input.removeAttribute("aria-activedescendant");
+    input.setAttribute("aria-expanded", String(items.length > 0));
+  }
+
+  async function search(query: string) {
+    latest = query;
+    if (!query.trim()) {
+      setResults([]);
+      status.textContent = text.empty;
+      status.hidden = false;
+      return;
+    }
+    const pf = await load();
+    const found = await pf?.debouncedSearch(query);
+    if (!found || query !== latest) return; // 더 새 입력에 밀려 취소됐거나 그사이 입력이 바뀐 검색
+    const results = await Promise.all(found.results.slice(0, 8).map((r) => r.data()));
+    if (query !== latest) return;
+    setResults(
+      results.map((r, i) => {
+        // listbox 안에는 option만 둔다. li는 목록 의미를 지운다
+        const li = document.createElement("li");
+        li.setAttribute("role", "none");
+        const a = document.createElement("a");
+        a.href = r.url;
+        a.id = `search-option-${i}`;
+        a.setAttribute("role", "option");
+        a.className = "block rounded-xl px-4 py-3 hover:bg-background";
+        const title = document.createElement("span");
+        title.className = "block text-sm font-semibold";
+        title.textContent = r.meta.title ?? r.url;
+        const excerpt = document.createElement("span");
+        excerpt.className = "mt-1 block text-xs leading-relaxed text-muted-foreground";
+        excerpt.innerHTML = r.excerpt; // Pagefind가 본문을 이스케이프하고 <mark>만 넣는다
+        a.append(title, excerpt);
+        li.append(a);
+        return li;
+      }),
+    );
+    status.textContent = text.none;
+    status.hidden = results.length > 0;
+    if (results.length > 0) select(0);
+  }
+
+  input.addEventListener("input", () => search(input.value));
+  input.addEventListener("keydown", (e) => {
+    // 한글 입력 중(조합 중)의 Enter·화살표는 글자를 확정하는 키라 결과를 열지 않는다
+    if (e.isComposing || e.keyCode === 229) return;
+    if (e.key === "ArrowDown") (e.preventDefault(), select(selected + 1));
+    if (e.key === "ArrowUp") (e.preventDefault(), select(selected - 1));
+    if (e.key === "Enter") list.querySelectorAll<HTMLAnchorElement>("a")[selected]?.click();
+  });
+  dialog.querySelector("[data-search-close]")?.addEventListener("click", () => dialog.close());
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+  document.querySelectorAll("[data-search-open]").forEach((b) => b.addEventListener("click", open));
+  addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      open();
+    }
+  });
+</script>

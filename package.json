@@ -7,14 +7,14 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/build-search.mjs dist",
     "preview": "astro preview",
     "check": "astro check",
     "check:content": "node scripts/check-content.ts",
     "check:html": "node scripts/check-html.mjs",
     "test:mcp": "node --test mcp/server.test.ts",
     "verify": "npm run check:content && npm run test:mcp && npm run check && npm run build:drafts && node scripts/check-html.mjs dist-drafts --drafts && npm run build && node scripts/check-html.mjs dist",
-    "build:drafts": "INCLUDE_DRAFTS=true astro build"
+    "build:drafts": "INCLUDE_DRAFTS=true astro build && node scripts/build-search.mjs dist-drafts"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "0.4.10",
@@ -23,16 +23,19 @@
     "@expressive-code/plugin-collapsible-sections": "0.44.3",
     "@expressive-code/plugin-line-numbers": "0.44.3",
     "@modelcontextprotocol/server": "2.4.0",
+    "@resvg/resvg-js": "2.6.2",
     "@tailwindcss/typography": "0.5.20",
     "@tailwindcss/vite": "4.3.5",
     "astro": "7.4.13",
     "astro-expressive-code": "0.44.3",
+    "satori": "0.63.2",
     "satteri": "0.11.7",
     "tailwindcss": "4.3.5"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
     "@modelcontextprotocol/client": "2.4.0",
+    "pagefind": "1.6.0",
     "typescript": "5.9.3",
     "yaml": "2.9.1"
   }

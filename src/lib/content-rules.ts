@@ -39,7 +39,10 @@ export function postSchema<Src extends z.ZodType>(coverSrc: Src) {
       description: z.string().min(1),
       category: z.enum(categorySlugs),
       // 태그는 주소(/tag/<tag>/)가 되고 번역본도 같은 태그를 쓴다(D13)
-      tags: z.array(z.string().regex(SLUG_PATTERN, "태그는 영문 소문자, 숫자, 하이픈만 쓴다(D13)")).default([]),
+      tags: z
+        .array(z.string().regex(SLUG_PATTERN, "태그는 영문 소문자, 숫자, 하이픈만 쓴다(D13)"))
+        .refine((tags) => new Set(tags).size === tags.length, "같은 태그를 두 번 쓰지 않는다")
+        .default([]),
       status: z.enum(["draft", "reviewed", "published"]),
       lang: z.enum(LANGS).default("ko"),
       translated_from: z.enum(LANGS).optional(),

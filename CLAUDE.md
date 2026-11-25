@@ -70,7 +70,8 @@
 ### 명령
 - `npm run dev`: 개발 서버. draft 글도 보인다.
 - `npm run verify`: 콘텐츠 검사 → `astro check` → 템플릿 검증 빌드(`dist-drafts/`) → 배포 빌드(`dist/`) → HTML 검사. 자세한 내용은 `verify-site` 스킬.
-- `npm run build` / `npm run preview`: 배포 빌드와 미리보기. published 글만 들어간다.
+- `npm run build` / `npm run preview`: 배포 빌드와 미리보기. published 글만 들어간다. 빌드 뒤 검색 색인(Pagefind)을 만든다.
+- 검색은 개발 서버에서 동작하지 않는다(색인은 빌드 결과물에만 있다). 확인: `npm run build:drafts` 뒤 `INCLUDE_DRAFTS=true npx astro preview`
 - 로컬에서는 `ASTRO_TELEMETRY_DISABLED=1`을 붙여 사용 통계 전송을 끈다(CI에는 설정되어 있다).
 
 ### 디렉터리
@@ -81,6 +82,7 @@
 - `src/i18n.ts`: 언어 목록, 언어별 화면 문구, `localizePath`(주소에 `/en` 붙이기)
 - `src/layouts/`, `src/components/`: 레이아웃과 `.astro` 컴포넌트
 - `src/lib/posts.ts`: 글 조회(`getVisiblePosts`)와 주소·날짜 헬퍼
+- `src/lib/og.ts`, `src/pages/og/[...path].png.ts`: cover가 없는 글의 OG 이미지(D12)를 빌드 때 만든다. 폰트는 `src/assets/fonts/`(Pretendard, OFL)
 - `src/lib/markdown.ts`: 본문 Markdown 플러그인(안내 상자 `> [!NOTE]`, 제목 앵커). Astro 기본 처리기 Sätteri의 플러그인 API를 쓴다. 코드 블록은 `astro-expressive-code`(설정은 `astro.config.mjs`)
 - `src/site.config.ts`, `src/data/`: 사이트 정보, 카테고리, 제휴 도메인(단일 소스)
 - `scripts/`: `check-content.ts`(규칙은 `src/lib/content-rules.ts`), `check-html.mjs`

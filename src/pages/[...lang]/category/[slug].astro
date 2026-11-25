@@ -1,57 +1,23 @@
 ---
-// 카테고리 글 목록(SPEC §4). 글이 있는 카테고리만 페이지를 만든다(빈 페이지는 색인 가치가 없다).
-// 언어마다 그 언어의 글로 따로 센다. 영어 글이 없는 카테고리는 /en/category/에 페이지가 없다.
+// 카테고리 글 목록 1페이지(SPEC §4). 글이 있는 카테고리만 만든다(빈 페이지는 색인 가치가 없다).
+// 언어마다 그 언어의 글로 따로 센다. 2페이지부터는 [slug]/page/[page].astro
 import type { GetStaticPaths } from "astro";
-import BaseLayout from "../../../layouts/BaseLayout.astro";
-import ListHeader from "../../../components/ListHeader.astro";
-import PostList from "../../../components/PostList.astro";
+import FilteredListPage from "../../../components/FilteredListPage.astro";
 import { site } from "../../../site.config";
-import { categories, categoryName, categoryUrl } from "../../../data/categories";
-import { filterByCategory, getVisiblePosts } from "../../../lib/posts";
-import { langPaths, localizePath, otherLang, ui } from "../../../i18n";
+import { categoryPages } from "../../../lib/list-pages";
+import { ui } from "../../../i18n";
 
-export const getStaticPaths = (async () => {
-  const perLang = await Promise.all(
-    langPaths.map(async ({ params, props: { lang } }) => {
-      const posts = await getVisiblePosts(lang);
-      // 다른 언어에도 이 카테고리 글이 있으면 그 카테고리 페이지가 짝이다
-      const other = otherLang(lang);
-      const otherPosts = await getVisiblePosts(other);
-      return categories
-        .map((category) => ({ category, posts: filterByCategory(posts, category.slug) }))
-        .filter(({ posts }) => posts.length > 0)
-        .map(({ category, posts }) => ({
-          params: { ...params, slug: category.slug },
-          props: {
-            lang,
-            name: categoryName(category, lang),
-            posts,
-            alternate: filterByCategory(otherPosts, category.slug).length > 0 ? categoryUrl(category.slug, other) : undefined,
-          },
-        }));
-    }),
-  );
-  return perLang.flat();
-}) satisfies GetStaticPaths;
+export const getStaticPaths = (async () => (await categoryPages()).filter((p) => p.props.page === 1)) satisfies GetStaticPaths;
 
-const { lang, name, posts, alternate } = Astro.props;
-const breadcrumb = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: site.name, item: new URL(localizePath(lang, "/"), site.url).href },
-    { "@type": "ListItem", position: 2, name, item: new URL(Astro.url.pathname, site.url).href },
-  ],
-};
+const { lang, name, posts, page, base, alternate } = Astro.props;
 ---
 
-<BaseLayout
-  title={name}
-  description={ui[lang].categoryDescription(site.name, name, posts.length)}
-  jsonLd={[breadcrumb]}
+<FilteredListPage
   lang={lang}
+  name={name}
+  description={ui[lang].categoryDescription(site.name, name, posts.length)}
+  posts={posts}
+  page={page}
+  base={base}
   alternate={alternate}
->
-  <ListHeader title={name} count={posts.length} lang={lang} />
-  <PostList posts={posts} lang={lang} />
-</BaseLayout>
+/>

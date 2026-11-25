@@ -15,7 +15,8 @@ const { lang } = Astro.props;
   type="button"
   data-theme-toggle
   aria-label={ui[lang].themeToggle}
-  class="theme-toggle hidden h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-background hover:text-foreground"
+  aria-pressed="false"
+  class="theme-toggle hidden h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition hover:bg-[var(--toc-hover)] hover:text-foreground"
 >
   {/* 아이콘은 하나만 보인다. 지금 라이트면 달(누르면 다크), 다크면 해(누르면 라이트) */}
   <span class="theme-icon-moon"><Icon name="moon" class="h-5 w-5" /></span>
@@ -45,11 +46,18 @@ const { lang } = Astro.props;
 
 <script>
   const root = document.documentElement;
-  for (const button of document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]")) {
+  const dark = matchMedia("(prefers-color-scheme: dark)");
+  const current = () => root.dataset.theme ?? (dark.matches ? "dark" : "light");
+  const buttons = document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]");
+  // 보조 기술에 지금 테마를 알린다(다크면 눌린 상태)
+  const sync = () => buttons.forEach((b) => b.setAttribute("aria-pressed", String(current() === "dark")));
+  dark.addEventListener("change", sync);
+  sync();
+  for (const button of buttons) {
     button.addEventListener("click", () => {
-      const current = root.dataset.theme ?? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-      const next = current === "dark" ? "light" : "dark";
+      const next = current() === "dark" ? "light" : "dark";
       root.dataset.theme = next;
+      sync();
       try {
         localStorage.setItem("theme", next);
       } catch {}

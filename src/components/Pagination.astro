@@ -4,18 +4,20 @@
 // - 모바일: ‹ 4 / 8 › 한 줄
 // 이전·다음은 갈 곳이 없어도 자리를 지킨다(번호 위치가 흔들리지 않게). 그때는 링크가 아닌 흐린 장식이다.
 import Icon from "./Icon.astro";
-import { listPageUrl } from "../lib/posts";
-import { ui, type Lang } from "../i18n";
+import { pagedUrl } from "../lib/posts";
+import { localizePath, ui, type Lang } from "../i18n";
 
 interface Props {
   current: number;
   total: number;
   lang: Lang;
+  /** 1페이지 주소(예: /, /category/etc/, /en/tag/astro/). 생략하면 그 언어의 홈 */
+  base?: string;
 }
 
-const { current, total, lang } = Astro.props;
+const { current, total, lang, base = localizePath(lang, "/") } = Astro.props;
 const t = ui[lang];
-const urlFor = (page: number) => listPageUrl(page, lang);
+const urlFor = (page: number) => pagedUrl(base, page);
 
 // 현재 페이지에서 시작해 양쪽으로 번갈아 넓히고, 한쪽 끝에 닿으면 다른 쪽으로 채워 5개를 만든다
 const VISIBLE = 5;
@@ -35,7 +37,7 @@ if (r < total - 2) pages.push("gap");
 if (r < total) pages.push(total);
 
 const square = "flex h-11 w-11 items-center justify-center rounded-lg";
-const arrow = `${square} bg-card text-accent-bar transition hover:bg-muted active:scale-90`;
+const arrow = `${square} bg-card text-accent-bar transition hover:shadow-md active:scale-90`;
 const arrowOff = `${square} bg-card text-accent-bar opacity-40`;
 ---
 
@@ -52,10 +54,11 @@ const arrowOff = `${square} bg-card text-accent-bar opacity-40`;
         </span>
       )}
 
-      <div class="hidden items-center rounded-lg bg-card font-bold sm:flex">
+      {/* 번호마다 따로 흰 네모(화살표와 같은 모양). 묶음 배경은 두지 않는다 */}
+      <div class="hidden items-center gap-2 font-bold sm:flex">
         {pages.map((p) =>
           p === "gap" ? (
-            <span class="flex h-11 w-6 items-center justify-center text-muted-foreground" aria-hidden="true">
+            <span class="flex h-11 w-5 items-center justify-center text-muted-foreground" aria-hidden="true">
               …
             </span>
           ) : p === current ? (
@@ -63,7 +66,7 @@ const arrowOff = `${square} bg-card text-accent-bar opacity-40`;
               {p}
             </span>
           ) : (
-            <a href={urlFor(p)} class={`${square} transition hover:bg-muted active:scale-90`}>
+            <a href={urlFor(p)} class={`${square} bg-card transition hover:text-accent-bar hover:shadow-md active:scale-90`}>
               {p}
             </a>
           ),

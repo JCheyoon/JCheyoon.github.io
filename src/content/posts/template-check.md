@@ -21,7 +21,7 @@ sources:
     accessed: 2026-11-23
 ---
 
-이 글은 Phase 1에서 글 페이지 템플릿을 확인하려고 만든 샘플입니다. `status: draft`이므로 배포 빌드에는 들어가지 않고, 개발 서버(`npm run dev`)와 템플릿 검증 빌드(`INCLUDE_DRAFTS=true`)에서만 보입니다. scripts/check-content.mjs가 이 파일이 draft 상태인지 확인합니다.
+이 글은 Phase 1에서 글 페이지 템플릿을 확인하려고 만든 샘플입니다. `status: draft`이므로 배포 빌드에는 들어가지 않고, 개발 서버(`npm run dev`)와 템플릿 검증 빌드(`INCLUDE_DRAFTS=true`)에서만 보입니다. scripts/check-content.ts가 이 파일이 draft 상태인지 확인합니다.
 
 ## 소제목과 문단
 

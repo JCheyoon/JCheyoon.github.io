@@ -23,7 +23,7 @@ sources:
     accessed: 2026-11-25
 ---
 
-This is the English translation of the template check sample. It stays `status: draft`, so it never reaches the deployed build. It only shows up on the dev server (`npm run dev`) and in the template check build (`INCLUDE_DRAFTS=true`). scripts/check-content.mjs makes sure this file stays a draft and that its Korean original exists.
+This is the English translation of the template check sample. It stays `status: draft`, so it never reaches the deployed build. It only shows up on the dev server (`npm run dev`) and in the template check build (`INCLUDE_DRAFTS=true`). scripts/check-content.ts makes sure this file stays a draft and that its Korean original exists.
 
 ## Headings and paragraphs
 

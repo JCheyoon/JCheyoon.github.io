@@ -19,7 +19,8 @@ Phase 1에서 만든 코드를 기준으로 정리했다(2026-11-23). 레거시 
 | `src/lib/posts.ts` | 글 조회·정렬·주소·날짜 헬퍼 |
 | `src/content.config.ts` | frontmatter 스키마 |
 | `src/site.config.ts`, `src/data/` | 사이트 정보, 카테고리 등 단일 소스 |
-| `scripts/` | 검사 스크립트. Node 내장 모듈과 `yaml`만 쓴다 |
+| `scripts/` | 검사 스크립트. Node가 빌드 없이 실행한다(`.ts`는 type stripping). 외부 패키지는 `yaml`과 `astro/zod`만 쓴다 |
+| `src/lib/content-rules.ts` | 글 스키마와 검사 규칙. 사이트·검사·MCP 서버 공통. `astro:` 모듈을 쓰지 않고, 상대 경로 import에 `.ts`를 붙인다 |
 
 ## 글 데이터
 - 글 목록은 항상 `getVisiblePosts()`로 가져온다. `getCollection("posts")`를 페이지에서 직접 부르지 않는다. 초안 공개 여부가 그 함수 한 곳에서 결정된다.

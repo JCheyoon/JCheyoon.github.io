@@ -1,0 +1,62 @@
+---
+// 모바일 카테고리 칩(SPEC §6.2, D15). 768px 미만에서는 사이드바를 숨기고 목록 위에 가로로 스크롤되는 칩을 둔다.
+import { categories, categoryName, categoryUrl } from "../data/categories";
+import { filterByCategory, type Post } from "../lib/posts";
+import { localizePath, ui, type Lang } from "../i18n";
+
+interface Props {
+  posts: Post[];
+  lang: Lang;
+}
+
+const { posts, lang } = Astro.props;
+const t = ui[lang];
+const path = Astro.url.pathname;
+const home = localizePath(lang, "/");
+const chips = [
+  { href: home, name: t.allPosts, active: path === home || path.startsWith(localizePath(lang, "/page/")) },
+  ...categories
+    .filter((c) => filterByCategory(posts, c.slug).length > 0)
+    .map((c) => {
+      const href = categoryUrl(c.slug, lang);
+      return { href, name: categoryName(c, lang), active: path.startsWith(href) };
+    }),
+];
+---
+
+{
+  posts.length > 0 && (
+    // 오른쪽 끝을 흐리게 해서 옆으로 더 넘길 수 있음을 보인다
+    <nav
+      aria-label={t.categories}
+      data-category-chips
+      class="-mx-4 mb-4 overflow-x-auto px-4 [mask-image:linear-gradient(to_right,black_calc(100%-2.5rem),transparent)] md:hidden"
+    >
+      <ul class="flex w-max gap-2 pr-8">
+        {chips.map((c) => (
+          <li>
+            <a
+              href={c.href}
+              aria-current={c.active ? "page" : undefined}
+              class:list={[
+                "block rounded-lg px-3 py-1.5 text-sm whitespace-nowrap",
+                c.active ? "bg-card font-semibold text-foreground" : "bg-card/60 text-muted-foreground",
+              ]}
+            >
+              {c.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<script>
+  // 지금 카테고리 칩이 화면 밖이면 가로 위치를 옮겨 보이게 한다(세로 스크롤은 건드리지 않는다)
+  const strip = document.querySelector<HTMLElement>("[data-category-chips]");
+  const active = strip?.querySelector<HTMLElement>('[aria-current="page"]');
+  if (strip && active && active.offsetLeft + active.offsetWidth > strip.clientWidth) {
+    strip.scrollLeft = active.offsetLeft - 16;
+  }
+</script>

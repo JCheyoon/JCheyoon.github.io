@@ -77,6 +77,8 @@
   /* 코드 블록은 라이트·다크 모두 어두운 배경이라 배지 색도 하나다 */
   --code-badge: oklch(0.8 0.08 195);
   --code-badge-bg: oklch(1 0 0 / 10%);
+  /* 바텀 시트 뒤를 어둡게 덮는 막 */
+  --scrim: oklch(0 0 0 / 45%);
   --callout-title-strength: 75%;
   color-scheme: light;
 }
@@ -361,4 +363,21 @@
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
+}
+
+/* 페이지 전환(SPEC §6.2, D15): 같은 사이트 안에서 이동할 때 브라우저가 부드럽게 바꾼다. 지원하지 않는 브라우저는 그냥 이동한다 */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+
+/* 숨는 헤더(SPEC §6.2): 768px 미만에서 아래로 스크롤하면 위로 숨긴다(Header.astro 스크립트가 data-hidden을 붙인다) */
+@media (max-width: 767.98px) {
+  .site-header {
+    transition: transform 0.25s;
+  }
+  .site-header[data-hidden] {
+    transform: translateY(-100%);
+  }
 }

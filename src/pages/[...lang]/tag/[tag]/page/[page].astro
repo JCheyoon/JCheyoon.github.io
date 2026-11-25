@@ -1,0 +1,22 @@
+---
+// 태그 글 목록 2페이지부터(SPEC §4: /tag/<tag>/page/<n>/, n ≥ 2)
+import type { GetStaticPaths } from "astro";
+import FilteredListPage from "../../../../../components/FilteredListPage.astro";
+import { site } from "../../../../../site.config";
+import { tagPages } from "../../../../../lib/list-pages";
+import { ui } from "../../../../../i18n";
+
+export const getStaticPaths = (async () => (await tagPages()).filter((p) => p.props.page > 1)) satisfies GetStaticPaths;
+
+const { lang, name, posts, page, base, alternate, tag } = Astro.props;
+---
+
+<FilteredListPage
+  lang={lang}
+  name={name}
+  description={`${ui[lang].tagDescription(site.name, tag, posts.length)}${ui[lang].pageSuffix(page)}`}
+  posts={posts}
+  page={page}
+  base={base}
+  alternate={alternate}
+/>

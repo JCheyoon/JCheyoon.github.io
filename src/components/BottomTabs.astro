@@ -1,0 +1,75 @@
+---
+// 모바일 하단 탭 바(SPEC §6.2, D15). 768px 미만에서만 보인다. 모두 링크라 스크립트가 필요 없다.
+// 탭: 홈 · 아카이브 · 검색 · 소개. 검색은 검색 창(SearchDialog)을 연다.
+import Icon from "./Icon.astro";
+import { localizePath, ui, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+const path = Astro.url.pathname;
+const home = localizePath(lang, "/");
+const tabs = [
+  { href: home, label: t.home, icon: "home" as const, active: path === home || path.startsWith(localizePath(lang, "/page/")) },
+  { href: localizePath(lang, "/archive/"), label: t.archive, icon: "archive" as const, active: path === localizePath(lang, "/archive/") },
+];
+const about = { href: localizePath(lang, "/about/"), label: t.about, icon: "user" as const, active: path === localizePath(lang, "/about/") };
+---
+
+<nav
+  aria-label={t.bottomNav}
+  class="fixed inset-x-0 bottom-0 z-20 border-t bg-card/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur md:hidden"
+>
+  {/* 검색 탭은 스크립트가 있을 때만 보인다(.js). 없으면 3칸 */}
+  <ul class="bottom-tabs grid h-16 grid-cols-3">
+    {
+      tabs.map((tab) => (
+        <li>
+          <a
+            href={tab.href}
+            aria-current={tab.active ? "page" : undefined}
+            class:list={[
+              "flex h-full flex-col items-center justify-center gap-0.5 text-[0.7rem]",
+              tab.active ? "font-bold text-accent-bar" : "text-muted-foreground",
+            ]}
+          >
+            <span class:list={["flex h-7 w-12 items-center justify-center rounded-full", tab.active && "bg-[var(--toc-hover)]"]}>
+              <Icon name={tab.icon} class="h-5 w-5" />
+            </span>
+            {tab.label}
+          </a>
+        </li>
+      ))
+    }
+    <li class="search-tab hidden">
+      <button type="button" data-search-open class="flex h-full w-full flex-col items-center justify-center gap-0.5 text-[0.7rem] text-muted-foreground">
+        <span class="flex h-7 w-12 items-center justify-center rounded-full"><Icon name="search" class="h-5 w-5" /></span>
+        {t.search}
+      </button>
+    </li>
+    <li>
+      <a
+        href={about.href}
+        aria-current={about.active ? "page" : undefined}
+        class:list={["flex h-full flex-col items-center justify-center gap-0.5 text-[0.7rem]", about.active ? "font-bold text-accent-bar" : "text-muted-foreground"]}
+      >
+        <span class:list={["flex h-7 w-12 items-center justify-center rounded-full", about.active && "bg-[var(--toc-hover)]"]}>
+          <Icon name={about.icon} class="h-5 w-5" />
+        </span>
+        {about.label}
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<style>
+  :global(.js) .bottom-tabs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  :global(.js) .search-tab {
+    display: block;
+  }
+</style>

@@ -65,9 +65,14 @@ export function totalPages(count: number, pageSize: number): number {
   return Math.max(1, Math.ceil(count / pageSize));
 }
 
-/** 목록 n페이지 주소. 1페이지는 홈이다(SPEC §4). */
+/** 페이지를 나눈 목록의 n페이지 주소. 1페이지는 base 그대로, 2페이지부터 base + page/n/ (SPEC §4) */
+export function pagedUrl(base: string, page: number): string {
+  return page <= 1 ? base : `${base}page/${page}/`;
+}
+
+/** 전체 글 목록 n페이지 주소. 1페이지는 홈이다(SPEC §4). */
 export function listPageUrl(page: number, lang: Lang = "ko"): string {
-  return localizePath(lang, page <= 1 ? "/" : `/page/${page}/`);
+  return pagedUrl(localizePath(lang, "/"), page);
 }
 
 // 날짜는 언어와 관계없이 서울 기준으로 표시한다(작성자 기준 날짜).

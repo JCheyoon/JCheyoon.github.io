@@ -4,6 +4,7 @@ import { site } from "../site.config";
 import { categories, categoryName, categoryUrl } from "../data/categories";
 import { filterByCategory, tagCounts, tagUrl, type Post } from "../lib/posts";
 import { localizePath, ui, type Lang } from "../i18n";
+import CategoryLink from "./CategoryLink.astro";
 
 interface Props {
   posts: Post[];
@@ -15,10 +16,24 @@ const t = ui[lang];
 const path = Astro.url.pathname;
 const home = localizePath(lang, "/");
 const tags = tagCounts(posts);
-
 const listed = categories
   .map((c) => ({ ...c, count: filterByCategory(posts, c.slug).length }))
   .filter((c) => c.count > 0);
+
+// 맨 위는 전체 글(= 홈 목록). 카테고리 페이지에서 전체로 돌아갈 수 있게 한다.
+// 페이지를 나눈 카테고리(/category/x/page/2/)에서도 활성으로 보이게 주소 앞부분으로 비교한다.
+const categoryItems = [
+  { href: home, name: t.allPosts, count: posts.length, active: path === home || path.startsWith(localizePath(lang, "/page/")) },
+  ...listed.map((c) => {
+    const href = categoryUrl(c.slug, lang);
+    return { href, name: categoryName(c, lang), count: c.count, active: path.startsWith(href) };
+  }),
+];
+// 전체 글 + 카테고리 6개까지 보이고, 나머지는 "더보기"로 접는다
+const SHOWN = 7;
+const shownCategories = categoryItems.slice(0, SHOWN);
+const moreCategories = categoryItems.slice(SHOWN);
+
 ---
 
 <aside class="flex flex-col gap-6" aria-label={t.sidebar}>
@@ -44,33 +59,30 @@ const listed = categories
       <nav class="rounded-2xl border bg-card px-3 py-4" aria-label={t.categories}>
         <h2 class="mb-3 px-2 text-base font-semibold text-muted-foreground">{t.categories}</h2>
         <ul class="flex flex-col gap-1">
-          {/* 맨 위는 전체 글(= 홈 목록). 카테고리 페이지에서 전체로 돌아갈 수 있게 한다 */}
-          {[
-            { href: home, name: t.allPosts, count: posts.length, active: path === home || path.startsWith(localizePath(lang, "/page/")) },
-            ...listed.map((c) => {
-              const href = categoryUrl(c.slug, lang);
-              return { href, name: categoryName(c, lang), count: c.count, active: path === href };
-            }),
-          ].map(({ href, name, count, active }) => {
-            return (
-              <li>
-                <a
-                  href={href}
-                  aria-current={active ? "page" : undefined}
-                  class:list={[
-                    "flex items-center justify-between rounded-lg px-3 py-2 text-sm",
-                    active
-                      ? "bg-background font-semibold text-foreground"
-                      : "text-muted-foreground hover:bg-background hover:text-foreground",
-                  ]}
-                >
-                  <span>{name}</span>
-                  <span class="text-xs">{count}</span>
-                </a>
-              </li>
-            );
-          })}
+          {shownCategories.map((item) => (
+            <li>
+              <CategoryLink {...item} />
+            </li>
+          ))}
         </ul>
+        {
+          moreCategories.length > 0 && (
+            // 카테고리가 많으면 나머지는 접어 둔다. 지금 보는 카테고리가 그 안에 있으면 펼친다
+            <details open={moreCategories.some((c) => c.active)} class="group">
+              <summary class="mt-1 cursor-pointer list-none rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-background hover:text-foreground">
+                <span class="group-open:hidden">{t.more(moreCategories.length)}</span>
+                <span class="hidden group-open:inline">{t.less}</span>
+              </summary>
+              <ul class="mt-1 flex flex-col gap-1">
+                {moreCategories.map((item) => (
+                  <li>
+                    <CategoryLink {...item} />
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )
+        }
       </nav>
     )
   }
@@ -81,7 +93,7 @@ const listed = categories
         <ul class="flex flex-wrap gap-2 px-2">
           {tags.map(({ tag, count }) => {
             const href = tagUrl(tag, lang);
-            const active = path === href;
+            const active = path.startsWith(href);
             return (
               <li>
                 <a

@@ -1,0 +1,44 @@
+---
+// 카테고리·태그 목록 페이지 한 장(SPEC §4). 홈처럼 site.pageSize개씩 나눈다.
+// 1페이지는 /category/<slug>/, 2페이지부터 /category/<slug>/page/<n>/ (태그도 같다).
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ListHeader from "./ListHeader.astro";
+import PostList from "./PostList.astro";
+import Pagination from "./Pagination.astro";
+import { site } from "../site.config";
+import { pagedUrl, totalPages, type Post } from "../lib/posts";
+import { localizePath, ui, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+  /** 목록 제목(카테고리 이름, #태그) */
+  name: string;
+  description: string;
+  /** 이 카테고리·태그의 전체 글(최신순) */
+  posts: Post[];
+  page: number;
+  /** 1페이지 주소 */
+  base: string;
+  /** 다른 언어의 같은 페이지 */
+  alternate?: string;
+}
+
+const { lang, name, description, posts, page, base, alternate } = Astro.props;
+const pageCount = totalPages(posts.length, site.pageSize);
+const start = (page - 1) * site.pageSize;
+const title = `${name}${ui[lang].pageSuffix(page)}`;
+const breadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: site.name, item: new URL(localizePath(lang, "/"), site.url).href },
+    { "@type": "ListItem", position: 2, name, item: new URL(base, site.url).href },
+  ],
+};
+---
+
+<BaseLayout title={title} description={description} jsonLd={[breadcrumb]} lang={lang} alternate={alternate} categoryChips>
+  <ListHeader title={title} count={posts.length} lang={lang} />
+  <PostList posts={posts.slice(start, start + site.pageSize)} lang={lang} />
+  <Pagination current={page} total={pageCount} lang={lang} base={base} />
+</BaseLayout>

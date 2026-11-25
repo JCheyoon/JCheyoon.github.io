@@ -20,7 +20,7 @@ Phase 1에서 만든 코드를 기준으로 정리했다(2026-11-23). 레거시 
 | `src/lib/markdown.ts` | 본문 Markdown 플러그인(Sätteri mdast·hast). remark·rehype 플러그인은 쓰지 않는다. 바꾼 뒤에는 `node_modules/.astro`를 지우고 빌드한다(글 내용이 그대로면 Astro가 이전 변환 결과를 캐시에서 다시 쓴다) |
 | `src/content.config.ts` | frontmatter 스키마 |
 | `src/site.config.ts`, `src/data/` | 사이트 정보, 카테고리 등 단일 소스 |
-| `scripts/` | 검사 스크립트. Node가 빌드 없이 실행한다(`.ts`는 type stripping). 외부 패키지는 `yaml`과 `astro/zod`만 쓴다 |
+| `scripts/` | 검사·빌드 보조 스크립트(`build-search.mjs`는 Pagefind 색인). Node가 빌드 없이 실행한다(`.ts`는 type stripping). 외부 패키지는 `yaml`과 `astro/zod`만 쓴다 |
 | `src/lib/content-rules.ts` | 글 스키마와 검사 규칙. 사이트·검사·MCP 서버 공통. `astro:` 모듈을 쓰지 않고, 상대 경로 import에 `.ts`를 붙인다 |
 
 ## 글 데이터

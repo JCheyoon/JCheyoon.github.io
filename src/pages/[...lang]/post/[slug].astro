@@ -7,6 +7,7 @@ import { Image } from "astro:assets";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import Icon from "../../../components/Icon.astro";
 import Toc from "../../../components/Toc.astro";
+import TocSheet from "../../../components/TocSheet.astro";
 import { site } from "../../../site.config";
 import { categoryName, categoryUrl, getCategory } from "../../../data/categories";
 import { formatDate, getVisiblePosts, isoDate, ogImageUrl, postDate, postUrl, tagUrl, type Post } from "../../../lib/posts";
@@ -90,11 +91,14 @@ const jsonLd = [
   jsonLd={jsonLd}
   lang={lang}
   alternate={translation ? postUrl(translation) : null}
+  mobileBack={category ? { href: categoryUrl(category.slug, lang), label: categoryName(category, lang) } : { href: localizePath(lang, "/"), label: t.home }}
 >
   <Toc slot="toc" headings={headings} lang={lang} />
+  <TocSheet headings={headings} lang={lang} />
 
   {/* 글 전체를 흰 카드 하나에 담는다(SPEC §6.1). 이전·다음 글은 카드 밖에 따로 둔다 */}
-  <article class="rounded-2xl border bg-card px-6 pt-6 pb-8 md:px-9">
+  {/* data-pagefind-*: 검색 색인(D16)은 글 본문만 담는다. 이동 경로·메타·태그는 색인에서 뺀다 */}
+  <article class="rounded-2xl border bg-card px-6 pt-6 pb-8 md:px-9" data-pagefind-body>
     {
       isDraft && (
         <p class="mb-6 rounded-xl border border-dashed px-4 py-3 text-sm text-muted-foreground">
@@ -105,7 +109,7 @@ const jsonLd = [
 
     <header>
       {/* 작은 이동 경로. BreadcrumbList 구조화 데이터와 같은 내용을 화면에도 보여 준다(SPEC §7) */}
-      <nav aria-label={t.breadcrumb} class="mb-3 text-xs text-muted-foreground">
+      <nav aria-label={t.breadcrumb} class="mb-3 text-xs text-muted-foreground" data-pagefind-ignore>
         <a href={localizePath(lang, "/")} class="hover:text-accent-bar">{t.home}</a>
         {
           category && (
@@ -119,11 +123,12 @@ const jsonLd = [
         }
       </nav>
       <h1
+        data-pagefind-meta="title"
         class="relative mb-3 text-3xl font-bold leading-tight md:text-[2.25rem] md:leading-[2.75rem] md:before:absolute md:before:top-3 md:before:-left-[1.125rem] md:before:h-5 md:before:w-1 md:before:rounded-full md:before:bg-accent-bar"
       >
         {data.title}
       </h1>
-      <ul class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-muted-foreground">
+      <ul class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-muted-foreground" data-pagefind-ignore>
         <li class="flex items-center gap-2">
           <span class="meta-icon"><Icon name="calendar" class="h-5 w-5" /></span>
           <time datetime={isoDate(published)}>{formatDate(published, lang)}</time>
@@ -176,7 +181,7 @@ const jsonLd = [
 
     {
       data.sources.length > 0 && (
-        <section class="mt-10" aria-labelledby="sources-heading">
+        <section class="mt-10" aria-labelledby="sources-heading" data-pagefind-ignore>
           <h2 id="sources-heading" class="text-lg font-semibold">
             {t.sources}
           </h2>
@@ -196,7 +201,7 @@ const jsonLd = [
 
     {
       data.tags.length > 0 && (
-        <ul class="mt-8 flex flex-wrap gap-2" aria-label={t.tags}>
+        <ul class="mt-8 flex flex-wrap gap-2" aria-label={t.tags} data-pagefind-ignore>
           {data.tags.map((tag) => (
             <li>
               <a href={tagUrl(tag, lang)} class="block rounded-lg bg-background px-3 py-1 text-sm text-muted-foreground transition hover:text-accent-bar">

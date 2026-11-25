@@ -5,6 +5,9 @@ import Header from "../components/Header.astro";
 import Sidebar from "../components/Sidebar.astro";
 import Footer from "../components/Footer.astro";
 import BackToTop from "../components/BackToTop.astro";
+import BottomTabs from "../components/BottomTabs.astro";
+import SearchDialog from "../components/SearchDialog.astro";
+import CategoryChips from "../components/CategoryChips.astro";
 import { getVisiblePosts } from "../lib/posts";
 import { localizePath, otherLang, ui } from "../i18n";
 import type { Props as SeoProps } from "../components/SeoHead.astro";
@@ -19,13 +22,17 @@ type Props = Omit<SeoProps, "alternate"> & {
    * - null: 전환 링크를 숨긴다(번역본이 없는 글).
    */
   alternate?: string | null;
+  /** 768px 미만 헤더의 뒤로 링크(글 페이지). Header 참고 */
+  mobileBack?: { href: string; label: string };
+  /** 768px 미만 목록 위 카테고리 칩. 목록 페이지(홈, n페이지, 카테고리, 태그)만 켠다 */
+  categoryChips?: boolean;
 };
 
-const { sidebar = true, alternate, ...seo } = Astro.props;
+const { sidebar = true, alternate, mobileBack, categoryChips = false, ...seo } = Astro.props;
 const lang = seo.lang ?? "ko";
 const switchHref = alternate === null ? undefined : (alternate ?? localizePath(otherLang(lang), "/"));
 const t = ui[lang];
-const posts = sidebar ? await getVisiblePosts(lang) : [];
+const posts = sidebar || categoryChips ? await getVisiblePosts(lang) : [];
 ---
 
 <!doctype html>
@@ -56,15 +63,17 @@ const posts = sidebar ? await getVisiblePosts(lang) : [];
       class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-20 focus:rounded focus:bg-card focus:px-3 focus:py-2"
       >{t.skipToContent}</a
     >
-    <Header lang={lang} switchHref={switchHref} />
+    <Header lang={lang} switchHref={switchHref} mobileBack={mobileBack} />
     <div
       class:list={[
-        "mx-auto max-w-[1200px] px-4 py-6 md:px-6",
+        // 768px 미만은 하단 탭 바(h-16)만큼 아래 여백을 더 둔다
+        "mx-auto max-w-[1200px] px-4 pt-6 pb-24 md:px-6 md:pb-6",
         sidebar && "grid gap-6 md:grid-cols-[17rem_minmax(0,1fr)]",
       ]}
     >
-      {/* 모바일에서는 본문이 먼저, 사이드바가 아래에 온다 */}
+      {/* 768px 미만에서는 사이드바를 숨기고, 목록 페이지는 위에 카테고리 칩을 둔다(SPEC §6.2) */}
       <main id="main" class:list={["relative min-w-0", sidebar && "md:order-2"]}>
+        {categoryChips && <CategoryChips posts={posts} lang={lang} />}
         <slot />
         {/*
           본문 오른쪽 기둥(SPEC §6.1): 위에는 목차, 아래에는 맨 위로 버튼.
@@ -88,7 +97,7 @@ const posts = sidebar ? await getVisiblePosts(lang) : [];
       </main>
       {
         sidebar && (
-          <div class="md:order-1">
+          <div class="hidden md:order-1 md:block">
             <Sidebar posts={posts} lang={lang} />
           </div>
         )
@@ -96,5 +105,7 @@ const posts = sidebar ? await getVisiblePosts(lang) : [];
     </div>
     <Footer />
     <BackToTop lang={lang} variant="floating" />
+    <BottomTabs lang={lang} />
+    <SearchDialog lang={lang} />
   </body>
 </html>

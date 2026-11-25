@@ -19,6 +19,7 @@ const errors = [];
 const warnings = [];
 const slugs = new Map(); // "<lang>/<slug>" → 파일 경로
 const translations = []; // 번역본: 원문이 있는지는 모든 글을 읽은 뒤 확인한다
+const translatedKeys = new Map(); // "<lang>/<slug>" → 번역본인지
 
 function isAffiliate(url) {
   try {
@@ -69,6 +70,7 @@ for (const { dirLang, dir, file } of files) {
 
   // 번역본은 반대 언어 폴더에 같은 slug의 원문이 있어야 한다
   if (data.translated_from) translations.push({ where, slug: data.slug, from: data.translated_from });
+  translatedKeys.set(key, Boolean(data.translated_from));
 
   // 템플릿 검증용 샘플은 절대 발행하지 않는다
   if (name === TEMPLATE_FIXTURE && data.status !== "draft") {
@@ -97,6 +99,15 @@ for (const { dirLang, dir, file } of files) {
 
 for (const { where, slug, from } of translations) {
   if (!slugs.has(`${from}/${slug}`)) errors.push(`${where}: 원문(${from}, slug ${slug})이 없다`);
+}
+
+// 두 언어에 같은 slug가 있으면 원문·번역본 짝이어야 한다. 사이트는 같은 slug를 짝으로 보고 서로 연결한다.
+for (const [key, where] of slugs) {
+  if (!key.startsWith("en/")) continue;
+  const koKey = `ko/${key.slice(3)}`;
+  if (slugs.has(koKey) && !translatedKeys.get(key) && !translatedKeys.get(koKey)) {
+    errors.push(`${where}: ${slugs.get(koKey)}와 slug가 같은데 어느 쪽도 translated_from이 없다. 번역 관계가 아니면 slug를 다르게 쓴다`);
+  }
 }
 
 for (const w of warnings) console.warn(`경고  ${w}`);

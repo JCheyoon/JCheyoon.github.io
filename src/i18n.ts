@@ -9,6 +9,10 @@ export function localizePath(lang: Lang, path: string): string {
   return lang === "en" ? `/en${path}` : path;
 }
 
+export function otherLang(lang: Lang): Lang {
+  return lang === "ko" ? "en" : "ko";
+}
+
 /**
  * 한 라우트 파일로 두 언어 페이지를 만들 때 쓰는 getStaticPaths 값.
  * `src/pages/[...lang]/`의 lang이 비면 한국어(루트), "en"이면 영어(/en/)다.
@@ -22,6 +26,9 @@ export const ui = {
   ko: {
     htmlLang: "ko",
     ogLocale: "ko_KR",
+    /** 언어 전환 링크에 보이는 이 언어의 이름 */
+    langName: "한국어",
+    langSwitch: "한국어로 보기",
     dateLocale: "ko-KR",
     skipToContent: "본문으로 건너뛰기",
     mainMenu: "주 메뉴",
@@ -53,6 +60,8 @@ export const ui = {
   en: {
     htmlLang: "en",
     ogLocale: "en_US",
+    langName: "English",
+    langSwitch: "View in English",
     dateLocale: "en-US",
     skipToContent: "Skip to content",
     mainMenu: "Main menu",

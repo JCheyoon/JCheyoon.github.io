@@ -1,13 +1,16 @@
 ---
 import Logo from "./Logo.astro";
 import { site } from "../site.config";
-import { localizePath, ui, type Lang } from "../i18n";
+import { localizePath, otherLang, ui, type Lang } from "../i18n";
 
 interface Props {
   lang: Lang;
+  /** 언어 전환 링크 주소. 없으면 링크를 그리지 않는다. */
+  switchHref?: string;
 }
 
-const { lang } = Astro.props;
+const { lang, switchHref } = Astro.props;
+const target = ui[otherLang(lang)];
 const t = ui[lang];
 const home = localizePath(lang, "/");
 
@@ -50,5 +53,18 @@ const isActive = (href: string) =>
         }
       </ul>
     </nav>
+    {
+      switchHref && (
+        <a
+          href={switchHref}
+          hreflang={target.htmlLang}
+          lang={target.htmlLang}
+          aria-label={target.langSwitch}
+          class="inline-flex h-10 items-center justify-self-end rounded-lg px-3 text-sm font-medium text-muted-foreground hover:text-foreground"
+        >
+          {target.langName}
+        </a>
+      )
+    }
   </div>
 </header>

@@ -6,27 +6,35 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import ListHeader from "../../../components/ListHeader.astro";
 import PostList from "../../../components/PostList.astro";
 import { site } from "../../../site.config";
-import { categories, categoryName } from "../../../data/categories";
+import { categories, categoryName, categoryUrl } from "../../../data/categories";
 import { filterByCategory, getVisiblePosts } from "../../../lib/posts";
-import { langPaths, localizePath, ui } from "../../../i18n";
+import { langPaths, localizePath, otherLang, ui } from "../../../i18n";
 
 export const getStaticPaths = (async () => {
   const perLang = await Promise.all(
     langPaths.map(async ({ params, props: { lang } }) => {
       const posts = await getVisiblePosts(lang);
+      // 다른 언어에도 이 카테고리 글이 있으면 그 카테고리 페이지가 짝이다
+      const other = otherLang(lang);
+      const otherPosts = await getVisiblePosts(other);
       return categories
         .map((category) => ({ category, posts: filterByCategory(posts, category.slug) }))
         .filter(({ posts }) => posts.length > 0)
         .map(({ category, posts }) => ({
           params: { ...params, slug: category.slug },
-          props: { lang, name: categoryName(category, lang), posts },
+          props: {
+            lang,
+            name: categoryName(category, lang),
+            posts,
+            alternate: filterByCategory(otherPosts, category.slug).length > 0 ? categoryUrl(category.slug, other) : undefined,
+          },
         }));
     }),
   );
   return perLang.flat();
 }) satisfies GetStaticPaths;
 
-const { lang, name, posts } = Astro.props;
+const { lang, name, posts, alternate } = Astro.props;
 const breadcrumb = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -42,6 +50,7 @@ const breadcrumb = {
   description={ui[lang].categoryDescription(site.name, name, posts.length)}
   jsonLd={[breadcrumb]}
   lang={lang}
+  alternate={alternate}
 >
   <ListHeader title={name} count={posts.length} lang={lang} />
   <PostList posts={posts} lang={lang} />

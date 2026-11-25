@@ -95,6 +95,20 @@ for (const file of htmlFiles) {
   if (canonical && meta(html, "property", "og:url") !== canonical) fail(route, "og:url이 canonical과 다르다");
   if (!/^https:\/\//.test(meta(html, "property", "og:image") ?? "")) fail(route, "og:image가 절대 URL이 아니다");
 
+  // hreflang(SPEC §9.2): 대상 페이지가 있고, 그 페이지도 이 페이지를 가리켜야 한다
+  for (const link of tags(html, "link").filter((a) => a.rel === "alternate" && a.hreflang)) {
+    const target = new URL(link.href).pathname;
+    if (target === route) continue;
+    if (!resolvesInDist(target)) {
+      fail(route, `hreflang 대상이 빌드 결과물에 없다(${target})`);
+      continue;
+    }
+    const back = tags(readFileSync(join(DIR, target, "index.html"), "utf8"), "link").some(
+      (a) => a.rel === "alternate" && a.hreflang && new URL(a.href).pathname === route,
+    );
+    if (!back) fail(route, `hreflang 대상(${target})이 이 페이지를 가리키지 않는다`);
+  }
+
   const noindex = meta(html, "name", "robots")?.includes("noindex");
   if (is404 && !noindex) fail(route, "404 페이지에 noindex가 없다");
 

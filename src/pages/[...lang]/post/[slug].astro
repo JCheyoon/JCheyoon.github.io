@@ -8,16 +8,23 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { site } from "../../../site.config";
 import { categoryName, categoryUrl, getCategory } from "../../../data/categories";
 import { formatDate, getVisiblePosts, isoDate, postDate, postUrl, type Post } from "../../../lib/posts";
-import { langPaths, localizePath, ui } from "../../../i18n";
+import { langPaths, localizePath, otherLang, ui } from "../../../i18n";
 
 export const getStaticPaths = (async () => {
   const perLang = await Promise.all(
-    langPaths.map(async ({ params }) => {
-      const posts = await getVisiblePosts(params.lang ?? "ko");
+    langPaths.map(async ({ params, props: { lang } }) => {
+      const posts = await getVisiblePosts(lang);
+      // 원문과 번역본은 같은 slug를 쓴다. 다른 언어에 공개된 같은 slug의 글이 짝이다(SPEC §9.2).
+      const otherPosts = await getVisiblePosts(otherLang(lang));
       // posts는 최신순이다. newer = 바로 다음에 나온 글, older = 바로 앞에 나온 글. 같은 언어 안에서만 잇는다.
       return posts.map((post, i) => ({
         params: { ...params, slug: post.data.slug },
-        props: { post, newer: posts[i - 1], older: posts[i + 1] },
+        props: {
+          post,
+          newer: posts[i - 1],
+          older: posts[i + 1],
+          translation: otherPosts.find((p) => p.data.slug === post.data.slug),
+        },
       }));
     }),
   );
@@ -28,9 +35,10 @@ interface Props {
   post: Post;
   newer?: Post;
   older?: Post;
+  translation?: Post;
 }
 
-const { post, newer, older } = Astro.props;
+const { post, newer, older, translation } = Astro.props;
 const { data } = post;
 const lang = data.lang;
 const t = ui[lang];
@@ -79,6 +87,7 @@ const jsonLd = [
   noindex={isDraft}
   jsonLd={jsonLd}
   lang={lang}
+  alternate={translation ? postUrl(translation) : null}
 >
   <article class="max-w-3xl">
     {

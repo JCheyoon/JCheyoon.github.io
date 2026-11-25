@@ -13,8 +13,9 @@ const isActive = (href: string) => (href === "/" ? path === "/" || path.startsWi
 ---
 
 <header class="sticky top-0 z-10 border-b bg-card/90 backdrop-blur">
-  <div class="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-4 px-4 md:px-6">
-    <a href="/" class="flex items-center text-foreground" aria-label={`${site.name} 홈`}>
+  {/* 로고 | 메뉴(가운데) | 오른쪽 빈 칸. 오른쪽 칸은 언어 전환(Phase 2)·테마 토글(Phase 3) 자리라 메뉴가 밀리지 않는다 */}
+  <div class="mx-auto grid h-16 max-w-[1200px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 md:px-6">
+    <a href="/" class="flex items-center justify-self-start text-foreground" aria-label={`${site.name} 홈`}>
       <Logo />
     </a>
     <nav aria-label="주 메뉴">

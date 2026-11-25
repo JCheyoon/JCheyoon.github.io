@@ -4,6 +4,7 @@ import SeoHead from "../components/SeoHead.astro";
 import Header from "../components/Header.astro";
 import Sidebar from "../components/Sidebar.astro";
 import Footer from "../components/Footer.astro";
+import BackToTop from "../components/BackToTop.astro";
 import { getVisiblePosts } from "../lib/posts";
 import { localizePath, otherLang, ui } from "../i18n";
 import type { Props as SeoProps } from "../components/SeoHead.astro";
@@ -45,9 +46,28 @@ const posts = sidebar ? await getVisiblePosts(lang) : [];
         sidebar && "grid gap-6 md:grid-cols-[17rem_minmax(0,1fr)]",
       ]}
     >
-      <!-- 모바일에서는 본문이 먼저, 사이드바가 아래에 온다 -->
-      <main id="main" class:list={["min-w-0", sidebar && "md:order-2"]}>
+      {/* 모바일에서는 본문이 먼저, 사이드바가 아래에 온다 */}
+      <main id="main" class:list={["relative min-w-0", sidebar && "md:order-2"]}>
         <slot />
+        {/*
+          본문 오른쪽 기둥(SPEC §6.1): 위에는 목차, 아래에는 맨 위로 버튼.
+          본문과 같은 높이라서 목차는 본문 윗선에서 시작하고, 버튼은 끝에서 본문 아랫선(이전·다음 글 버튼)에 맞춰 멈춘다.
+          본문 옆 여백이 좁으면(1424px 미만) 숨기고, 버튼은 화면 오른쪽 아래에 띄운다. 목차는 1536px 이상에서만 보인다.
+        */}
+        <div class="absolute top-0 bottom-0 left-full ml-4 hidden w-[min(16rem,calc((100vw-1200px)/2-1rem))] flex-col justify-between min-[1424px]:flex">
+          {
+            Astro.slots.has("toc") ? (
+              <div class="sticky top-20 hidden 2xl:block">
+                <slot name="toc" />
+              </div>
+            ) : (
+              <div />
+            )
+          }
+          <div class="sticky bottom-6">
+            <BackToTop lang={lang} variant="rail" />
+          </div>
+        </div>
       </main>
       {
         sidebar && (
@@ -58,5 +78,6 @@ const posts = sidebar ? await getVisiblePosts(lang) : [];
       }
     </div>
     <Footer />
+    <BackToTop lang={lang} variant="floating" />
   </body>
 </html>

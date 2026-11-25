@@ -1,0 +1,37 @@
+---
+// 맨 위로 버튼(SPEC §6.1). 스크립트는 조금 내려왔을 때 버튼을 보이게 하는 일만 한다(SPEC §8).
+// - rail: 본문 오른쪽 기둥 아래(BaseLayout). 스크롤 중엔 화면 아래에 붙고, 끝에서는 본문 아랫선에 맞춰 멈춘다.
+// - floating: 본문 옆에 공간이 없는 화면에서 오른쪽 아래에 뜬다.
+import Icon from "./Icon.astro";
+import { ui, type Lang } from "../i18n";
+
+interface Props {
+  lang: Lang;
+  variant: "rail" | "floating";
+}
+
+const { lang, variant } = Astro.props;
+---
+
+<a
+  href="#top"
+  data-back-to-top
+  aria-label={ui[lang].backToTop}
+  class:list={[
+    "pointer-events-none flex items-center justify-center rounded-2xl opacity-0 transition data-[visible]:pointer-events-auto data-[visible]:opacity-100",
+    // 기둥 버튼은 청록 페이지 배경 위라 흰 카드로 충분히 보인다
+    variant === "rail" && "h-14 w-14 bg-card text-accent-bar hover:bg-muted",
+    // 떠 있는 버튼은 흰 본문 카드 위에 겹치므로 로고 색으로 채워 눈에 띄게 한다
+    variant === "floating" &&
+      "fixed right-4 bottom-4 z-10 h-12 w-12 bg-logo text-on-logo shadow-lg ring-2 ring-card hover:opacity-90 min-[1424px]:hidden",
+  ]}
+>
+  <Icon name="arrow-up" class="h-6 w-6" />
+</a>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLElement>("[data-back-to-top]");
+  const update = () => buttons.forEach((b) => b.toggleAttribute("data-visible", scrollY > 400));
+  addEventListener("scroll", update, { passive: true });
+  update();
+</script>

@@ -1,0 +1,33 @@
+---
+// 직접 그린 24×24 선 아이콘. 색은 currentColor를 따른다.
+const paths = {
+  calendar: ["M7 3v3", "M17 3v3", "M4 9h16", "M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"],
+  edit: ["M4 20h4l10.5-10.5a2.12 2.12 0 0 0-3-3L5 17v3", "M13.5 7.5l3 3"],
+  folder: ["M4 6.5A1.5 1.5 0 0 1 5.5 5h4l2 2h7A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"],
+  user: ["M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z", "M5 20a7 7 0 0 1 14 0"],
+  "chevron-left": ["M15 5l-7 7 7 7"],
+  "chevron-right": ["M9 5l7 7-7 7"],
+  "arrow-up": ["M6 14l6-6 6 6"],
+} as const;
+
+interface Props {
+  name: keyof typeof paths;
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  class={className}
+>
+  {paths[name].map((d) => <path d={d} />)}
+</svg>

@@ -80,7 +80,8 @@
 - `src/layouts/`, `src/components/`: 레이아웃과 `.astro` 컴포넌트
 - `src/lib/posts.ts`: 글 조회(`getVisiblePosts`)와 주소·날짜 헬퍼
 - `src/site.config.ts`, `src/data/`: 사이트 정보, 카테고리, 제휴 도메인(단일 소스)
-- `scripts/`: `check-content.mjs`, `check-html.mjs`
+- `scripts/`: `check-content.ts`(규칙은 `src/lib/content-rules.ts`), `check-html.mjs`
+- `src/lib/content-rules.ts`: 글 스키마와 검사 규칙의 단일 소스. 사이트 빌드, 검사 스크립트, MCP 서버가 함께 쓴다. Node가 직접 실행하므로 상대 경로 import에 `.ts`를 붙인다
 - `.github/workflows/site.yml`: PR 검증, master push 자동 배포, 수동 재배포
 - `public/`: 파비콘, 매니페스트
 

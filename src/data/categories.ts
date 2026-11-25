@@ -1,6 +1,6 @@
 // 카테고리의 단일 소스(SPEC §5.3). slug는 주소(/category/<slug>/)와 글 frontmatter의 category에 쓴다.
 // 초기값은 2026-11-23 작성자 결정. 추가할 때는 이 목록만 고친다.
-import { localizePath, type Lang } from "../i18n";
+import { localizePath, type Lang } from "../i18n.ts";
 
 export interface Category {
   slug: string;

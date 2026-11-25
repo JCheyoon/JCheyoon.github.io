@@ -20,4 +20,4 @@ disclosure:
 
 This sample is an English original. It has no `translated_from` field and no Korean version, so its page should show no language switch link in the header and no `hreflang` links in the head. It only appears on the English site (`/en/`), never on the Korean one.
 
-Like the other template check samples, it stays `status: draft`. scripts/check-content.mjs fails the build if any file whose name starts with `template-check` is not a draft.
+Like the other template check samples, it stays `status: draft`. scripts/check-content.ts fails the build if any file whose name starts with `template-check` is not a draft.

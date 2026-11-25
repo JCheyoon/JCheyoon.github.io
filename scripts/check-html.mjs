@@ -124,13 +124,17 @@ if (!DRAFTS_MODE) {
     .filter((f) => /sitemap.*\.xml$|rss\.xml$/.test(f))
     .map((f) => readFileSync(f, "utf8"))
     .join("\n");
-  for (const file of readdirSync(POSTS_DIR).filter((f) => f.endsWith(".md"))) {
-    const front = readFileSync(join(POSTS_DIR, file), "utf8").match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? "";
-    const data = parse(front) ?? {};
-    if (data.status === "published") continue;
-    const slug = file.replace(/\.md$/, "");
-    if (existsSync(join(DIR, "post", slug))) fail(`/post/${slug}/`, `status: ${data.status} 글이 배포 결과물에 있다`);
-    if (feeds.includes(`/post/${slug}/`)) fail(`/post/${slug}/`, `status: ${data.status} 글이 sitemap이나 RSS에 있다`);
+  // 한국어 글 posts/<slug>.md → /post/<slug>/, 영어 글 posts/en/<slug>.md → /en/post/<slug>/
+  for (const [dir, prefix] of [[POSTS_DIR, "/post/"], [join(POSTS_DIR, "en"), "/en/post/"]]) {
+    if (!existsSync(dir)) continue;
+    for (const file of readdirSync(dir).filter((f) => f.endsWith(".md"))) {
+      const front = readFileSync(join(dir, file), "utf8").match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? "";
+      const data = parse(front) ?? {};
+      if (data.status === "published") continue;
+      const route = `${prefix}${file.replace(/\.md$/, "")}/`;
+      if (existsSync(join(DIR, route))) fail(route, `status: ${data.status} 글이 배포 결과물에 있다`);
+      if (feeds.includes(route)) fail(route, `status: ${data.status} 글이 sitemap이나 RSS에 있다`);
+    }
   }
 }
 

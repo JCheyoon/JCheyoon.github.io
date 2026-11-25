@@ -2,6 +2,7 @@ import { getCollection, type CollectionEntry } from "astro:content";
 import { categoryWithChildren } from "../data/categories";
 
 export type Post = CollectionEntry<"posts">;
+export type Lang = Post["data"]["lang"];
 
 /**
  * draft·reviewed 글을 보여 줄지 여부(SPEC §5.5).
@@ -16,13 +17,17 @@ export function postDate(post: Post): Date {
   return post.data.published_at ?? post.data.created_at;
 }
 
+/** 한국어 글은 `/post/<slug>/`, 영어 글은 `/en/post/<slug>/` (SPEC §4) */
 export function postUrl(post: Post): string {
-  return `/post/${post.id}/`;
+  return post.data.lang === "en" ? `/en/post/${post.data.slug}/` : `/post/${post.data.slug}/`;
 }
 
-/** 공개 대상 글을 최신순으로 돌려준다. */
-export async function getVisiblePosts(): Promise<Post[]> {
-  const posts = await getCollection("posts", (p) => includeDrafts || p.data.status === "published");
+/** 공개 대상 글 중 한 언어의 글을 최신순으로 돌려준다. 언어별 사이트는 자기 언어 글만 보여 준다(D11). */
+export async function getVisiblePosts(lang: Lang = "ko"): Promise<Post[]> {
+  const posts = await getCollection(
+    "posts",
+    (p) => p.data.lang === lang && (includeDrafts || p.data.status === "published"),
+  );
   return posts.sort((a, b) => postDate(b).getTime() - postDate(a).getTime());
 }
 

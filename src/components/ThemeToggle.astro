@@ -16,7 +16,7 @@ const { lang } = Astro.props;
   data-theme-toggle
   aria-label={ui[lang].themeToggle}
   aria-pressed="false"
-  class="theme-toggle hidden h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-background hover:text-foreground"
+  class="theme-toggle hidden h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition hover:bg-[var(--toc-hover)] hover:text-foreground"
 >
   {/* 아이콘은 하나만 보인다. 지금 라이트면 달(누르면 다크), 다크면 해(누르면 라이트) */}
   <span class="theme-icon-moon"><Icon name="moon" class="h-5 w-5" /></span>

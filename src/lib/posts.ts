@@ -85,7 +85,10 @@ export function yearOf(date: Date): number {
   return Number(yearFormatter.format(date));
 }
 
-/** <time datetime>와 JSON-LD용 YYYY-MM-DD */
+// 화면 날짜와 같은 서울 기준 날짜. UTC로 자르면 서울 오전 9시 전 글은 하루 앞 날짜가 된다
+const isoDateFormatter = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Seoul" });
+
+/** <time datetime>용 YYYY-MM-DD(서울 기준) */
 export function isoDate(date: Date): string {
-  return date.toISOString().slice(0, 10);
+  return isoDateFormatter.format(date);
 }

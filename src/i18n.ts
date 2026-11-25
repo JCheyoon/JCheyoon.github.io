@@ -28,6 +28,7 @@ export const ui = {
     ogLocale: "ko_KR",
     /** 언어 전환 링크에 보이는 이 언어의 이름 */
     langName: "한국어",
+    langShort: "KO",
     langSwitch: "한국어로 보기",
     dateLocale: "ko-KR",
     skipToContent: "본문으로 건너뛰기",
@@ -67,6 +68,7 @@ export const ui = {
     htmlLang: "en",
     ogLocale: "en_US",
     langName: "English",
+    langShort: "EN",
     langSwitch: "View in English",
     dateLocale: "en-US",
     skipToContent: "Skip to content",

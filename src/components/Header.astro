@@ -29,12 +29,13 @@ const isActive = (href: string) =>
 
 <header class="sticky top-0 z-10 border-b bg-card/90 backdrop-blur">
   {/* 로고 | 메뉴(가운데) | 오른쪽 빈 칸. 오른쪽 칸은 언어 전환(Phase 2)·테마 토글(Phase 3) 자리라 메뉴가 밀리지 않는다 */}
-  <div class="mx-auto grid h-16 max-w-[1200px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 md:px-6">
+  {/* 640px 미만은 간격·여백을 줄이고 언어 링크를 EN/KO로 짧게 써서 360px 폰에서도 한 줄에 들어가게 한다 */}
+  <div class="mx-auto grid h-16 max-w-[1200px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 sm:gap-4 md:px-6">
     <a href={home} class="flex items-center justify-self-start text-foreground" aria-label={`${site.name} ${t.home}`}>
       <Logo />
     </a>
     <nav aria-label={t.mainMenu}>
-      <ul class="flex items-center gap-2">
+      <ul class="flex items-center sm:gap-2">
         {
           links.map((link) => (
             <li>
@@ -42,7 +43,7 @@ const isActive = (href: string) =>
                 href={link.href}
                 aria-current={isActive(link.href) ? "page" : undefined}
                 class:list={[
-                  "inline-flex h-10 items-center rounded-lg px-4 text-sm font-medium",
+                  "inline-flex h-10 items-center rounded-lg px-2 text-sm font-medium sm:px-4",
                   isActive(link.href)
                     ? "bg-background text-foreground font-semibold"
                     : "text-muted-foreground hover:bg-background hover:text-foreground",
@@ -64,9 +65,10 @@ const isActive = (href: string) =>
             hreflang={target.htmlLang}
             lang={target.htmlLang}
             aria-label={target.langSwitch}
-            class="inline-flex h-10 items-center rounded-lg px-3 text-sm font-medium text-muted-foreground hover:bg-background hover:text-foreground"
+            class="inline-flex h-10 items-center rounded-lg px-2 text-sm font-medium text-muted-foreground hover:bg-background hover:text-foreground sm:px-3"
           >
-            {target.langName}
+            <span class="sm:hidden">{target.langShort}</span>
+            <span class="hidden sm:inline">{target.langName}</span>
           </a>
         )
       }

@@ -1,8 +1,9 @@
 ---
 // 모바일 하단 탭 바(SPEC §6.2, D15). 768px 미만에서만 보인다. 모두 링크라 스크립트가 필요 없다.
-// 탭: 홈 · 아카이브 · 검색 · 소개. 검색은 검색 창(SearchDialog)을 연다.
+// 탭: 홈 · 기록(아카이브) · 검색 · 소개. 검색은 검색 창(SearchDialog)을 연다.
 import Icon from "./Icon.astro";
 import { localizePath, ui, type Lang } from "../i18n";
+import { isListPage } from "../lib/posts";
 
 interface Props {
   lang: Lang;
@@ -15,7 +16,7 @@ const t = ui[lang];
 const path = Astro.url.pathname;
 const home = localizePath(lang, "/");
 const tabs = [
-  { href: home, label: t.home, icon: "home" as const, active: path === home || path.startsWith(localizePath(lang, "/page/")) },
+  { href: home, label: t.home, icon: "home" as const, active: isListPage(path, lang) },
   { href: localizePath(lang, "/archive/"), label: t.archive, icon: "archive" as const, active: path === localizePath(lang, "/archive/") },
 ];
 const about = { href: localizePath(lang, "/about/"), label: t.about, icon: "user" as const, active: path === localizePath(lang, "/about/") };
@@ -32,7 +33,7 @@ const about = { href: localizePath(lang, "/about/"), label: t.about, icon: "user
         <li>
           <a
             href={tab.href}
-            aria-current={tab.active ? "page" : undefined}
+            aria-current={tab.active ? (path === tab.href ? "page" : "true") : undefined}
             class:list={[
               "flex h-full flex-col items-center justify-center gap-0.5 text-[0.7rem]",
               tab.active ? "font-bold text-accent-bar" : "text-muted-foreground",

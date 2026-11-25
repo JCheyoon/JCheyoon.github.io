@@ -75,6 +75,15 @@ export function listPageUrl(page: number, lang: Lang = "ko"): string {
   return pagedUrl(localizePath(lang, "/"), page);
 }
 
+/**
+ * 글 목록 페이지인지(홈과 그 n페이지, 카테고리·태그 목록). 헤더 메뉴와 하단 탭 바가 "홈"을 현재 메뉴로 칠할 때 쓴다.
+ * 카테고리·태그는 홈 목록을 거른 화면이라, 여기서 홈 표시가 꺼지면 지금 어느 메뉴에 있는지 알 수 없다.
+ * 그 페이지 자체가 홈은 아니므로 aria-current는 "page" 대신 "true"(이 메뉴 안에 있음)를 쓴다.
+ */
+export function isListPage(path: string, lang: Lang = "ko"): boolean {
+  return path === localizePath(lang, "/") || ["/page/", "/category/", "/tag/"].some((p) => path.startsWith(localizePath(lang, p)));
+}
+
 // 날짜는 언어와 관계없이 서울 기준으로 표시한다(작성자 기준 날짜).
 const dateFormatters = Object.fromEntries(
   (Object.keys(ui) as Lang[]).map((lang) => [

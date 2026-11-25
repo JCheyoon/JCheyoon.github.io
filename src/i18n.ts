@@ -36,7 +36,7 @@ export const ui = {
     themeToggle: "라이트/다크 테마 바꾸기",
     home: "홈",
     about: "소개",
-    archive: "아카이브",
+    archive: "기록",
     archiveDescription: (siteName: string, n: number) => `${siteName}의 전체 글 ${n}편을 연도별로 모았습니다.`,
     sidebar: "사이드바",
     categories: "카테고리",

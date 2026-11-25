@@ -105,9 +105,11 @@
 
 ### 2b. 블로그 MCP 서버 (SPEC §9.4, D10)
 
-- [ ] 사이트와 함께 쓰는 공통 스키마·검사 로직 분리
-- [ ] `mcp/` 서버 골격 (TypeScript, 공식 SDK, stdio)과 Claude Code 연결 설정
-- [ ] 도구: `list_posts`, `check_post`, `translate_post`, `create_draft`
+- [x] 사이트와 함께 쓰는 공통 스키마·검사 로직 분리
+- [x] `mcp/` 서버 골격 (TypeScript, 공식 SDK, stdio)과 Claude Code 연결 설정
+- [x] 도구: `list_posts`, `check_post`
+- [ ] 도구: `translate_post`, `create_draft`, `list_templates`
+- [ ] 글 템플릿 4종과 선택 블록 2종 (SPEC §5.7), `draft-post`가 주제에 맞는 템플릿을 제안
 - [ ] `publish-post`가 원문 발행 뒤 `translate_post`를 이어서 실행하도록 스킬 수정
 - [ ] 도구가 규칙을 강제하는지 확인하는 테스트 (잘못된 입력이 거부되는지)
 

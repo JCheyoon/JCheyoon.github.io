@@ -84,6 +84,7 @@
 - `src/lib/content-rules.ts`: 글 스키마와 검사 규칙의 단일 소스. 사이트 빌드, 검사 스크립트, MCP 서버가 함께 쓴다. Node가 직접 실행하므로 상대 경로 import에 `.ts`를 붙인다
 - `.github/workflows/site.yml`: PR 검증, master push 자동 배포, 수동 재배포
 - `public/`: 파비콘, 매니페스트
+- `mcp/`: 블로그 MCP 서버(SPEC §9.4). `server.ts`(stdio, 도구 등록), `tools.ts`(도구 동작), `server.test.ts`(`npm run test:mcp`, verify에 포함). Claude Code 연결 설정은 루트 `.mcp.json`
 
 ### 주의
 - `template-check`로 시작하는 글은 템플릿 검증용 샘플이다. 항상 `status: draft`로 둔다(check-content가 확인한다).

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "cheyoon-blog": {
+      "command": "node",
+      "args": ["mcp/server.ts"]
+    }
+  }
+}

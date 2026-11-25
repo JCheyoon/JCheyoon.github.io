@@ -12,12 +12,14 @@
     "check": "astro check",
     "check:content": "node scripts/check-content.ts",
     "check:html": "node scripts/check-html.mjs",
-    "verify": "npm run check:content && npm run check && npm run build:drafts && node scripts/check-html.mjs dist-drafts --drafts && npm run build && node scripts/check-html.mjs dist",
+    "test:mcp": "node --test mcp/server.test.ts",
+    "verify": "npm run check:content && npm run test:mcp && npm run check && npm run build:drafts && node scripts/check-html.mjs dist-drafts --drafts && npm run build && node scripts/check-html.mjs dist",
     "build:drafts": "INCLUDE_DRAFTS=true astro build"
   },
   "dependencies": {
     "@astrojs/rss": "4.0.19",
     "@astrojs/sitemap": "3.7.6",
+    "@modelcontextprotocol/server": "2.4.0",
     "@tailwindcss/typography": "0.5.20",
     "@tailwindcss/vite": "4.3.5",
     "astro": "7.4.13",
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
+    "@modelcontextprotocol/client": "2.4.0",
     "typescript": "5.9.3",
     "yaml": "2.9.1"
   }

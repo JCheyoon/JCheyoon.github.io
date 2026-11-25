@@ -15,11 +15,14 @@
       "Bash(git diff:*)",
       "Bash(git log:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "mcp__cheyoon-blog__list_posts",
+      "mcp__cheyoon-blog__check_post",
+      "mcp__cheyoon-blog__list_templates"
     ],
     "ask": [
       "Bash(npm run deploy:*)",
       "Bash(git push:*)",
+      "Bash(git commit:*)",
       "Bash(git reset:*)",
       "Edit(.env)"
     ],

@@ -8,6 +8,7 @@
 - 글은 Markdown + git으로 관리하고, draft → reviewed → published를 거친다.
   - 규칙: [.claude/rules/content.md](.claude/rules/content.md)
   - 스킬: `draft-post`, `review-post`, `publish-post`
+  - 초안·번역 파일은 블로그 MCP 서버(`cheyoon-blog`, `mcp/`)의 도구로 만든다. 이 저장소에서 Claude Code를 열면 `.mcp.json`으로 연결된다
 - push와 PR 생성은 `create-pr` 스킬로 한다(한글 PR, AI 작성 표시 없음). push 전에 반드시 PR 초안을 보여 주고 승인을 받는다. merge와 배포는 사람이 한다.
 - 라이브 사이트는 GitHub Actions(`site.yml`)로 배포된다. `master`에 merge하면 자동 배포된다(2026-11-25 전환). `gh-pages` 브랜치는 롤백용이다. `legacy/spa/`에서 `npm run deploy`를 실행하지 않는다. SPEC §3.1 참고.
 
@@ -85,6 +86,8 @@
 - `.github/workflows/site.yml`: PR 검증, master push 자동 배포, 수동 재배포
 - `public/`: 파비콘, 매니페스트
 - `mcp/`: 블로그 MCP 서버(SPEC §9.4). `server.ts`(stdio, 도구 등록), `tools.ts`(도구 동작), `server.test.ts`(`npm run test:mcp`, verify에 포함). Claude Code 연결 설정은 루트 `.mcp.json`
+  - 도구: `list_posts`, `check_post`, `list_templates`(읽기), `create_draft`, `translate_post`(쓰기). commit·push·상태 승격은 하지 않는다
+- `src/content/templates/`: 글 템플릿(SPEC §5.7). 기본 4종, 선택 블록 2종
 
 ### 주의
 - `template-check`로 시작하는 글은 템플릿 검증용 샘플이다. 항상 `status: draft`로 둔다(check-content가 확인한다).

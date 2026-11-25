@@ -82,7 +82,7 @@ server.registerTool(
       title: z.string().describe("본문과 일치하고 과장하지 않는 제목"),
       description: z.string().describe("검색 결과와 OG에 쓰는 요약"),
       category: z.enum(categorySlugs),
-      tags: z.array(z.string()).optional().describe("소문자"),
+      tags: z.array(z.string()).optional().describe("영문 소문자, 숫자, 하이픈만(D13). 태그 주소 /tag/<tag>/가 된다. 예: astro, github-actions"),
       audience: z.string().describe("대상 독자"),
       search_intent: z.string().describe("검색 의도 한 문장"),
       body: z.string().optional().describe("작성한 본문(Markdown, frontmatter 제외)"),

@@ -76,7 +76,8 @@
 ### 디렉터리
 - `src/content/posts/<slug>.md`: 글. frontmatter 스키마는 `src/content.config.ts`(SPEC §5.1)
 - `src/assets/posts/<slug>/`: 글 이미지(SPEC §5.4)
-- `src/pages/`: 라우트. `[...lang]/` 아래 파일 하나가 한국어(`/`, `/page/n/`, `/post/slug/`, `/category/slug/`)와 영어(`/en/...`) 페이지를 함께 만든다(D11). 그 밖에 `/about/`, `/en/about/`, `/404`, `/rss.xml`, `/en/rss.xml`, `/robots.txt`
+- `src/pages/`: 라우트. `[...lang]/` 아래 파일 하나가 한국어(`/`, `/page/n/`, `/post/slug/`, `/category/slug/`, `/tag/tag/`)와 영어(`/en/...`) 페이지를 함께 만든다(D11). 그 밖에 `/about/`, `/archive/`(+`/en/`), `/404`, `/rss.xml`, `/en/rss.xml`, `/robots.txt`
+  - `[...lang]/` 아래에 정적 이름 하나짜리 라우트(예: `[...lang]/archive.astro`)를 두면 `/archive/`가 홈 라우트(lang="archive")와 겹쳐 빌드가 실패한다. 그런 페이지는 `pages/x.astro`와 `pages/en/x.astro`가 같은 컴포넌트를 쓰게 한다(`ArchivePage.astro`)
 - `src/i18n.ts`: 언어 목록, 언어별 화면 문구, `localizePath`(주소에 `/en` 붙이기)
 - `src/layouts/`, `src/components/`: 레이아웃과 `.astro` 컴포넌트
 - `src/lib/posts.ts`: 글 조회(`getVisiblePosts`)와 주소·날짜 헬퍼

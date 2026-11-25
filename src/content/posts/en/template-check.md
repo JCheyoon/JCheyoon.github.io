@@ -3,7 +3,7 @@ title: "Template check sample post"
 slug: template-check
 description: "A sample for checking the English post template (title, body styles, image, table, code, sources, previous and next posts). It is never deployed."
 category: etc
-tags: [sample]
+tags: [sample, astro]
 status: draft
 lang: en
 translated_from: ko

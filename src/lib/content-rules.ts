@@ -38,9 +38,8 @@ export function postSchema<Src extends z.ZodType>(coverSrc: Src) {
       slug: z.string().regex(SLUG_PATTERN, "slug는 영문 소문자, 숫자, 하이픈만 쓴다"),
       description: z.string().min(1),
       category: z.enum(categorySlugs),
-      tags: z
-        .array(z.string().min(1).refine((t) => t === t.toLowerCase(), "태그는 소문자로 쓴다"))
-        .default([]),
+      // 태그는 주소(/tag/<tag>/)가 되고 번역본도 같은 태그를 쓴다(D13)
+      tags: z.array(z.string().regex(SLUG_PATTERN, "태그는 영문 소문자, 숫자, 하이픈만 쓴다(D13)")).default([]),
       status: z.enum(["draft", "reviewed", "published"]),
       lang: z.enum(LANGS).default("ko"),
       translated_from: z.enum(LANGS).optional(),

@@ -2,7 +2,7 @@
 // 프로필과 카테고리. 글이 없는 카테고리는 페이지가 없으므로 목록에 넣지 않는다(죽은 링크 방지).
 import { site } from "../site.config";
 import { categories, categoryName, categoryUrl } from "../data/categories";
-import { filterByCategory, type Post } from "../lib/posts";
+import { filterByCategory, tagCounts, tagUrl, type Post } from "../lib/posts";
 import { localizePath, ui, type Lang } from "../i18n";
 
 interface Props {
@@ -14,6 +14,7 @@ const { posts, lang } = Astro.props;
 const t = ui[lang];
 const path = Astro.url.pathname;
 const home = localizePath(lang, "/");
+const tags = tagCounts(posts);
 
 const listed = categories
   .map((c) => ({ ...c, count: filterByCategory(posts, c.slug).length }))
@@ -22,9 +23,9 @@ const listed = categories
 
 <aside class="flex flex-col gap-6" aria-label={t.sidebar}>
   <section class="rounded-2xl border bg-card px-5 py-5 text-center">
-    <p class="text-2xl font-bold tracking-wide">WELCOME</p>
-    <p class="mt-1 text-sm font-semibold">{site.author.name}</p>
-    <p class="mt-2 text-xs text-muted-foreground">{site.tagline[lang]}</p>
+    <p class="mt-1 text-sm font-semibold">WELCOME</p>
+    <span class="mx-auto mt-2 mb-2.5 block h-1 w-5 rounded-full bg-accent-bar" aria-hidden="true"></span>
+    <p class="text-xs text-muted-foreground">{site.tagline[lang]}</p>
     <ul class="mt-4 flex justify-center gap-3">
       {
         site.social.map((s) => (
@@ -65,6 +66,34 @@ const listed = categories
                 >
                   <span>{name}</span>
                   <span class="text-xs">{count}</span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    )
+  }
+  {
+    tags.length > 0 && (
+      <nav class="rounded-2xl border bg-card px-3 py-4" aria-label={t.tags}>
+        <h2 class="mb-3 px-2 text-base font-semibold text-muted-foreground">{t.tags}</h2>
+        <ul class="flex flex-wrap gap-2 px-2">
+          {tags.map(({ tag, count }) => {
+            const href = tagUrl(tag, lang);
+            const active = path === href;
+            return (
+              <li>
+                <a
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  aria-label={`#${tag} (${count})`}
+                  class:list={[
+                    "block rounded-lg px-2.5 py-1 text-sm transition",
+                    active ? "bg-background font-semibold text-foreground" : "bg-background/60 text-muted-foreground hover:bg-background hover:text-foreground",
+                  ]}
+                >
+                  {tag}
                 </a>
               </li>
             );

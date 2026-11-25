@@ -32,8 +32,23 @@ const posts = sidebar ? await getVisiblePosts(lang) : [];
 <html lang={t.htmlLang}>
   <head>
     <SeoHead {...seo} alternate={alternate ?? undefined} />
-    {/* 스크립트가 도는 환경 표시. 스크립트 없이도 동작하는 요소(맨 위로 버튼)가 이 값을 보고 모양을 바꾼다 */}
-    <script is:inline>document.documentElement.classList.add("js");</script>
+    {/*
+      그리기 전에 실행한다(첫 화면 깜빡임 방지, SPEC §8).
+      - js: 스크립트 없이도 동작하는 요소(맨 위로 버튼)가 이 값을 보고 모양을 바꾼다
+      - data-theme: 저장된 테마(D14)가 있을 때만 붙인다. 없으면 CSS가 시스템 설정을 실시간으로 따른다.
+        저장소를 못 쓰는 환경에서도 실패하지 않게 감싼다
+    */}
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        root.classList.add("js");
+        let saved = null;
+        try {
+          saved = localStorage.getItem("theme");
+        } catch {}
+        if (saved === "light" || saved === "dark") root.dataset.theme = saved;
+      })();
+    </script>
   </head>
   <body class="min-h-screen">
     <a

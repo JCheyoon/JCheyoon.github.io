@@ -37,7 +37,7 @@
   --secondary: oklch(0.87 0.015 189);
   --secondary-foreground: oklch(0.21 0.034 264.665);
   --muted: oklch(0.967 0.003 264.542);
-  --muted-foreground: oklch(0.551 0.027 264.364);
+  --muted-foreground: oklch(0.52 0.027 264.364); /* 레거시 0.551은 배경색 위 대비 4.21:1로 WCAG AA(4.5:1) 미달 */
   --accent-bar: oklch(0.6594 0.0659 194.387);
   --border: oklch(0.928 0.006 264.531);
   --ring: oklch(0.707 0.022 261.325);

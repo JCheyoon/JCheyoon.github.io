@@ -5,6 +5,7 @@ import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
 
 // Pretendard(OFL, src/assets/fonts/Pretendard-LICENSE.txt). 빌드할 때 한 번만 읽는다.
+// 경로는 저장소 루트 기준이다. 빌드는 항상 npm 스크립트로 저장소 루트에서 실행한다(번들된 뒤에는 import.meta.url이 dist를 가리켜 쓸 수 없다).
 const fonts = [
   { name: "Pretendard", weight: 700 as const, style: "normal" as const, data: readFileSync("src/assets/fonts/Pretendard-Bold.otf") },
   { name: "Pretendard", weight: 500 as const, style: "normal" as const, data: readFileSync("src/assets/fonts/Pretendard-Medium.otf") },
@@ -67,7 +68,8 @@ export async function renderOgImage({ title, category, date, author }: OgInput):
             h("div", { position: "absolute", left: 0, top: 12, width: 10, height: 46, borderRadius: 5, backgroundColor: COLORS.accent }),
             h(
               "div",
-              { fontSize: 56, fontWeight: 700, lineHeight: 1.3, color: COLORS.foreground, lineClamp: 3, wordBreak: "keep-all" },
+              // satori는 display: block일 때만 lineClamp를 적용한다
+              { display: "block", fontSize: 56, fontWeight: 700, lineHeight: 1.3, color: COLORS.foreground, lineClamp: 3, wordBreak: "keep-all" },
               title,
             ),
           ]),

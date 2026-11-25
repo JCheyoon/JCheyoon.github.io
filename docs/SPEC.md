@@ -104,6 +104,8 @@ Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 �
 | `/en/about/` | 영어 소개 | |
 | `/en/rss.xml` | 영어 글 RSS | `/rss.xml`은 한국어 글만 |
 | `/rss.xml`, `/sitemap-index.xml`, `/robots.txt` | 빌드 시 자동 생성 | |
+| `/og/<slug>.png`, `/og/en/<slug>.png` | 글 OG 이미지 | cover가 없는 글만(D12) |
+| `/pagefind/` | 검색 색인 | 공개 글이 있을 때만(D16) |
 | 그 밖의 경로 | `404.html` | 실제 404 상태 |
 
 slug 규칙:
@@ -178,7 +180,7 @@ slug 규칙:
 - alt(이미지 설명)는 필수다. 이미지를 볼 수 없는 사람에게 무엇이 보이는지 설명한다.
 - 외부 이미지 주소(https://...)는 쓰지 않는다. `check-content`가 잡는다.
 - 올리기 전에 긴 변을 2000px 안팎으로 줄인다(권장값). 원본이 git에 쌓이므로 저장소 크기를 관리하기 위해서다.
-- 대표 이미지(OG)는 frontmatter `cover: { src: ../../assets/posts/<slug>/cover.jpg, alt: ... }`로 지정한다. 없으면 빌드가 제목·카테고리·사이트 이름을 넣은 1200×630 이미지를 글마다 만든다(D12, Phase 3).
+- 대표 이미지(OG)는 frontmatter `cover: { src: ../../assets/posts/<slug>/cover.jpg, alt: ... }`로 지정한다. 없으면 빌드가 제목·카테고리·글쓴이·날짜를 넣은 1200×630 이미지를 글마다 만든다(D12, Phase 3, 2026-11-25 작성자 확인). 주소는 `/og/<slug>.png`, 영어 글은 `/og/en/<slug>.png`.
 
 ### 5.5 공개 범위
 

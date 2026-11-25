@@ -33,6 +33,8 @@ const lang = seo.lang ?? "ko";
 const switchHref = alternate === null ? undefined : (alternate ?? localizePath(otherLang(lang), "/"));
 const t = ui[lang];
 const posts = sidebar || categoryChips ? await getVisiblePosts(lang) : [];
+// 검색 색인은 공개 글이 있을 때만 만들어진다(scripts/build-search.mjs). 글이 없으면 검색 버튼·탭·창을 아예 그리지 않는다
+const searchable = (await getVisiblePosts(lang)).length > 0;
 ---
 
 <!doctype html>
@@ -63,7 +65,7 @@ const posts = sidebar || categoryChips ? await getVisiblePosts(lang) : [];
       class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-20 focus:rounded focus:bg-card focus:px-3 focus:py-2"
       >{t.skipToContent}</a
     >
-    <Header lang={lang} switchHref={switchHref} mobileBack={mobileBack} />
+    <Header lang={lang} switchHref={switchHref} mobileBack={mobileBack} searchable={searchable} />
     <div
       class:list={[
         // 768px 미만은 하단 탭 바(h-16)만큼 아래 여백을 더 둔다
@@ -105,7 +107,7 @@ const posts = sidebar || categoryChips ? await getVisiblePosts(lang) : [];
     </div>
     <Footer />
     <BackToTop lang={lang} variant="floating" />
-    <BottomTabs lang={lang} />
-    <SearchDialog lang={lang} />
+    <BottomTabs lang={lang} searchable={searchable} />
+    {searchable && <SearchDialog lang={lang} />}
   </body>
 </html>

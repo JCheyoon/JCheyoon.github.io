@@ -54,9 +54,12 @@ const chips = [
 
 <script>
   // 지금 카테고리 칩이 화면 밖이면 가로 위치를 옮겨 보이게 한다(세로 스크롤은 건드리지 않는다)
+  // 오른쪽 끝 흐림(40px)에 걸려도 화면 밖으로 본다
   const strip = document.querySelector<HTMLElement>("[data-category-chips]");
   const active = strip?.querySelector<HTMLElement>('[aria-current="page"]');
-  if (strip && active && active.offsetLeft + active.offsetWidth > strip.clientWidth) {
-    strip.scrollLeft = active.offsetLeft - 16;
+  if (strip && active) {
+    const s = strip.getBoundingClientRect();
+    const a = active.getBoundingClientRect();
+    if (a.right > s.right - 40) strip.scrollLeft += a.left - s.left - 16;
   }
 </script>

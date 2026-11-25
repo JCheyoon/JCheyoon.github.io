@@ -100,6 +100,8 @@ const t = ui[lang];
   };
   let pagefind: Pagefind | undefined;
   let selected = -1;
+  // 마지막으로 보낸 검색어. 늦게 끝난 이전 검색 결과가 지금 입력을 덮지 않게 한다
+  let latest = "";
 
   async function load(): Promise<Pagefind | undefined> {
     if (pagefind) return pagefind;
@@ -108,7 +110,10 @@ const t = ui[lang];
       const path = "/pagefind/pagefind.js";
       pagefind = (await import(/* @vite-ignore */ path)) as Pagefind;
     } catch {
-      status.textContent = text.failed;
+      // 개발 서버에는 색인이 없다(빌드 결과물에만 있다). 고장으로 오해하지 않게 개발 중에는 확인 방법을 알려 준다
+      status.textContent = import.meta.env.DEV
+        ? "개발 서버에는 검색 색인이 없습니다. npm run build:drafts 후 INCLUDE_DRAFTS=true npx astro preview로 확인하세요."
+        : text.failed;
     }
     return pagefind;
   }
@@ -129,6 +134,7 @@ const t = ui[lang];
   }
 
   async function search(query: string) {
+    latest = query;
     if (!query.trim()) {
       list.replaceChildren();
       status.textContent = text.empty;
@@ -137,8 +143,9 @@ const t = ui[lang];
     }
     const pf = await load();
     const found = await pf?.debouncedSearch(query);
-    if (!found) return; // 더 새 입력에 밀려 취소된 검색
+    if (!found || query !== latest) return; // 더 새 입력에 밀려 취소됐거나 그사이 입력이 바뀐 검색
     const results = await Promise.all(found.results.slice(0, 8).map((r) => r.data()));
+    if (query !== latest) return;
     list.replaceChildren(
       ...results.map((r) => {
         const li = document.createElement("li");
@@ -165,6 +172,8 @@ const t = ui[lang];
 
   input.addEventListener("input", () => search(input.value));
   input.addEventListener("keydown", (e) => {
+    // 한글 입력 중(조합 중)의 Enter·화살표는 글자를 확정하는 키라 결과를 열지 않는다
+    if (e.isComposing || e.keyCode === 229) return;
     if (e.key === "ArrowDown") (e.preventDefault(), select(selected + 1));
     if (e.key === "ArrowUp") (e.preventDefault(), select(selected - 1));
     if (e.key === "Enter") list.querySelectorAll<HTMLAnchorElement>("a")[selected]?.click();

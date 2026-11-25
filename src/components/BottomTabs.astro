@@ -6,9 +6,11 @@ import { localizePath, ui, type Lang } from "../i18n";
 
 interface Props {
   lang: Lang;
+  /** 검색할 글이 있을 때만 검색 탭을 그린다(BaseLayout) */
+  searchable: boolean;
 }
 
-const { lang } = Astro.props;
+const { lang, searchable } = Astro.props;
 const t = ui[lang];
 const path = Astro.url.pathname;
 const home = localizePath(lang, "/");
@@ -24,7 +26,7 @@ const about = { href: localizePath(lang, "/about/"), label: t.about, icon: "user
   class="fixed inset-x-0 bottom-0 z-20 border-t bg-card/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur md:hidden"
 >
   {/* 검색 탭은 스크립트가 있을 때만 보인다(.js). 없으면 3칸 */}
-  <ul class="bottom-tabs grid h-16 grid-cols-3">
+  <ul class:list={["grid h-16 grid-cols-3", searchable && "bottom-tabs"]}>
     {
       tabs.map((tab) => (
         <li>
@@ -44,12 +46,12 @@ const about = { href: localizePath(lang, "/about/"), label: t.about, icon: "user
         </li>
       ))
     }
-    <li class="search-tab hidden">
+    {searchable && (<li class="search-tab hidden">
       <button type="button" data-search-open class="flex h-full w-full flex-col items-center justify-center gap-0.5 text-[0.7rem] text-muted-foreground">
         <span class="flex h-7 w-12 items-center justify-center rounded-full"><Icon name="search" class="h-5 w-5" /></span>
         {t.search}
       </button>
-    </li>
+    </li>)}
     <li>
       <a
         href={about.href}

@@ -23,7 +23,7 @@ if (!existsSync(DIR)) {
   process.exit(1);
 }
 
-for (const required of ["index.html", "404.html", "rss.xml", "robots.txt", "sitemap-index.xml"]) {
+for (const required of ["index.html", "404.html", "rss.xml", "robots.txt", "sitemap-index.xml", "en/index.html", "en/rss.xml"]) {
   if (!existsSync(join(DIR, required))) fail(DIR, `${required}가 없다`);
 }
 
@@ -71,7 +71,9 @@ for (const file of htmlFiles) {
   const route = routeOf(file);
   const is404 = route === "/404.html";
 
-  if (!/<html[^>]*\blang="ko"/.test(html)) fail(route, '<html lang="ko">가 없다');
+  // 영어 사이트(/en/ 아래)는 lang="en", 나머지는 lang="ko" (D11)
+  const expectedLang = route.startsWith("/en/") ? "en" : "ko";
+  if (!new RegExp(`<html[^>]*\\blang="${expectedLang}"`).test(html)) fail(route, `<html lang="${expectedLang}">가 없다`);
 
   const titles = [...html.matchAll(/<title>([\s\S]*?)<\/title>/g)];
   if (titles.length !== 1 || !titles[0][1].trim()) fail(route, "<title>이 정확히 1개, 비어 있지 않아야 한다");
@@ -106,7 +108,7 @@ for (const file of htmlFiles) {
     if (!resolvesInDist(href)) fail(route, `내부 링크가 빌드 결과물에 없다(${href})`);
   }
 
-  if (route.startsWith("/post/")) {
+  if (route.startsWith("/post/") || route.startsWith("/en/post/")) {
     postPages += 1;
     if (!/<h1\b/.test(html)) fail(route, "h1이 없다");
     if (!html.includes('"@type":"BlogPosting"')) fail(route, "BlogPosting JSON-LD가 없다");

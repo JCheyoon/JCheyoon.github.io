@@ -5,6 +5,7 @@ import Header from "../components/Header.astro";
 import Sidebar from "../components/Sidebar.astro";
 import Footer from "../components/Footer.astro";
 import { getVisiblePosts } from "../lib/posts";
+import { ui } from "../i18n";
 import type { Props as SeoProps } from "../components/SeoHead.astro";
 
 type Props = SeoProps & {
@@ -13,11 +14,13 @@ type Props = SeoProps & {
 };
 
 const { sidebar = true, ...seo } = Astro.props;
-const posts = sidebar ? await getVisiblePosts() : [];
+const lang = seo.lang ?? "ko";
+const t = ui[lang];
+const posts = sidebar ? await getVisiblePosts(lang) : [];
 ---
 
 <!doctype html>
-<html lang="ko">
+<html lang={t.htmlLang}>
   <head>
     <SeoHead {...seo} />
   </head>
@@ -25,9 +28,9 @@ const posts = sidebar ? await getVisiblePosts() : [];
     <a
       href="#main"
       class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-20 focus:rounded focus:bg-card focus:px-3 focus:py-2"
-      >본문으로 건너뛰기</a
+      >{t.skipToContent}</a
     >
-    <Header />
+    <Header lang={lang} />
     <div
       class:list={[
         "mx-auto max-w-[1200px] px-4 py-6 md:px-6",
@@ -41,7 +44,7 @@ const posts = sidebar ? await getVisiblePosts() : [];
       {
         sidebar && (
           <div class="md:order-1">
-            <Sidebar posts={posts} />
+            <Sidebar posts={posts} lang={lang} />
           </div>
         )
       }

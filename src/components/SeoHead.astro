@@ -1,6 +1,7 @@
 ---
 // 모든 페이지가 쓰는 공통 head(SPEC §7). title, description, canonical, OG, JSON-LD를 넣는다.
 import { site } from "../site.config";
+import { localizePath, ui, type Lang } from "../i18n";
 
 export interface Props {
   /** 페이지 제목. 홈이면 사이트 이름만 쓴다. */
@@ -15,6 +16,7 @@ export interface Props {
   noindex?: boolean;
   jsonLd?: Record<string, unknown>[];
   isHome?: boolean;
+  lang?: Lang;
 }
 
 const {
@@ -27,12 +29,13 @@ const {
   noindex = false,
   jsonLd = [],
   isHome = false,
+  lang = "ko",
 } = Astro.props;
 
-const fullTitle = isHome ? `${site.name} | ${site.tagline}` : `${title} | ${site.name}`;
+const fullTitle = isHome ? `${site.name} | ${site.tagline[lang]}` : `${title} | ${site.name}`;
 const canonical = new URL(Astro.url.pathname, site.url).href;
 const imageUrl = new URL(image, site.url).href;
-const rssUrl = new URL("rss.xml", site.url).href;
+const rssUrl = new URL(localizePath(lang, "/rss.xml"), site.url).href;
 
 // </script>가 JSON 안에 들어가도 태그가 닫히지 않게 < 를 이스케이프한다.
 const serialize = (data: Record<string, unknown>) => JSON.stringify(data).replace(/</g, "\\u003c");
@@ -46,7 +49,7 @@ const serialize = (data: Record<string, unknown>) => JSON.stringify(data).replac
 {noindex && <meta name="robots" content="noindex" />}
 
 <meta property="og:site_name" content={site.name} />
-<meta property="og:locale" content="ko_KR" />
+<meta property="og:locale" content={ui[lang].ogLocale} />
 <meta property="og:type" content={type} />
 <meta property="og:title" content={isHome ? site.name : title} />
 <meta property="og:description" content={description} />

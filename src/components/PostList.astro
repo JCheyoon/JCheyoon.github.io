@@ -1,18 +1,19 @@
 ---
 import PostCard from "./PostCard.astro";
 import type { Post } from "../lib/posts";
+import { ui, type Lang } from "../i18n";
 
 interface Props {
   posts: Post[];
-  emptyMessage?: string;
+  lang: Lang;
 }
 
-const { posts, emptyMessage = "아직 발행된 글이 없습니다." } = Astro.props;
+const { posts, lang } = Astro.props;
 ---
 
 {
   posts.length === 0 ? (
-    <p class="rounded-2xl border bg-card px-6 py-10 text-center text-sm text-muted-foreground">{emptyMessage}</p>
+    <p class="rounded-2xl border bg-card px-6 py-10 text-center text-sm text-muted-foreground">{ui[lang].noPosts}</p>
   ) : (
     <div class="grid gap-6">
       {posts.map((post) => (

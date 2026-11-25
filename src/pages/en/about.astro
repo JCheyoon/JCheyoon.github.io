@@ -1,0 +1,43 @@
+---
+// 영어 소개 페이지(D11). 한국어 /about/의 번역이다. 문구는 작성자 검수 대상이다.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { site } from "../../site.config";
+
+const profile = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  mainEntity: {
+    "@type": "Person",
+    name: site.author.name,
+    sameAs: site.social.map((s) => s.href),
+  },
+};
+---
+
+<BaseLayout title="About" description={`About ${site.name} and its author, ${site.author.name}.`} jsonLd={[profile]} lang="en">
+  <article class="prose prose-slate max-w-3xl dark:prose-invert">
+    <h1>What this blog covers</h1>
+    <p>{site.description.en} I write mainly about things I have tried and verified myself.</p>
+
+    <h2>How posts are made</h2>
+    <ul>
+      <li>I sometimes use AI tools to help write drafts.</li>
+      <li>Before publishing, I check every post myself for facts, sources, and whether the experience is really mine.</li>
+      <li>Facts and numbers come with sources, and information that may change carries the date it was checked.</li>
+      <li>English posts are often translations of Korean posts. Translations are reviewed before they are published.</li>
+    </ul>
+
+    <h2>Contact</h2>
+    <ul>
+      {
+        site.social.map((s) => (
+          <li>
+            <a href={s.href} rel="me noopener">
+              {s.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </article>
+</BaseLayout>

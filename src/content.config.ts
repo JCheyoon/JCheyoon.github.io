@@ -4,8 +4,7 @@ import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { categorySlugs } from "./data/categories";
-
-const LANGS = ["ko", "en"] as const;
+import { LANGS } from "./i18n";
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 // YAML에서 `reviewed_at:`처럼 값을 비워 두면 null이 된다. 비어 있음은 undefined로 통일한다.

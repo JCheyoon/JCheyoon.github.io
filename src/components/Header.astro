@@ -1,24 +1,34 @@
 ---
 import Logo from "./Logo.astro";
 import { site } from "../site.config";
+import { localizePath, ui, type Lang } from "../i18n";
 
-// Phase 1 메뉴. 아카이브는 Phase 3, 문의는 Phase 4에서 추가한다(미구현 메뉴는 두지 않는다).
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+const home = localizePath(lang, "/");
+
+// 아카이브는 Phase 3, 문의는 Phase 4에서 추가한다(미구현 메뉴는 두지 않는다).
 const links = [
-  { href: "/", label: "홈" },
-  { href: "/about/", label: "소개" },
+  { href: home, label: t.home },
+  { href: localizePath(lang, "/about/"), label: t.about },
 ];
 
 const path = Astro.url.pathname;
-const isActive = (href: string) => (href === "/" ? path === "/" || path.startsWith("/page/") : path.startsWith(href));
+const isActive = (href: string) =>
+  href === home ? path === home || path.startsWith(localizePath(lang, "/page/")) : path.startsWith(href);
 ---
 
 <header class="sticky top-0 z-10 border-b bg-card/90 backdrop-blur">
   {/* 로고 | 메뉴(가운데) | 오른쪽 빈 칸. 오른쪽 칸은 언어 전환(Phase 2)·테마 토글(Phase 3) 자리라 메뉴가 밀리지 않는다 */}
   <div class="mx-auto grid h-16 max-w-[1200px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 md:px-6">
-    <a href="/" class="flex items-center justify-self-start text-foreground" aria-label={`${site.name} 홈`}>
+    <a href={home} class="flex items-center justify-self-start text-foreground" aria-label={`${site.name} ${t.home}`}>
       <Logo />
     </a>
-    <nav aria-label="주 메뉴">
+    <nav aria-label={t.mainMenu}>
       <ul class="flex items-center gap-1">
         {
           links.map((link) => (

@@ -1,8 +1,8 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import { categoryWithChildren } from "../data/categories";
+import { localizePath, ui, type Lang } from "../i18n";
 
 export type Post = CollectionEntry<"posts">;
-export type Lang = Post["data"]["lang"];
 
 /**
  * draft·reviewed 글을 보여 줄지 여부(SPEC §5.5).
@@ -19,7 +19,7 @@ export function postDate(post: Post): Date {
 
 /** 한국어 글은 `/post/<slug>/`, 영어 글은 `/en/post/<slug>/` (SPEC §4) */
 export function postUrl(post: Post): string {
-  return post.data.lang === "en" ? `/en/post/${post.data.slug}/` : `/post/${post.data.slug}/`;
+  return localizePath(post.data.lang, `/post/${post.data.slug}/`);
 }
 
 /** 공개 대상 글 중 한 언어의 글을 최신순으로 돌려준다. 언어별 사이트는 자기 언어 글만 보여 준다(D11). */
@@ -42,19 +42,20 @@ export function totalPages(count: number, pageSize: number): number {
 }
 
 /** 목록 n페이지 주소. 1페이지는 홈이다(SPEC §4). */
-export function listPageUrl(page: number): string {
-  return page <= 1 ? "/" : `/page/${page}/`;
+export function listPageUrl(page: number, lang: Lang = "ko"): string {
+  return localizePath(lang, page <= 1 ? "/" : `/page/${page}/`);
 }
 
-const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-  timeZone: "Asia/Seoul",
-});
+// 날짜는 언어와 관계없이 서울 기준으로 표시한다(작성자 기준 날짜).
+const dateFormatters = Object.fromEntries(
+  (Object.keys(ui) as Lang[]).map((lang) => [
+    lang,
+    new Intl.DateTimeFormat(ui[lang].dateLocale, { year: "numeric", month: "long", day: "numeric", timeZone: "Asia/Seoul" }),
+  ]),
+) as Record<Lang, Intl.DateTimeFormat>;
 
-export function formatDate(date: Date): string {
-  return dateFormatter.format(date);
+export function formatDate(date: Date, lang: Lang = "ko"): string {
+  return dateFormatters[lang].format(date);
 }
 
 /** <time datetime>와 JSON-LD용 YYYY-MM-DD */

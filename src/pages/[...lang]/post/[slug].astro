@@ -1,30 +1,47 @@
 ---
-// 글 페이지(SPEC §6, §7). 본문은 빌드 HTML에 들어가고, BlogPosting·BreadcrumbList JSON-LD를 넣는다.
+// 글 페이지(SPEC §6, §7). 한국어는 /post/<slug>/, 영어는 /en/post/<slug>/.
+// 본문은 빌드 HTML에 들어가고, BlogPosting·BreadcrumbList JSON-LD를 넣는다.
 import type { GetStaticPaths } from "astro";
 import { render } from "astro:content";
 import { Image } from "astro:assets";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import { site } from "../../site.config";
-import { getCategory } from "../../data/categories";
-import { formatDate, getVisiblePosts, isoDate, postDate, postUrl, type Post } from "../../lib/posts";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { site } from "../../../site.config";
+import { categoryName, categoryUrl, getCategory } from "../../../data/categories";
+import { formatDate, getVisiblePosts, isoDate, postDate, postUrl, type Post } from "../../../lib/posts";
+import { langPaths, localizePath, otherLang, ui } from "../../../i18n";
 
 export const getStaticPaths = (async () => {
-  const posts = await getVisiblePosts();
-  // posts는 최신순이다. newer = 바로 다음에 나온 글, older = 바로 앞에 나온 글.
-  return posts.map((post, i) => ({
-    params: { slug: post.id },
-    props: { post, newer: posts[i - 1], older: posts[i + 1] },
-  }));
+  const perLang = await Promise.all(
+    langPaths.map(async ({ params, props: { lang } }) => {
+      const posts = await getVisiblePosts(lang);
+      // 원문과 번역본은 같은 slug를 쓴다. 다른 언어에 공개된 같은 slug의 글이 짝이다(SPEC §9.2).
+      const otherPosts = await getVisiblePosts(otherLang(lang));
+      // posts는 최신순이다. newer = 바로 다음에 나온 글, older = 바로 앞에 나온 글. 같은 언어 안에서만 잇는다.
+      return posts.map((post, i) => ({
+        params: { ...params, slug: post.data.slug },
+        props: {
+          post,
+          newer: posts[i - 1],
+          older: posts[i + 1],
+          translation: otherPosts.find((p) => p.data.slug === post.data.slug),
+        },
+      }));
+    }),
+  );
+  return perLang.flat();
 }) satisfies GetStaticPaths;
 
 interface Props {
   post: Post;
   newer?: Post;
   older?: Post;
+  translation?: Post;
 }
 
-const { post, newer, older } = Astro.props;
+const { post, newer, older, translation } = Astro.props;
 const { data } = post;
+const lang = data.lang;
+const t = ui[lang];
 const { Content } = await render(post);
 
 const category = getCategory(data.category);
@@ -44,15 +61,15 @@ const jsonLd = [
     author: { "@type": "Person", name: site.author.name },
     image: new URL(ogImage, site.url).href,
     mainEntityOfPage: pageUrl,
-    inLanguage: "ko",
+    inLanguage: lang,
   },
   {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: site.name, item: new URL("/", site.url).href },
+      { "@type": "ListItem", position: 1, name: site.name, item: new URL(localizePath(lang, "/"), site.url).href },
       ...(category
-        ? [{ "@type": "ListItem", position: 2, name: category.name, item: new URL(`/category/${category.slug}/`, site.url).href }]
+        ? [{ "@type": "ListItem", position: 2, name: categoryName(category, lang), item: new URL(categoryUrl(category.slug, lang), site.url).href }]
         : []),
       { "@type": "ListItem", position: category ? 3 : 2, name: data.title, item: pageUrl },
     ],
@@ -69,24 +86,26 @@ const jsonLd = [
   modifiedTime={data.updated_at}
   noindex={isDraft}
   jsonLd={jsonLd}
+  lang={lang}
+  alternate={translation ? postUrl(translation) : null}
 >
   <article class="max-w-3xl">
     {
       isDraft && (
         <p class="mb-6 rounded-xl border border-dashed px-4 py-3 text-sm text-muted-foreground">
-          초안 미리보기입니다(status: {data.status}). 배포 빌드에는 포함되지 않습니다.
+          {t.draftNotice(data.status)}
         </p>
       )
     }
 
-    <nav aria-label="현재 위치" class="mb-4 text-xs text-muted-foreground">
-      <a href="/" class="hover:text-foreground">홈</a>
+    <nav aria-label={t.breadcrumb} class="mb-4 text-xs text-muted-foreground">
+      <a href={localizePath(lang, "/")} class="hover:text-foreground">{t.home}</a>
       {
         category && (
           <>
             <span aria-hidden="true"> / </span>
-            <a href={`/category/${category.slug}/`} class="hover:text-foreground">
-              {category.name}
+            <a href={categoryUrl(category.slug, lang)} class="hover:text-foreground">
+              {categoryName(category, lang)}
             </a>
           </>
         )
@@ -96,12 +115,12 @@ const jsonLd = [
     <header class="space-y-3">
       <h1 class="text-3xl font-bold leading-tight">{data.title}</h1>
       <p class="text-sm text-muted-foreground">
-        {site.author.name} · <time datetime={isoDate(published)}>{formatDate(published)}</time>
+        {site.author.name} · <time datetime={isoDate(published)}>{formatDate(published, lang)}</time>
         {
           data.updated_at && (
             <>
-              {" · 수정 "}
-              <time datetime={isoDate(data.updated_at)}>{formatDate(data.updated_at)}</time>
+              {` · ${t.updated} `}
+              <time datetime={isoDate(data.updated_at)}>{formatDate(data.updated_at, lang)}</time>
             </>
           )
         }
@@ -132,7 +151,7 @@ const jsonLd = [
       data.sources.length > 0 && (
         <section class="mt-10" aria-labelledby="sources-heading">
           <h2 id="sources-heading" class="text-lg font-semibold">
-            참고한 자료
+            {t.sources}
           </h2>
           <ul class="mt-3 list-disc space-y-1 pl-5 text-sm">
             {data.sources.map((s) => (
@@ -140,7 +159,7 @@ const jsonLd = [
                 <a href={s.url} rel="noopener" class="underline underline-offset-4">
                   {s.title}
                 </a>
-                <span class="text-muted-foreground"> ({formatDate(s.accessed)} 확인)</span>
+                <span class="text-muted-foreground"> ({t.accessed(formatDate(s.accessed, lang))})</span>
               </li>
             ))}
           </ul>
@@ -150,7 +169,7 @@ const jsonLd = [
 
     {
       data.tags.length > 0 && (
-        <ul class="mt-8 flex flex-wrap gap-2" aria-label="태그">
+        <ul class="mt-8 flex flex-wrap gap-2" aria-label={t.tags}>
           {data.tags.map((tag) => (
             <li class="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">#{tag}</li>
           ))}
@@ -160,10 +179,10 @@ const jsonLd = [
 
     {
       (newer || older) && (
-        <nav aria-label="이전 글과 다음 글" class="mt-10 grid gap-3 border-t pt-6 text-sm sm:grid-cols-2">
+        <nav aria-label={t.prevNextNav} class="mt-10 grid gap-3 border-t pt-6 text-sm sm:grid-cols-2">
           {older ? (
             <a href={postUrl(older)} rel="prev" class="rounded-xl bg-card px-4 py-3 hover:shadow">
-              <span class="block text-xs text-muted-foreground">이전 글</span>
+              <span class="block text-xs text-muted-foreground">{t.prevPost}</span>
               {older.data.title}
             </a>
           ) : (
@@ -171,7 +190,7 @@ const jsonLd = [
           )}
           {newer && (
             <a href={postUrl(newer)} rel="next" class="rounded-xl bg-card px-4 py-3 text-right hover:shadow">
-              <span class="block text-xs text-muted-foreground">다음 글</span>
+              <span class="block text-xs text-muted-foreground">{t.nextPost}</span>
               {newer.data.title}
             </a>
           )}

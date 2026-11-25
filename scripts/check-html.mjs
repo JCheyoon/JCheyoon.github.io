@@ -23,7 +23,7 @@ if (!existsSync(DIR)) {
   process.exit(1);
 }
 
-for (const required of ["index.html", "404.html", "rss.xml", "robots.txt", "sitemap-index.xml"]) {
+for (const required of ["index.html", "404.html", "rss.xml", "robots.txt", "sitemap-index.xml", "en/index.html", "en/rss.xml"]) {
   if (!existsSync(join(DIR, required))) fail(DIR, `${required}가 없다`);
 }
 
@@ -71,7 +71,9 @@ for (const file of htmlFiles) {
   const route = routeOf(file);
   const is404 = route === "/404.html";
 
-  if (!/<html[^>]*\blang="ko"/.test(html)) fail(route, '<html lang="ko">가 없다');
+  // 영어 사이트(/en/ 아래)는 lang="en", 나머지는 lang="ko" (D11)
+  const expectedLang = route.startsWith("/en/") ? "en" : "ko";
+  if (!new RegExp(`<html[^>]*\\blang="${expectedLang}"`).test(html)) fail(route, `<html lang="${expectedLang}">가 없다`);
 
   const titles = [...html.matchAll(/<title>([\s\S]*?)<\/title>/g)];
   if (titles.length !== 1 || !titles[0][1].trim()) fail(route, "<title>이 정확히 1개, 비어 있지 않아야 한다");
@@ -93,6 +95,20 @@ for (const file of htmlFiles) {
   if (canonical && meta(html, "property", "og:url") !== canonical) fail(route, "og:url이 canonical과 다르다");
   if (!/^https:\/\//.test(meta(html, "property", "og:image") ?? "")) fail(route, "og:image가 절대 URL이 아니다");
 
+  // hreflang(SPEC §9.2): 대상 페이지가 있고, 그 페이지도 이 페이지를 가리켜야 한다
+  for (const link of tags(html, "link").filter((a) => a.rel === "alternate" && a.hreflang)) {
+    const target = new URL(link.href).pathname;
+    if (target === route) continue;
+    if (!resolvesInDist(target)) {
+      fail(route, `hreflang 대상이 빌드 결과물에 없다(${target})`);
+      continue;
+    }
+    const back = tags(readFileSync(join(DIR, target, "index.html"), "utf8"), "link").some(
+      (a) => a.rel === "alternate" && a.hreflang && new URL(a.href).pathname === route,
+    );
+    if (!back) fail(route, `hreflang 대상(${target})이 이 페이지를 가리키지 않는다`);
+  }
+
   const noindex = meta(html, "name", "robots")?.includes("noindex");
   if (is404 && !noindex) fail(route, "404 페이지에 noindex가 없다");
 
@@ -106,7 +122,7 @@ for (const file of htmlFiles) {
     if (!resolvesInDist(href)) fail(route, `내부 링크가 빌드 결과물에 없다(${href})`);
   }
 
-  if (route.startsWith("/post/")) {
+  if (route.startsWith("/post/") || route.startsWith("/en/post/")) {
     postPages += 1;
     if (!/<h1\b/.test(html)) fail(route, "h1이 없다");
     if (!html.includes('"@type":"BlogPosting"')) fail(route, "BlogPosting JSON-LD가 없다");
@@ -124,13 +140,17 @@ if (!DRAFTS_MODE) {
     .filter((f) => /sitemap.*\.xml$|rss\.xml$/.test(f))
     .map((f) => readFileSync(f, "utf8"))
     .join("\n");
-  for (const file of readdirSync(POSTS_DIR).filter((f) => f.endsWith(".md"))) {
-    const front = readFileSync(join(POSTS_DIR, file), "utf8").match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? "";
-    const data = parse(front) ?? {};
-    if (data.status === "published") continue;
-    const slug = file.replace(/\.md$/, "");
-    if (existsSync(join(DIR, "post", slug))) fail(`/post/${slug}/`, `status: ${data.status} 글이 배포 결과물에 있다`);
-    if (feeds.includes(`/post/${slug}/`)) fail(`/post/${slug}/`, `status: ${data.status} 글이 sitemap이나 RSS에 있다`);
+  // 한국어 글 posts/<slug>.md → /post/<slug>/, 영어 글 posts/en/<slug>.md → /en/post/<slug>/
+  for (const [dir, prefix] of [[POSTS_DIR, "/post/"], [join(POSTS_DIR, "en"), "/en/post/"]]) {
+    if (!existsSync(dir)) continue;
+    for (const file of readdirSync(dir).filter((f) => f.endsWith(".md"))) {
+      const front = readFileSync(join(dir, file), "utf8").match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? "";
+      const data = parse(front) ?? {};
+      if (data.status === "published") continue;
+      const route = `${prefix}${file.replace(/\.md$/, "")}/`;
+      if (existsSync(join(DIR, route))) fail(route, `status: ${data.status} 글이 배포 결과물에 있다`);
+      if (feeds.includes(route)) fail(route, `status: ${data.status} 글이 sitemap이나 RSS에 있다`);
+    }
   }
 }
 

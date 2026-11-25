@@ -1,12 +1,15 @@
 ---
 // 목록 페이지(홈, n페이지, 카테고리) 맨 위의 제목 카드.
 // 모든 목록 페이지가 같은 높이의 카드로 시작해야 페이지를 옮겨도 사이드바와 윗선이 맞는다.
+import { ui, type Lang } from "../i18n";
+
 interface Props {
   title: string;
   count: number;
+  lang: Lang;
 }
 
-const { title, count } = Astro.props;
+const { title, count, lang } = Astro.props;
 ---
 
 <header class="mb-6 flex items-center justify-between gap-4 rounded-2xl border bg-card px-6 py-5">
@@ -14,5 +17,5 @@ const { title, count } = Astro.props;
     <span class="absolute left-0 top-1 h-5 w-1 rounded-full bg-accent-bar" aria-hidden="true"></span>
     <h1 class="text-lg font-bold leading-7">{title}</h1>
   </div>
-  <p class="shrink-0 text-sm text-muted-foreground">글 {count}편</p>
+  <p class="shrink-0 text-sm text-muted-foreground">{ui[lang].postCount(count)}</p>
 </header>

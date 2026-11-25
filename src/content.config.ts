@@ -4,7 +4,7 @@ import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { categorySlugs } from "./data/categories";
-
+import { LANGS } from "./i18n";
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 // YAML에서 `reviewed_at:`처럼 값을 비워 두면 null이 된다. 비어 있음은 undefined로 통일한다.
@@ -14,9 +14,11 @@ const optionalText = z.preprocess(emptyToUndefined, z.string().min(1).optional()
 
 const posts = defineCollection({
   loader: glob({
-    pattern: "*.md",
+    // 한국어 글은 posts/<slug>.md, 영어 글은 posts/en/<slug>.md (SPEC §9.2)
+    pattern: ["*.md", "en/*.md"],
     base: "./src/content/posts",
-    // 글 id(= 주소의 slug)는 파일명으로 정한다. frontmatter slug와 같은지는 check-content가 확인한다.
+    // 글 id는 경로로 정한다(한국어 `<slug>`, 영어 `en/<slug>`). 원문과 번역본이 같은 slug를 써도 겹치지 않는다.
+    // frontmatter slug가 파일명과 같은지, lang이 폴더와 맞는지는 check-content가 확인한다.
     generateId: ({ entry }) => entry.replace(/\.md$/, ""),
   }),
   schema: ({ image }) =>
@@ -30,6 +32,8 @@ const posts = defineCollection({
           .array(z.string().min(1).refine((t) => t === t.toLowerCase(), "태그는 소문자로 쓴다"))
           .default([]),
         status: z.enum(["draft", "reviewed", "published"]),
+        lang: z.enum(LANGS).default("ko"),
+        translated_from: z.enum(LANGS).optional(),
         ai_assisted: z.boolean(),
         audience: z.string().min(1),
         search_intent: z.string().min(1),
@@ -57,6 +61,14 @@ const posts = defineCollection({
           .optional(),
       })
       .superRefine((data, ctx) => {
+        if (data.translated_from !== undefined) {
+          if (data.translated_from === data.lang) {
+            ctx.addIssue({ code: "custom", path: ["translated_from"], message: "translated_from은 글의 lang과 달라야 한다" });
+          }
+          if (!data.ai_assisted) {
+            ctx.addIssue({ code: "custom", path: ["ai_assisted"], message: "번역본은 AI 초안이므로 ai_assisted: true다 (SPEC §9.2)" });
+          }
+        }
         if (data.status !== "draft") {
           for (const field of ["reviewed_at", "reviewed_by", "review_notes"] as const) {
             if (data[field] === undefined) {

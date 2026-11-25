@@ -20,6 +20,8 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) => !new URL(page).pathname.startsWith("/404"),
+      // 한국어 /x/와 영어 /en/x/가 둘 다 있으면 서로를 대체 언어로 넣는다(SPEC §9.2)
+      i18n: { defaultLocale: "ko", locales: { ko: "ko", en: "en" } },
     }),
   ],
   vite: {

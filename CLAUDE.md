@@ -75,7 +75,8 @@
 ### 디렉터리
 - `src/content/posts/<slug>.md`: 글. frontmatter 스키마는 `src/content.config.ts`(SPEC §5.1)
 - `src/assets/posts/<slug>/`: 글 이미지(SPEC §5.4)
-- `src/pages/`: 라우트. `/`, `/page/[page]/`, `/post/[slug]/`, `/category/[slug]/`, `/about/`, `/404`, `/rss.xml`, `/robots.txt`
+- `src/pages/`: 라우트. `[...lang]/` 아래 파일 하나가 한국어(`/`, `/page/n/`, `/post/slug/`, `/category/slug/`)와 영어(`/en/...`) 페이지를 함께 만든다(D11). 그 밖에 `/about/`, `/en/about/`, `/404`, `/rss.xml`, `/en/rss.xml`, `/robots.txt`
+- `src/i18n.ts`: 언어 목록, 언어별 화면 문구, `localizePath`(주소에 `/en` 붙이기)
 - `src/layouts/`, `src/components/`: 레이아웃과 `.astro` 컴포넌트
 - `src/lib/posts.ts`: 글 조회(`getVisiblePosts`)와 주소·날짜 헬퍼
 - `src/site.config.ts`, `src/data/`: 사이트 정보, 카테고리, 제휴 도메인(단일 소스)
@@ -84,7 +85,8 @@
 - `public/`: 파비콘, 매니페스트
 
 ### 주의
-- `src/content/posts/template-check.md`는 템플릿 검증용 샘플이다. 항상 `status: draft`로 둔다(check-content가 확인한다).
+- `template-check`로 시작하는 글은 템플릿 검증용 샘플이다. 항상 `status: draft`로 둔다(check-content가 확인한다).
+  - `posts/template-check.md`(한국어 원문), `posts/en/template-check.md`(그 영어 번역본), `posts/en/template-check-en.md`(영어 원문, 번역본 없음)
 - 주소는 끝 슬래시를 붙인다(D5): `/post/slug/`.
 - 코드 규칙: `.claude/rules/site-code.md`, `.claude/rules/rendering-seo.md`
 

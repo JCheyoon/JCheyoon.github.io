@@ -4,8 +4,15 @@
 export const site = {
   url: import.meta.env.SITE,
   name: "CHEYOON",
-  description: "소프트웨어를 만들며 직접 겪은 문제와 해결을 기록하는 블로그입니다.",
-  tagline: "소프트웨어를 만들며 배운 것을 기록합니다.",
+  // 언어별 문구(D11). 영어 문구는 작성자 검수 대상이다.
+  description: {
+    ko: "소프트웨어를 만들며 직접 겪은 문제와 해결을 기록하는 블로그입니다.",
+    en: "A blog about problems I ran into while building software, and how I solved them.",
+  },
+  tagline: {
+    ko: "소프트웨어를 만들며 배운 것을 기록합니다.",
+    en: "Notes on what I learn building software.",
+  },
   author: {
     name: "Jung Cheyoon",
   },

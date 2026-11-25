@@ -3,11 +3,13 @@
 // frontmatter 필드와 상태별 필수값은 src/content.config.ts의 스키마가 빌드 때 검사한다.
 //
 // reviewed·published 글은 문제가 있으면 실패(exit 1), draft 글은 경고만 낸다.
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { basename, join } from "node:path";
 import { parse } from "yaml";
 
 const POSTS_DIR = "src/content/posts";
+// 언어별 폴더(SPEC §9.2): 한국어는 posts/, 영어는 posts/en/
+const LANG_DIRS = { ko: POSTS_DIR, en: join(POSTS_DIR, "en") };
 const TEMPLATE_FIXTURE = "template-check";
 const MARKERS = ["[경험 추가 필요", "[출처 확인 필요"];
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -15,7 +17,10 @@ const { domains: AFFILIATE_DOMAINS } = JSON.parse(readFileSync("src/data/affilia
 
 const errors = [];
 const warnings = [];
-const slugs = new Map();
+const slugs = new Map(); // "<lang>/<slug>" → 파일 경로
+const translations = []; // 번역본: 원문이 있는지는 모든 글을 읽은 뒤 확인한다
+const translatedKeys = new Map(); // "<lang>/<slug>" → 번역본인지
+const frontByKey = new Map(); // "<lang>/<slug>" → frontmatter (원문·번역본 날짜 비교용)
 
 function isAffiliate(url) {
   try {
@@ -26,11 +31,13 @@ function isAffiliate(url) {
   }
 }
 
-const files = readdirSync(POSTS_DIR).filter((f) => f.endsWith(".md"));
+const files = Object.entries(LANG_DIRS).flatMap(([dirLang, dir]) =>
+  existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith(".md")).map((file) => ({ dirLang, dir, file })) : [],
+);
 
-for (const file of files) {
-  const where = `${POSTS_DIR}/${file}`;
-  const raw = readFileSync(join(POSTS_DIR, file), "utf8");
+for (const { dirLang, dir, file } of files) {
+  const where = `${dir}/${file}`;
+  const raw = readFileSync(join(dir, file), "utf8");
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
   if (!match) {
     errors.push(`${where}: frontmatter(---로 감싼 머리말)가 없다`);
@@ -53,11 +60,22 @@ for (const file of files) {
   // slug = 파일명 (글 주소가 파일명으로 정해진다)
   if (!SLUG_PATTERN.test(name)) errors.push(`${where}: 파일명은 영문 소문자·숫자·하이픈만 쓴다`);
   if (data.slug !== name) errors.push(`${where}: frontmatter slug(${data.slug})가 파일명(${name})과 다르다`);
-  if (slugs.has(data.slug)) errors.push(`${where}: slug가 ${slugs.get(data.slug)}와 겹친다`);
-  slugs.set(data.slug, where);
+  // 같은 언어 안에서만 slug가 겹치면 안 된다. 원문과 번역본은 같은 slug를 쓴다.
+  const key = `${dirLang}/${data.slug}`;
+  if (slugs.has(key)) errors.push(`${where}: slug가 ${slugs.get(key)}와 겹친다`);
+  slugs.set(key, where);
 
-  // 템플릿 검증용 샘플은 절대 발행하지 않는다
-  if (name === TEMPLATE_FIXTURE && data.status !== "draft") {
+  // lang은 폴더와 맞아야 한다 (lang을 생략하면 ko)
+  const lang = data.lang ?? "ko";
+  if (lang !== dirLang) errors.push(`${where}: lang(${lang})이 폴더(${dirLang === "en" ? "posts/en/" : "posts/"})와 맞지 않다`);
+
+  // 번역본은 반대 언어 폴더에 같은 slug의 원문이 있어야 한다
+  if (data.translated_from) translations.push({ where, slug: data.slug, from: data.translated_from });
+  translatedKeys.set(key, Boolean(data.translated_from));
+  frontByKey.set(key, data);
+
+  // 템플릿 검증용 샘플(template-check로 시작하는 파일)은 절대 발행하지 않는다
+  if (name.startsWith(TEMPLATE_FIXTURE) && data.status !== "draft") {
     errors.push(`${where}: 템플릿 검증용 샘플은 status: draft로 둔다`);
   }
 
@@ -78,6 +96,32 @@ for (const file of files) {
   for (const [, alt, src] of body.matchAll(/!\[([^\]]*)\]\(([^)\s]+)[^)]*\)/g)) {
     if (!alt.trim()) report(`이미지(${src})에 alt가 없다`);
     if (/^https?:\/\//.test(src)) report(`외부 이미지(${src})는 쓰지 않는다. src/assets/posts/${name}/에 넣는다`);
+  }
+}
+
+for (const { where, slug, from } of translations) {
+  if (!slugs.has(`${from}/${slug}`)) {
+    errors.push(`${where}: 원문(${from}, slug ${slug})이 없다`);
+    continue;
+  }
+  // 검수를 마친 번역본인데 그 뒤에 원문이 고쳐졌으면 재검수 대상이다(SPEC §9.2). 발행은 막지 않고 경고만 낸다.
+  const original = frontByKey.get(`${from}/${slug}`);
+  const translation = frontByKey.get(`${from === "ko" ? "en" : "ko"}/${slug}`);
+  const updated = original.updated_at ? new Date(original.updated_at) : undefined;
+  const reviewed = translation.reviewed_at ? new Date(translation.reviewed_at) : undefined;
+  if (updated && reviewed && updated > reviewed) {
+    warnings.push(
+      `${where}: 원문이 번역 검수 뒤에 고쳐졌다(원문 updated_at ${original.updated_at} > 번역본 reviewed_at ${translation.reviewed_at}). 번역본을 원문에 맞춰 고치고 다시 검수한다`,
+    );
+  }
+}
+
+// 두 언어에 같은 slug가 있으면 원문·번역본 짝이어야 한다. 사이트는 같은 slug를 짝으로 보고 서로 연결한다.
+for (const [key, where] of slugs) {
+  if (!key.startsWith("en/")) continue;
+  const koKey = `ko/${key.slice(3)}`;
+  if (slugs.has(koKey) && !translatedKeys.get(key) && !translatedKeys.get(koKey)) {
+    errors.push(`${where}: ${slugs.get(koKey)}와 slug가 같은데 어느 쪽도 translated_from이 없다. 번역 관계가 아니면 slug를 다르게 쓴다`);
   }
 }
 

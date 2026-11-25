@@ -1,14 +1,17 @@
 ---
 // 프로필과 카테고리. 글이 없는 카테고리는 페이지가 없으므로 목록에 넣지 않는다(죽은 링크 방지).
 import { site } from "../site.config";
-import { categories } from "../data/categories";
+import { categories, categoryName, categoryUrl } from "../data/categories";
 import { filterByCategory, type Post } from "../lib/posts";
+import { ui, type Lang } from "../i18n";
 
 interface Props {
   posts: Post[];
+  lang: Lang;
 }
 
-const { posts } = Astro.props;
+const { posts, lang } = Astro.props;
+const t = ui[lang];
 const path = Astro.url.pathname;
 
 const listed = categories
@@ -16,11 +19,11 @@ const listed = categories
   .filter((c) => c.count > 0);
 ---
 
-<aside class="flex flex-col gap-6" aria-label="사이드바">
+<aside class="flex flex-col gap-6" aria-label={t.sidebar}>
   <section class="rounded-2xl border bg-card px-5 py-5 text-center">
     <p class="text-2xl font-bold tracking-wide">WELCOME</p>
     <p class="mt-1 text-sm font-semibold">{site.author.name}</p>
-    <p class="mt-2 text-xs text-muted-foreground">{site.tagline}</p>
+    <p class="mt-2 text-xs text-muted-foreground">{site.tagline[lang]}</p>
     <ul class="mt-4 flex justify-center gap-3">
       {
         site.social.map((s) => (
@@ -36,14 +39,14 @@ const listed = categories
 
   {
     listed.length > 0 && (
-      <nav class="rounded-2xl border bg-card px-3 py-4" aria-label="카테고리">
+      <nav class="rounded-2xl border bg-card px-3 py-4" aria-label={t.categories}>
         <h2 class="mb-3 flex items-center px-2 text-base font-semibold text-muted-foreground">
           <span class="mr-2 h-5 w-1 rounded bg-accent-bar" aria-hidden="true" />
-          카테고리
+          {t.categories}
         </h2>
         <ul class="flex flex-col gap-1">
           {listed.map((c) => {
-            const href = `/category/${c.slug}/`;
+            const href = categoryUrl(c.slug, lang);
             const active = path === href;
             return (
               <li>
@@ -59,7 +62,7 @@ const listed = categories
                 >
                   <span class="flex items-center gap-2">
                     {active && <span class="h-3.5 w-0.5 rounded bg-accent-bar" aria-hidden="true" />}
-                    {c.name}
+                    {categoryName(c, lang)}
                   </span>
                   <span class="text-xs">{c.count}</span>
                 </a>

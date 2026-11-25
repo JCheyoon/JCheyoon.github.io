@@ -1,0 +1,48 @@
+---
+// 목록 2페이지부터(SPEC §4: /page/[n]/, /en/page/[n]/, n ≥ 2). 1페이지는 홈이다.
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import ListHeader from "../../../components/ListHeader.astro";
+import PostList from "../../../components/PostList.astro";
+import Pagination from "../../../components/Pagination.astro";
+import { site } from "../../../site.config";
+import { getVisiblePosts, listPageUrl, totalPages } from "../../../lib/posts";
+import { langPaths, otherLang, ui } from "../../../i18n";
+
+export const getStaticPaths = (async () => {
+  const perLang = await Promise.all(
+    langPaths.map(async ({ params, props: { lang } }) => {
+      const posts = await getVisiblePosts(lang);
+      const pageCount = totalPages(posts.length, site.pageSize);
+      // 다른 언어에 같은 번호의 페이지가 있을 때만 그 페이지를 짝으로 둔다
+      const other = otherLang(lang);
+      const otherPageCount = totalPages((await getVisiblePosts(other)).length, site.pageSize);
+      return Array.from({ length: Math.max(0, pageCount - 1) }, (_, i) => {
+        const page = i + 2;
+        const start = (page - 1) * site.pageSize;
+        return {
+          params: { ...params, page: String(page) },
+          props: {
+            lang,
+            page,
+            pageCount,
+            total: posts.length,
+            posts: posts.slice(start, start + site.pageSize),
+            alternate: page <= otherPageCount ? listPageUrl(page, other) : undefined,
+          },
+        };
+      });
+    }),
+  );
+  return perLang.flat();
+}) satisfies GetStaticPaths;
+
+const { lang, page, pageCount, total, posts, alternate } = Astro.props;
+const t = ui[lang];
+---
+
+<BaseLayout title={t.listPageTitle(page)} description={t.listPageDescription(site.name, page)} lang={lang} alternate={alternate}>
+  <ListHeader title={t.listPageHeading(page)} count={total} lang={lang} />
+  <PostList posts={posts} lang={lang} />
+  <Pagination current={page} total={pageCount} lang={lang} />
+</BaseLayout>

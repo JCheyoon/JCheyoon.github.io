@@ -118,9 +118,9 @@ export interface DraftInput {
 
 export type WriteResult = { ok: true; path: string; warnings: string[] } | { ok: false; errors: string[] };
 
-/** 작성자 기준 날짜(서울) YYYY-MM-DD */
+/** 작성자가 있는 곳(이 컴퓨터의 시간대)의 오늘 YYYY-MM-DD */
 function today(): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date());
+  return new Intl.DateTimeFormat("en-CA").format(new Date());
 }
 
 /** frontmatter를 저장소의 글과 같은 순서·모양으로 쓴다. 빈 값은 `key:`로 둔다. */
@@ -266,7 +266,7 @@ export function translatePost(root: string, input: TranslationInput): WriteResul
     updated_at: null,
     disclosure: input.disclosure?.trim() || null,
     ...(o.sources ? { sources: o.sources } : {}),
-    // cover alt는 원문 언어 그대로다. 검수할 때 번역한다.
+    // cover alt는 원문 언어 그대로다. 저장한 뒤 번역한다(publish-post 3단계, translate_post 설명).
     ...(cover ? { cover: { src: moveRelative(cover.src, input.from, to), alt: cover.alt } } : {}),
   };
   return writeChecked(root, to, input.slug, renderPost(front, input.body));

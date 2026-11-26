@@ -24,21 +24,9 @@ const profile = {
     <ul>
       <li>I sometimes use AI tools to help write drafts.</li>
       <li>Before publishing, I check every post myself for facts, sources, and whether the experience is really mine.</li>
-      <li>Facts and numbers come with sources, and information that may change carries the date it was checked.</li>
+      <li>Facts and numbers that affect a post's conclusion or your decisions come with sources.</li>
+      <li>Information is current as of the post's publication date. If I change a post, it shows the date it was updated.</li>
       <li>English posts are often translations of Korean posts. Translations are reviewed before they are published.</li>
-    </ul>
-
-    <h2>Contact</h2>
-    <ul>
-      {
-        site.social.map((s) => (
-          <li>
-            <a href={s.href} rel="me noopener">
-              {s.label}
-            </a>
-          </li>
-        ))
-      }
     </ul>
   </article>
 </BaseLayout>

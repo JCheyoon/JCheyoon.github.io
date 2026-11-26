@@ -19,7 +19,7 @@ ASTRO_TELEMETRY_DISABLED=1 npm run verify
 | 2 | `npm run test:mcp`, `npm run test:linkedin` | 블로그 MCP 서버 도구, LinkedIn 게시 대상 선정과 요청 형식(LinkedIn은 호출하지 않는다) |
 | 3 | `npm run check` | `astro check` 타입 검사, frontmatter 스키마(`src/content.config.ts`) |
 | 4 | `npm run build:drafts` + `check-html dist-drafts --drafts` | 초안까지 포함해 템플릿을 검증한다. 글 페이지가 1개 이상 있어야 한다(`template-check` 샘플) |
-| 5 | `npm run build` + `check-html dist` | 배포 결과물: title·description·canonical·OG·lang, 내부 링크, img alt, 404 noindex, 초안이 결과물·sitemap·RSS·`/data/posts.json`에 없는지 |
+| 5 | `npm run build` + `check-html dist` | 배포 결과물: title·description·canonical·OG·lang, 내부 링크, 바깥 링크의 새 탭 열기, img alt, 404 noindex, 초안이 결과물·sitemap·RSS·`/data/posts.json`에 없는지 |
 
 ## 실패했을 때
 

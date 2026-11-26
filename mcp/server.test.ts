@@ -5,7 +5,7 @@ import { after, before, describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Client } from "@modelcontextprotocol/client";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
@@ -26,7 +26,11 @@ async function call(name: string, args: Record<string, unknown> = {}) {
 
 before(async () => {
   root = mkdtempSync(join(tmpdir(), "blog-mcp-test-"));
-  cpSync(join(REPO, POSTS), join(root, POSTS), { recursive: true });
+  // 샘플 글(template-check*)만 복사한다. 실제 글까지 복사하면 글을 발행할 때마다 목록 테스트의 기대값이 달라진다
+  cpSync(join(REPO, POSTS), join(root, POSTS), {
+    recursive: true,
+    filter: (source) => !source.endsWith(".md") || basename(source).startsWith("template-check"),
+  });
   cpSync(join(REPO, TEMPLATES), join(root, TEMPLATES), { recursive: true });
   cpSync(join(REPO, "src/assets/posts"), join(root, "src/assets/posts"), { recursive: true });
 

@@ -31,7 +31,7 @@ const groups = [...Map.groupBy(posts, (p) => yearOf(postDate(p)))].sort(([a], [b
       groups.map(([year, list]) => (
         <div>
           <div class="flex h-15 items-center">
-            <h2 class="w-[18%] text-right text-2xl font-bold md:w-[12%]">{year}</h2>
+            <h2 class="w-18 shrink-0 text-right text-2xl font-bold md:w-[12%] md:min-w-18">{year}</h2>
             <div class="flex w-[12%] justify-center md:w-[8%]">
               <span class="h-3 w-3 rounded-full border-[3px] border-accent-bar" aria-hidden="true" />
             </div>
@@ -41,7 +41,7 @@ const groups = [...Map.groupBy(posts, (p) => yearOf(postDate(p)))].sort(([a], [b
             {list.map((post) => (
               <li>
                 <a href={postUrl(post)} class="group flex h-10 items-center rounded-lg transition hover:bg-background">
-                  <time datetime={isoDate(postDate(post))} class="w-[18%] text-right text-sm text-muted-foreground md:w-[12%]">
+                  <time datetime={isoDate(postDate(post))} class="w-18 shrink-0 text-right text-sm text-muted-foreground md:w-[12%] md:min-w-18">
                     {formatMonthDay(postDate(post))}
                   </time>
                   <span class="archive-line relative flex h-full w-[12%] items-center justify-center md:w-[8%]" aria-hidden="true">

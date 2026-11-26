@@ -26,7 +26,8 @@ Phase 1에서 만든 코드를 기준으로 정리했다(2026-11-23).
 ## 글 데이터
 - 글 목록은 항상 `getVisiblePosts()`로 가져온다. `getCollection("posts")`를 페이지에서 직접 부르지 않는다. 초안 공개 여부가 그 함수 한 곳에서 결정된다.
 - 글 주소는 `postUrl()`, 전체 글 목록 주소는 `listPageUrl()`, 카테고리·태그 목록의 n페이지는 `pagedUrl(1페이지 주소, n)`으로 만든다. 문자열로 직접 조합하지 않는다.
-- 날짜 표시는 `formatDate()`(언어별, Asia/Seoul), 아카이브의 월·일은 `formatMonthDay()`, `<time datetime>`은 `isoDate()`를 쓴다.
+- 글의 날짜는 작성자가 적은 달력의 날짜다. 새로 적을 때는 이 컴퓨터 시간대의 오늘을 쓰고, 보여 줄 때는 변환 없이 UTC로 표시한다(도시 시간대를 코드에 넣지 않는다).
+- 날짜 표시는 `formatDate()`(언어별), 아카이브의 월·일은 `formatMonthDay()`, `<time datetime>`은 `isoDate()`를 쓴다.
 
 ## 마크업과 스타일
 - 기본은 JS 없는 정적 HTML이다. `client:*` 아일랜드는 SPEC §8에 적힌 것만 쓴다.

@@ -84,11 +84,12 @@ export function isListPage(path: string, lang: Lang = "ko"): boolean {
   return path === localizePath(lang, "/") || ["/page/", "/category/", "/tag/"].some((p) => path.startsWith(localizePath(lang, p)));
 }
 
-// 날짜는 언어와 관계없이 서울 기준으로 표시한다(작성자 기준 날짜).
+// 글의 날짜(YYYY-MM-DD)는 작성자가 적은 달력의 날짜다. 시간대 변환 없이 적힌 그대로 보여 준다.
+// 날짜만 적은 값은 UTC 0시로 읽히므로 표시도 UTC로 해야 같은 날짜가 나온다.
 const dateFormatters = Object.fromEntries(
   (Object.keys(ui) as Lang[]).map((lang) => [
     lang,
-    new Intl.DateTimeFormat(ui[lang].dateLocale, { year: "numeric", month: "long", day: "numeric", timeZone: "Asia/Seoul" }),
+    new Intl.DateTimeFormat(ui[lang].dateLocale, { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }),
   ]),
 ) as Record<Lang, Intl.DateTimeFormat>;
 
@@ -97,22 +98,22 @@ export function formatDate(date: Date, lang: Lang = "ko"): string {
 }
 
 // 아카이브의 월·일(MM-DD). 연도는 아카이브가 묶음 제목으로 따로 보여 준다
-const monthDayFormatter = new Intl.DateTimeFormat("en-CA", { month: "2-digit", day: "2-digit", timeZone: "Asia/Seoul" });
-const yearFormatter = new Intl.DateTimeFormat("en", { year: "numeric", timeZone: "Asia/Seoul" });
+const monthDayFormatter = new Intl.DateTimeFormat("en-CA", { month: "2-digit", day: "2-digit", timeZone: "UTC" });
+const yearFormatter = new Intl.DateTimeFormat("en", { year: "numeric", timeZone: "UTC" });
 
 export function formatMonthDay(date: Date): string {
   return monthDayFormatter.format(date);
 }
 
-/** 서울 기준 연도(화면 날짜와 같은 기준) */
+/** 연도(화면 날짜와 같은 기준) */
 export function yearOf(date: Date): number {
   return Number(yearFormatter.format(date));
 }
 
-// 화면 날짜와 같은 서울 기준 날짜. UTC로 자르면 서울 오전 9시 전 글은 하루 앞 날짜가 된다
-const isoDateFormatter = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Seoul" });
+// 화면 날짜와 같은 기준의 날짜
+const isoDateFormatter = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "UTC" });
 
-/** <time datetime>용 YYYY-MM-DD(서울 기준) */
+/** <time datetime>용 YYYY-MM-DD */
 export function isoDate(date: Date): string {
   return isoDateFormatter.format(date);
 }

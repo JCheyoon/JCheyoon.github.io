@@ -1,5 +1,6 @@
 ---
 // 푸터(SPEC §6): 문의·개인정보 처리방침·이용약관 링크와 저작권. 링크는 지금 언어의 페이지로 간다.
+// 768px 미만에서는 GitHub 링크도 보인다.
 import { site } from "../site.config";
 import { localizePath, ui, type Lang } from "../i18n";
 
@@ -25,6 +26,16 @@ const links = [
           <li>
             <a href={link.href} class="hover:text-foreground hover:underline">
               {link.label}
+            </a>
+          </li>
+        ))
+      }
+      {/* 768px 미만은 사이드바(GitHub 링크가 있는 곳)를 숨기므로 푸터에서 보여 준다 */}
+      {
+        site.social.map((s) => (
+          <li class="md:hidden">
+            <a href={s.href} target="_blank" rel="me noopener" class="hover:text-foreground hover:underline">
+              {s.label}
             </a>
           </li>
         ))

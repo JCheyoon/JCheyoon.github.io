@@ -30,6 +30,12 @@ jobs:
           if [ "$count" != "0" ]; then exit 0; fi
           gh issue create --title "$title" --body "LinkedIn 액세스 토큰은 발급 60일 뒤 만료됩니다.
 
-          1. https://www.linkedin.com/developers/tools/oauth/token-generator 에서 openid, profile, w_member_social로 다시 발급합니다.
-          2. Settings → Secrets and variables → Actions에서 Secret LINKEDIN_ACCESS_TOKEN을 바꿉니다.
-          3. 같은 화면의 Variable LINKEDIN_TOKEN_ISSUED_AT을 오늘 날짜로 바꿉니다."
+          갱신 방법 (작성자 Mac에서)
+          1. 터미널에서 이 저장소 폴더로 이동해 npm run linkedin:token 을 실행합니다.
+          2. https://www.linkedin.com/developers/tools/oauth/token-generator 에서 앱을 고르고 openid, profile, w_member_social을 체크해 새 토큰을 발급합니다. 발급한 당일에 반영합니다(스크립트를 실행한 날이 발급일로 저장됩니다).
+          3. 토큰을 복사만 하고, 터미널로 돌아와 Enter를 누릅니다. 터미널에 붙여 넣지 않습니다.
+          4. 화면에 나온 이름이 본인이면 y를 입력합니다.
+          5. 완료 메시지가 나오면 이 이슈를 닫습니다.
+
+          Secrets와 발급일 저장, 클립보드 비우기는 스크립트가 합니다. 클립보드 기록 앱을 쓰면 그 기록은 직접 지웁니다.
+          공개 저장소이므로 토큰을 이 이슈를 포함해 어디에도 붙여 넣지 않습니다."

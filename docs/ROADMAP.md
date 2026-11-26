@@ -132,13 +132,12 @@
 
 - [x] 문의, 개인정보 처리방침, 이용약관(+영어판, 푸터 링크). 광고 고지는 AdSense 신청 때 추가(Phase 6)
 - [ ] 제휴 표시 컴포넌트와 제휴 도메인 목록
-- [ ] LinkedIn 공유 (SPEC §9.3)
-  - LinkedIn 앱 생성, Share on LinkedIn 제품 추가, 토큰을 Secrets에 등록 (사람이 직접)
+- [x] LinkedIn 공유 (SPEC §9.3, 2026-11-26. 실제 글 게시는 Phase 5)
   - [x] LinkedIn 페이지와 앱 생성, 제품 2개 추가 (작성자, 2026-11-26)
-  - [ ] 토큰 발급, Secrets·Variable 등록 (작성자)
+  - [x] 토큰 발급, Secrets·Variable 등록 (작성자, 2026-11-26)
   - [x] 개인 피드 테스트 게시: 게시와 카드 이미지 확인 (작성자, 2026-11-26)
   - [x] 영어 글 `linkedin: true`면 merge 후 Action이 게시하고 태그로 기록. `publish-post`가 올릴지 묻는다 (2026-11-26 작성자 결정)
-  - [x] 토큰 만료 알림 워크플로
+  - [x] 토큰 만료 알림 워크플로와 갱신 스크립트(`npm run linkedin:token`)
 
 완료 기준: 필수 페이지가 공개되고, LinkedIn 게시 Action이 샘플로 검증된다(실제 게시는 Phase 5).
 

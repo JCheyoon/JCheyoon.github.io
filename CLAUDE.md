@@ -83,7 +83,7 @@
 - `src/lib/og.ts`, `src/pages/og/[...path].png.ts`: cover가 없는 글의 OG 이미지(D12)를 빌드 때 만든다. 폰트는 `src/assets/fonts/`(Pretendard, OFL)
 - `src/lib/markdown.ts`: 본문 Markdown 플러그인(안내 상자 `> [!NOTE]`, 제목 앵커). Astro 기본 처리기 Sätteri의 플러그인 API를 쓴다. 코드 블록은 `astro-expressive-code`(설정은 `astro.config.mjs`)
 - `src/site.config.ts`, `src/data/`: 사이트 정보, 카테고리, 제휴 도메인(단일 소스)
-- `scripts/`: `check-content.ts`(규칙은 `src/lib/content-rules.ts`), `check-html.mjs`, `post-linkedin.ts`(LinkedIn 게시, 테스트는 `post-linkedin.test.ts`)
+- `scripts/`: `check-content.ts`(규칙은 `src/lib/content-rules.ts`), `check-html.mjs`, `post-linkedin.ts`(LinkedIn 게시, 테스트는 `post-linkedin.test.ts`), `renew-linkedin-token.ts`(토큰 갱신, `npm run linkedin:token`)
 - `src/lib/content-rules.ts`: 글 스키마와 검사 규칙의 단일 소스. 사이트 빌드, 검사 스크립트, MCP 서버가 함께 쓴다. Node가 직접 실행하므로 상대 경로 import에 `.ts`를 붙인다
 - `.github/workflows/site.yml`: PR 검증, master push 자동 배포, 수동 재배포, 배포 뒤 LinkedIn 게시(SPEC §9.3). `linkedin-token.yml`: 토큰 만료 알림
 - `public/`: 파비콘, 매니페스트

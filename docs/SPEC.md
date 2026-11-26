@@ -358,6 +358,7 @@ slug 규칙:
   - LinkedIn 공식 API의 Share on LinkedIn 제품(`w_member_social` 권한)을 쓴다. 앱과 토큰은 사람이 만든다.
   - 저장소 Secrets `LINKEDIN_ACCESS_TOKEN`, `LINKEDIN_PERSON_ID`(`/v2/userinfo`의 `sub`), Variable `LINKEDIN_TOKEN_ISSUED_AT`.
   - 액세스 토큰은 60일 만료다. 자동 갱신(refresh token)은 일부 파트너만 쓸 수 있다.
+  - 갱신: 작성자 컴퓨터에서 `npm run linkedin:token`을 실행한다. 토큰 발급과 로그인은 브라우저에서 사람이 하고, 스크립트는 클립보드의 토큰을 `/v2/userinfo`로 확인한 뒤 승인을 받아 Secrets 2개와 Variable을 저장한다. 공개 저장소이므로 토큰과 계정 ID를 파일·출력·명령 인자에 남기지 않는다. macOS 전용이다.
   - 만료 2주 전에 `linkedin-token.yml`이 이슈로 알린다. 공개 저장소에서 60일 동안 활동이 없으면 GitHub가 예약 실행을 끌 수 있다.
   - 근거: [Share on LinkedIn](https://learn.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/share-on-linkedin), [OAuth 흐름](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow), [refresh token](https://learn.microsoft.com/en-us/linkedin/shared/authentication/programmatic-refresh-tokens)
   - [Posts API 문서](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api)는 Posts API가 ugcPosts를 대체한다고 적었다. 종료 날짜는 없고(2026-11-26 확인), Share on LinkedIn 문서는 ugcPosts를 안내한다. 게시가 실패하기 시작하면 Posts API 이전을 검토한다.

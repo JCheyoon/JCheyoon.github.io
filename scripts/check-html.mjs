@@ -23,7 +23,7 @@ if (!existsSync(DIR)) {
   process.exit(1);
 }
 
-for (const required of ["index.html", "404.html", "rss.xml", "robots.txt", "sitemap-index.xml", "en/index.html", "en/rss.xml"]) {
+for (const required of ["index.html", "404.html", "rss.xml", "robots.txt", "sitemap-index.xml", "en/index.html", "en/rss.xml", "data/posts.json"]) {
   if (!existsSync(join(DIR, required))) fail(DIR, `${required}가 없다`);
 }
 
@@ -139,6 +139,26 @@ for (const file of htmlFiles) {
 
 if (DRAFTS_MODE && postPages === 0) fail(DIR, "템플릿 검증 빌드에 글 페이지가 하나도 없다");
 
+// 공개 글 데이터(SPEC D18): 형식이 맞고, 글마다 페이지가 결과물에 있어야 한다
+const postsData = (() => {
+  const file = join(DIR, "data", "posts.json");
+  if (!existsSync(file)) return [];
+  try {
+    return JSON.parse(readFileSync(file, "utf8")).posts ?? [];
+  } catch {
+    fail("/data/posts.json", "JSON으로 읽을 수 없다");
+    return [];
+  }
+})();
+for (const p of postsData) {
+  const route = `${p.lang === "en" ? "/en" : ""}/post/${p.slug}/`;
+  for (const key of ["slug", "lang", "url", "title", "description", "publishedAt", "body"]) {
+    if (!p[key]) fail("/data/posts.json", `${route}: ${key}가 비어 있다`);
+  }
+  if (!existsSync(join(DIR, route, "index.html"))) fail("/data/posts.json", `${route}: 글 페이지가 결과물에 없다`);
+}
+if (DRAFTS_MODE && postsData.length === 0) fail("/data/posts.json", "템플릿 검증 빌드인데 글이 하나도 없다");
+
 // 배포 빌드: published가 아닌 글이 결과물, sitemap, RSS에 새지 않았는지 확인한다
 if (!DRAFTS_MODE) {
   const feeds = walk(DIR)
@@ -155,6 +175,10 @@ if (!DRAFTS_MODE) {
       const route = `${prefix}${file.replace(/\.md$/, "")}/`;
       if (existsSync(join(DIR, route))) fail(route, `status: ${data.status} 글이 배포 결과물에 있다`);
       if (feeds.includes(route)) fail(route, `status: ${data.status} 글이 sitemap이나 RSS에 있다`);
+      const lang = prefix === "/en/post/" ? "en" : "ko";
+      if (postsData.some((p) => p.lang === lang && p.slug === file.replace(/\.md$/, ""))) {
+        fail(route, `status: ${data.status} 글이 /data/posts.json에 있다`);
+      }
     }
   }
 }

@@ -96,6 +96,7 @@ Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 �
 | `/rss.xml`, `/sitemap-index.xml`, `/robots.txt` | 빌드 시 자동 생성 | |
 | `/og/<slug>.png`, `/og/en/<slug>.png` | 글 OG 이미지 | cover가 없는 글만(D12) |
 | `/pagefind/` | 검색 색인 | 공개 글이 있을 때만(D16) |
+| `/data/posts.json` | 공개 글 데이터(한국어·영어, 본문 Markdown 포함) | 공개 MCP 서버가 읽는다(D18). 형식은 D18 |
 | 그 밖의 경로 | `404.html` | 실제 404 상태 |
 
 slug 규칙:
@@ -403,7 +404,7 @@ slug 규칙:
 | D15 | 모바일 UI | 하단 탭 바, 목록 필터(카테고리·태그 시트), 목차 바텀 시트, 숨는 헤더, 페이지 전환. Phase 3 마지막(§6.2) | 승인 (2026-11-25) |
 | D16 | 검색 | 헤더 버튼 + ⌘K + 검색 창, 모바일 전체 화면, Pagefind. 모바일 UI 완성을 위해 Phase 3으로 당김(§6.3) | 승인 (2026-11-25) |
 | D17 | 댓글 | Giscus(GitHub Discussions, GitHub 로그인). 로그인이 봇·도배 방지를 겸하고, 회원 정보를 직접 보관하지 않으며, 서버가 필요 없다. 비개발자 독자의 익명 댓글 요구가 실제로 생기면 이름+비밀번호(수정·삭제용)+Turnstile+횟수 제한+첫 댓글 승인을 갖춘 직접 구현을 그때 검토한다. 붙일 때 SPEC §8 스크립트와 개인정보 처리방침에 giscus를 추가한다 | 승인 (2026-11-26) |
-| D18 | AI 독자 대응 | 공개 읽기 전용 MCP 서버(도구: `search_posts`, `get_post`, `list_posts`)를 `blog-backend`(Go, Render)에 둔다. 사이트 빌드가 공개 글만 담은 `/data/posts.json`(가칭, 형식은 만들 때 확정)을 만들고 서버가 그것을 읽는다. DB 없음. 답은 독자의 AI가 만들므로 블로그는 API 비용을 내지 않는다. 사이트 안 질문 위젯(블로그가 API 비용 부담)과 `llms.txt`·글 Markdown 공개(2026-11 조사에서 꾸준히 읽는 AI가 Claude Code뿐)는 하지 않는다. 사이트 데이터 파일과 로컬 연습은 단계와 관계없이 먼저 해도 되고, 배포는 첫 글 발행 뒤(ROADMAP Phase 5) | 승인 (2026-11-26) |
+| D18 | AI 독자 대응 | 공개 읽기 전용 MCP 서버(도구: `search_posts`, `get_post`, `list_posts`)를 `blog-backend`(Go, Render)에 둔다. 사이트 빌드가 공개 글만 담은 `/data/posts.json`을 만들고 서버가 그것을 읽는다. 형식: `{generatedAt, site, posts: [{slug, lang, url, title, description, category: {slug, name}, tags, publishedAt, updatedAt|null, translations: {<lang>: url}, body}]}`(필드 camelCase, `body`는 frontmatter를 뺀 Markdown 원문, 한 파일에 전체 글. 수백 편 규모에서 서버가 한 번 받아 메모리에서 검색하기 위함. 몇 MB를 넘으면 목록과 본문을 나눈다). DB 없음. 답은 독자의 AI가 만들므로 블로그는 API 비용을 내지 않는다. 사이트 안 질문 위젯(블로그가 API 비용 부담)과 `llms.txt`·글 Markdown 공개(2026-11 조사에서 꾸준히 읽는 AI가 Claude Code뿐)는 하지 않는다. 사이트 데이터 파일과 로컬 연습은 단계와 관계없이 먼저 해도 되고, 배포는 첫 글 발행 뒤(ROADMAP Phase 5) | 승인 (2026-11-26) |
 
 ## 12. 완료 정의 (모든 기능 공통)
 

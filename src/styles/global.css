@@ -239,6 +239,10 @@
     & li::marker {
       color: var(--accent-bar);
     }
+    /* 번호는 글자라서 대비가 필요하다 */
+    & ol > li::marker {
+      color: var(--accent-text);
+    }
 
     /* 인용문: 기울임·따옴표 없이 왼쪽 둥근 막대 */
     & blockquote {

@@ -1,5 +1,5 @@
 ---
-// 소개 페이지(SPEC §6): 운영자, 사이트 목적, 제작 방식, 연락처.
+// 소개 페이지(SPEC §6): 운영자, 사이트 목적, 제작 방식.
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { site } from "../site.config";
 
@@ -24,20 +24,8 @@ const profile = {
     <ul>
       <li>글 초안을 쓸 때 AI 도구의 도움을 받기도 합니다.</li>
       <li>모든 글은 발행 전에 운영자가 직접 사실, 출처, 경험 여부를 검수합니다.</li>
-      <li>사실과 수치에는 출처를 달고, 바뀔 수 있는 정보에는 기준 날짜를 적습니다.</li>
-    </ul>
-
-    <h2>연락처</h2>
-    <ul>
-      {
-        site.social.map((s) => (
-          <li>
-            <a href={s.href} target="_blank" rel="me noopener">
-              {s.label}
-            </a>
-          </li>
-        ))
-      }
+      <li>글의 결론이나 독자의 판단에 영향을 주는 사실과 수치에는 출처를 답니다.</li>
+      <li>정보의 기준일은 글의 발행일이며, 내용을 고치면 수정일을 표시합니다.</li>
     </ul>
   </article>
 </BaseLayout>

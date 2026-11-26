@@ -1,0 +1,68 @@
+---
+// 영어 개인정보 처리방침. 한국어 /privacy/의 번역이다. 두 페이지의 내용이 다르면 한국어가 기준이다. 문구는 작성자 검수 대상이다.
+import InfoPage from "../../components/InfoPage.astro";
+import { site } from "../../site.config";
+
+const effective = "November 25, 2026";
+---
+
+<InfoPage title="Privacy Policy" description={`How ${site.name} handles personal information.`} lang="en" alternate="/privacy/">
+  <p>
+    {site.name} ("this blog") is a personal blog. There are no accounts, and it does not use cookies or analytics tools. The only personal information I
+    receive is what you send when you contact me by email.
+  </p>
+
+  <h2>1. What I collect and why</h2>
+  <ul>
+    <li>What: your email address, your name (if your email shows it), and your message, when you email me</li>
+    <li>Why: to read and reply to your message</li>
+  </ul>
+
+  <h2>2. How long I keep it</h2>
+  <ul>
+    <li>I keep messages for one year after I reply, then delete them from my mailbox.</li>
+    <li>If you ask me to delete your message, I will delete it right away.</li>
+    <li>Messages are kept only as email, and are deleted from the mailbox and its trash.</li>
+  </ul>
+
+  <h2>3. Sharing</h2>
+  <p>I do not share your personal information with anyone.</p>
+
+  <h2>4. Services this blog uses</h2>
+  <p>This blog uses the services below. Both companies are in the United States and handle data under their own privacy policies.</p>
+  <ul>
+    <li>
+      GitHub (GitHub, Inc.): hosting (GitHub Pages). GitHub logs visitors' IP addresses for security purposes (<a
+        href="https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#data-collection">About GitHub Pages</a
+      >). I do not receive or see these logs. <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+        >GitHub General Privacy Statement</a
+      >
+    </li>
+    <li>
+      Google (Google LLC): receiving and storing contact email (Gmail). <a href="https://policies.google.com/privacy">Google Privacy Policy</a>
+    </li>
+  </ul>
+
+  <h2>5. Cookies and browser storage</h2>
+  <ul>
+    <li>This blog does not use cookies.</li>
+    <li>
+      If you choose a light or dark theme, that choice (a single <code>theme</code> value) is saved in your browser's storage (localStorage). It is never
+      sent to me, and clearing this site's data in your browser removes it.
+    </li>
+    <li>Site search runs entirely in your browser. Search terms are not sent anywhere.</li>
+  </ul>
+
+  <h2>6. Your rights</h2>
+  <p>You can ask to see, correct, or delete the personal information you sent, or ask me to stop using it. Email me and I will act on it promptly.</p>
+
+  <h2>7. Contact</h2>
+  <ul>
+    <li>Name: {site.author.name} (author)</li>
+    <li>Email: <a href={`mailto:${site.email}`}>{site.email}</a></li>
+  </ul>
+
+  <h2>8. Changes</h2>
+  <p>If this policy changes, I will update this page and its effective date. If the Korean and English versions differ, the Korean version applies.</p>
+  <p>Effective date: {effective}</p>
+</InfoPage>

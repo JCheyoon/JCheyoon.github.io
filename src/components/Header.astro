@@ -21,7 +21,7 @@ const target = ui[otherLang(lang)];
 const t = ui[lang];
 const home = localizePath(lang, "/");
 
-// 문의는 Phase 4에서 추가한다(미구현 메뉴는 두지 않는다).
+// 문의·개인정보 처리방침·이용약관은 푸터에 둔다(SPEC §6).
 const links = [
   { href: home, label: t.home },
   { href: localizePath(lang, "/archive/"), label: t.archive },

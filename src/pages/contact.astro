@@ -1,0 +1,18 @@
+---
+// 문의 페이지(SPEC §4, §6). 폼 없이 이메일 주소만 안내한다(폼은 v1 이후). 문구는 작성자 검수 대상이다.
+import InfoPage from "../components/InfoPage.astro";
+import { site } from "../site.config";
+---
+
+<InfoPage title="문의" description={`${site.name} 운영자에게 연락하는 방법입니다.`} lang="ko" alternate="/en/contact/">
+  <p>글의 오류 제보, 질문, 제안은 이메일로 보내 주세요.</p>
+  <p>
+    <a href={`mailto:${site.email}`}>{site.email}</a>
+  </p>
+  <h2>보내기 전에</h2>
+  <ul>
+    <li>글에 관한 문의라면 글 주소를 함께 적어 주시면 빠르게 확인할 수 있습니다.</li>
+    <li>개인이 운영하는 블로그라 답장이 늦거나 모든 메일에 답하지 못할 수 있습니다.</li>
+    <li>보내 주신 이메일 주소와 내용을 처리하는 방법은 <a href="/privacy/">개인정보 처리방침</a>에 있습니다.</li>
+  </ul>
+</InfoPage>

@@ -17,6 +17,8 @@ export const site = {
     name: "Jung Cheyoon",
   },
   social: [{ label: "GitHub", href: "https://github.com/JCheyoon" }],
+  /** 문의 이메일(SPEC §6 문의). 문의·개인정보 처리방침 페이지가 쓴다 */
+  email: "cheyoonka@gmail.com",
   /** 글을 지정하지 않은 페이지의 OG 이미지 (public/ 기준 경로) */
   defaultOgImage: "/web-app-manifest-512x512.png",
   pageSize: 5,

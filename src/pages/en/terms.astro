@@ -1,0 +1,37 @@
+---
+// 영어 이용약관. 한국어 /terms/의 번역이다. 두 페이지의 내용이 다르면 한국어가 기준이다. 문구는 작성자 검수 대상이다.
+import InfoPage from "../../components/InfoPage.astro";
+import { site } from "../../site.config";
+
+const effective = "November 25, 2026";
+---
+
+<InfoPage title="Terms of Use" description={`What to know when using posts on ${site.name}.`} lang="en" alternate="/terms/">
+  <h2>1. Copyright</h2>
+  <ul>
+    <li>Posts and images on this blog are copyrighted by the author ({site.author.name}).</li>
+    <li>You may quote short parts of a post if you credit it with its title and address. Republishing all or most of a post requires permission.</li>
+    <li>Code examples in posts are free to use without credit.</li>
+  </ul>
+
+  <h2>2. Disclaimer</h2>
+  <ul>
+    <li>Posts are based on things I have checked myself, but I cannot guarantee that they are accurate or up to date.</li>
+    <li>Information that changes, such as versions, prices, and policies, carries the date it was checked. Please check the official documentation too.</li>
+    <li>I am not responsible for the results of applying what a post describes.</li>
+    <li>External sites linked from posts are responsible for their own content.</li>
+  </ul>
+
+  <h2>3. Affiliate links and ads</h2>
+  <ul>
+    <li>If a post contains affiliate links or is sponsored, the relationship is stated clearly right below the title.</li>
+    <li>If ads are added, this page and the Privacy Policy will be updated.</li>
+  </ul>
+
+  <h2>4. Changes</h2>
+  <p>
+    If these terms change, I will update this page and its effective date. If the Korean and English versions differ, the Korean version applies. For
+    questions, see the <a href="/en/contact/">Contact</a> page.
+  </p>
+  <p>Effective date: {effective}</p>
+</InfoPage>

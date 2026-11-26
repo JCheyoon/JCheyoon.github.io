@@ -113,7 +113,8 @@ for (const file of htmlFiles) {
   if (is404 && !noindex) fail(route, "404 페이지에 noindex가 없다");
 
   for (const img of tags(html, "img")) {
-    if (!img.alt?.trim()) fail(route, `alt 없는 이미지가 있다(${img.src})`);
+    // aria-hidden="true"는 장식이라고 밝힌 이미지다(목록 썸네일처럼 옆의 글이 같은 내용을 전한다)
+    if (!img.alt?.trim() && img["aria-hidden"] !== "true") fail(route, `alt 없는 이미지가 있다(${img.src})`);
   }
 
   for (const a of tags(html, "a")) {

@@ -4,13 +4,11 @@
 
 - 무엇을 만들고, 어떤 순서로 하는지는 [docs/SPEC.md](docs/SPEC.md)와 [docs/ROADMAP.md](docs/ROADMAP.md)가 기준이다. 작업 전에 ROADMAP의 "현재 단계"를 확인한다.
 - 사이트는 저장소 루트의 **Astro 정적 사이트**다. 아래 "사이트 (Astro)" 섹션을 본다.
-- `legacy/spa/`는 은퇴한 Vite + React SPA(관리자 포함)다(SPEC D6, D7). 버그를 고치지 않고, 빌드하거나 배포하지 않는다.
 - 글은 Markdown + git으로 관리하고, draft → reviewed → published를 거친다.
   - 규칙: [.claude/rules/content.md](.claude/rules/content.md)
   - 스킬: `draft-post`, `review-post`, `publish-post`
   - 초안·번역 파일은 블로그 MCP 서버(`cheyoon-blog`, `mcp/`)의 도구로 만든다. 이 저장소에서 Claude Code를 열면 `.mcp.json`으로 연결된다
-- push와 PR 생성은 `create-pr` 스킬로 한다(한글 PR, AI 작성 표시 없음). push 전에 반드시 PR 초안을 보여 주고 승인을 받는다. merge와 배포는 사람이 한다.
-- 라이브 사이트는 GitHub Actions(`site.yml`)로 배포된다. `master`에 merge하면 자동 배포된다(2026-11-25 전환). 롤백 방법은 SPEC §3.1.
+- 브랜치·커밋·PR·배포 규칙은 [.claude/rules/project-scope.md](.claude/rules/project-scope.md). PR은 `create-pr` 스킬로, 승인을 받은 뒤에만 push한다. `master` merge가 곧 배포다(GitHub Actions).
 
 ## 작업 원칙
 
@@ -101,31 +99,12 @@
 
 ## Legacy SPA (`legacy/spa/`)
 
-이 섹션의 경로는 모두 `legacy/spa/` 기준이다. 참고용으로만 남겨 둔다.
-
-### Overview
-
-Vite + React + TypeScript 블로그 앱이었다. `index.html` → `src/main.tsx` → `src/App.tsx` 순서로 부팅하고, 공개 페이지(React Router)와 관리자 영역(로그인, 글 관리, 카테고리 관리)이 있었다. 글은 Go 백엔드(blog-backend)의 Supabase DB에서 HTML로 받아왔다.
-
-### Tech Stack
-- React 19, Vite, react-router-dom, @tanstack/react-query
-- Tailwind CSS, shadcn 스타일 프리미티브, Tiptap 에디터, lucide-react, Radix Select·Popover
-
-### Known issues (고치지 않음)
-- `npm run build`가 타입 에러 2개(`src/components/post/postCard.tsx`, `src/lib/api-context.tsx`)로 실패한다.
-- `VITE_API_BASE_URL`이 비어 있으면 첫 요청에서 `undefined.trim()` 예외가 난다.
-- 관리자 대시보드는 `/api/posts?all=true`(공개 라우트)를 불러서 초안이 보이지 않는다.
-
-상세 규칙은 `paths: legacy/**`가 붙은 `.claude/rules/` 문서(architecture, api-conventions, coding-style, naming-convention, environment-and-tooling)에 있다.
+은퇴한 Vite + React SPA(관리자 포함)를 보관만 한다(SPEC D6, D7). 고치거나 빌드·배포하지 않는다. 필요하면 git 기록과 그 안의 코드를 직접 읽는다.
 
 ## Claude Workspace (.claude/)
 
 - 규칙: `.claude/rules/`
   - 항상 로드: `content.md`(콘텐츠), `project-scope.md`(범위·브랜치·PR)
   - 사이트 코드 작업 시: `site-code.md`, `rendering-seo.md`
-  - 레거시 작업 시(`legacy/**`): architecture, api-conventions, coding-style, naming-convention, environment-and-tooling
-- 스킬은 `.claude/skills/<이름>/SKILL.md` 형식이어야 인식된다.
-  - 콘텐츠·작업 흐름: `draft-post`, `review-post`, `publish-post`, `create-pr`, `verify-site`
-  - 레거시 전용(새 코드에 쓰지 않음): `add-api-fetcher`, `add-data-driven-component`, `create-ui-component`, `verify-project`
+- 스킬(`.claude/skills/<이름>/SKILL.md`): `draft-post`, `review-post`, `publish-post`, `create-pr`, `verify-site`
 - `.claude/settings.json`: 권한 기본값(allow/ask/deny)
-- 구조 설명: `.claude/README.md`

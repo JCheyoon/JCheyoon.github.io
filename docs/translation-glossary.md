@@ -1,16 +1,15 @@
 # 번역 표현집 (한국어 → 영어)
 
-작성자가 고른 표현이다. 번역하기 전에 읽고, 같은 말이나 비슷한 말이 나오면 이 표현을 먼저 쓴다. 문맥에 맞게 시제와 인칭은 바꾼다.
-번역을 검수하면서 작성자가 표현을 새로 고르거나 바꾸면 이 표를 고친다.
+작성자가 검수를 마친 **최종 글에 남은 표현**만 적는다. 번역하기 전에 읽고, 같은 말이나 비슷한 말이 나오면 이 표현을 먼저 쓴다. 문맥에 맞게 시제와 인칭은 바꾼다.
+번역을 승인받은 뒤 최종 번역문과 대조해 이 표를 고친다. 제안했지만 작성자가 바꾸거나 지운 표현은 남기지 않는다.
 원어민 검수를 받은 목록은 아니다.
 
-| 한국어 | 영어 | 고른 날짜 |
+| 한국어 | 영어 | 확인한 날짜 |
 |---|---|---|
-| 미루고 미루던 ~를 다시 시작하기로 했다 | After putting it off for ages, I finally decided to … | 2026-11-27 |
-| 과한 설계다 | it's overkill | 2026-11-27 |
-| 딸깍 (AI로 금방) | in a few clicks | 2026-11-27 |
-| 별 매력이 없다 | didn't have much going for it | 2026-11-27 |
-| 굳이? | "Why bother?" | 2026-11-27 |
-| 지키려는 철칙 | one rule I try to stick to | 2026-11-27 |
-| 신경 써야 할 서버가 사라졌다 | no server to babysit | 2026-11-27 |
-| 이렇게 걸렀다 | here's how I narrowed them down | 2026-11-27 |
+| 미루고 미루던 ~를 다시 시작하기로 했다 | After putting it off for ages, I finally decided to … | 2026-11-26 |
+| 과한 설계다 | it's overkill | 2026-11-26 |
+| 딸깍 (AI로 금방) | with a few prompts | 2026-11-26 |
+| 별 매력이 없다 | didn't have much going for it | 2026-11-26 |
+| 굳이? | "Why bother?" | 2026-11-26 |
+| 신경 써야 할 서버가 사라졌다 | no server to maintain | 2026-11-26 |
+| 이렇게 걸렀다 | here's how I narrowed them down | 2026-11-26 |

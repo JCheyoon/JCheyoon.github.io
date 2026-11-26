@@ -18,7 +18,8 @@ const links = [
 ];
 ---
 
-<footer class="mt-12 border-t bg-background py-10 text-sm text-muted-foreground">
+{/* 아래 여백: 1536px 미만은 화면 아래에 떠 있는 목차·맨 위로 버튼(높이 48px + 간격 16px)이 푸터 글을 가리지 않게 넓힌다 */}
+<footer class="mt-12 border-t bg-background pt-10 pb-20 text-sm text-muted-foreground 2xl:pb-10">
   <nav aria-label={t.footerMenu} class="mb-3">
     <ul class="flex flex-wrap justify-center gap-x-5 gap-y-2">
       {

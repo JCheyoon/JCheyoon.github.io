@@ -48,6 +48,8 @@ const serialize = (data: Record<string, unknown>) => JSON.stringify(data).replac
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
+{/* Search Console은 홈에서 확인한다 */}
+{isHome && <meta name="google-site-verification" content={site.googleSiteVerification} />}
 <link rel="canonical" href={canonical} />
 {
   alternate && (

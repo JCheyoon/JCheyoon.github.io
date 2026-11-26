@@ -182,6 +182,22 @@
     & :is(h2, h3, h4):hover .heading-anchor {
       opacity: 1;
     }
+    /* 마우스가 없는 화면은 손가락이 닿으면 hover가 되어 #이 깜빡이고, 투명한 채로도 눌린다. 목차가 있으니 숨긴다 */
+    @media (hover: none) {
+      & :is(h2, h3, h4) .heading-anchor {
+        display: none;
+      }
+    }
+
+    /* 표: html의 overflow-wrap: anywhere를 그대로 받으면 칸 너비를 글자 단위로 계산해 첫 칸이 "SP / A"처럼 좁아진다.
+       break-word는 칸이 가장 긴 단어보다 좁아지지 않는다 */
+    & :is(th, td) {
+      overflow-wrap: break-word;
+    }
+    /* 공백 없이 긴 코드와 주소는 예외로 아무 데서나 끊는다. 끊지 않으면 표가 좁은 화면 밖으로 나간다 */
+    & :is(th, td) :is(code, a) {
+      overflow-wrap: anywhere;
+    }
 
     /* 링크: 강조색, 점선 밑줄, 마우스를 올리면 배경 */
     & a:not(.heading-anchor) {

@@ -111,12 +111,12 @@ const jsonLd = [
     <header>
       {/* 작은 이동 경로. BreadcrumbList 구조화 데이터와 같은 내용을 화면에도 보여 준다(SPEC §7) */}
       <nav aria-label={t.breadcrumb} class="mb-3 text-xs text-muted-foreground" data-pagefind-ignore>
-        <a href={localizePath(lang, "/")} class="hover:text-accent-bar">{t.home}</a>
+        <a href={localizePath(lang, "/")} class="hover:text-accent-text">{t.home}</a>
         {
           category && (
             <>
               <span aria-hidden="true"> › </span>
-              <a href={categoryUrl(category.slug, lang)} class="hover:text-accent-bar">
+              <a href={categoryUrl(category.slug, lang)} class="hover:text-accent-text">
                 {categoryName(category, lang)}
               </a>
             </>
@@ -147,7 +147,7 @@ const jsonLd = [
           category && (
             <li class="flex items-center gap-2">
               <span class="meta-icon"><Icon name="folder" class="h-5 w-5" /></span>
-              <a href={categoryUrl(category.slug, lang)} class="hover:text-accent-bar">
+              <a href={categoryUrl(category.slug, lang)} class="hover:text-accent-text">
                 {categoryName(category, lang)}
               </a>
             </li>
@@ -222,7 +222,7 @@ const jsonLd = [
         <ul class="mt-8 flex flex-wrap gap-2" aria-label={t.tags} data-pagefind-ignore>
           {data.tags.map((tag) => (
             <li>
-              <a href={tagUrl(tag, lang)} class="block rounded-lg bg-background px-3 py-1 text-sm text-muted-foreground transition hover:text-accent-bar">
+              <a href={tagUrl(tag, lang)} class="block rounded-lg bg-background px-3 py-1 text-sm text-muted-foreground transition hover:text-accent-text">
                 #{tag}
               </a>
             </li>

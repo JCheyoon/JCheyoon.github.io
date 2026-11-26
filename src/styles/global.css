@@ -30,6 +30,7 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent-bar: var(--accent-bar);
+  --color-accent-text: var(--accent-text);
   --color-logo: var(--logo);
   --color-on-logo: var(--on-logo);
   --color-border: var(--border);
@@ -53,6 +54,8 @@
   --muted: oklch(0.967 0.003 264.542);
   --muted-foreground: oklch(0.52 0.027 264.364); /* 레거시 0.551은 배경색 위 대비 4.21:1로 WCAG AA(4.5:1) 미달 */
   --accent-bar: oklch(0.6594 0.0659 194.387);
+  /* 강조색 글자. accent-bar는 흰 바탕 위 3.03:1이라 아이콘·막대(3:1)에만 쓰고, 글자는 이 색을 쓴다(4.5:1 이상, 2026-11-26 Lighthouse 지적) */
+  --accent-text: oklch(0.47 0.08 195);
   /* 로고 색(Logo.astro의 #5f9e9f)과 그 위에 올리는 아이콘. 라이트·다크 모두 같은 값(대비 3.05:1, 아이콘 기준 3:1 이상) */
   --logo: #5f9e9f;
   --on-logo: #ffffff;
@@ -101,6 +104,7 @@
     --muted: oklch(0.278 0.033 256.848);
     --muted-foreground: oklch(0.707 0.022 261.325);
     --accent-bar: oklch(0.7 0.07 195);
+    --accent-text: oklch(0.7 0.07 195);
     --border: oklch(1 0 0 / 10%);
     --ring: oklch(0.551 0.027 264.364);
     --link: oklch(0.8 0.08 195);
@@ -126,6 +130,7 @@
   --muted: oklch(0.278 0.033 256.848);
   --muted-foreground: oklch(0.707 0.022 261.325);
   --accent-bar: oklch(0.7 0.07 195);
+  --accent-text: oklch(0.7 0.07 195);
   --border: oklch(1 0 0 / 10%);
   --ring: oklch(0.551 0.027 264.364);
   --link: oklch(0.8 0.08 195);

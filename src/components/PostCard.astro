@@ -57,7 +57,7 @@ const lang = post.data.lang;
           category && (
             <span class="flex items-center gap-2">
               <span class="meta-icon"><Icon name="folder" class="h-5 w-5" /></span>
-              <a href={categoryUrl(category.slug, lang)} class="hover:text-accent-bar">{categoryName(category, lang)}</a>
+              <a href={categoryUrl(category.slug, lang)} class="hover:text-accent-text">{categoryName(category, lang)}</a>
             </span>
           )
         }
@@ -68,7 +68,7 @@ const lang = post.data.lang;
               {post.data.tags.map((tag, i) => (
                 <>
                   {i > 0 && <span aria-hidden="true">/</span>}
-                  <a href={tagUrl(tag, lang)} class="hover:text-accent-bar">{tag}</a>
+                  <a href={tagUrl(tag, lang)} class="hover:text-accent-text">{tag}</a>
                 </>
               ))}
             </span>

@@ -1,0 +1,97 @@
+---
+// 댓글(SPEC D17): giscus. 댓글은 GitHub Discussions에 저장한다.
+// 원문과 번역본은 같은 slug를 Discussion 제목으로 써서 댓글을 함께 쓴다. strict는 비슷한 제목이 섞이지 않게 한다.
+// 스크립트가 없으면 댓글 창을 만들 수 없으므로 영역을 숨긴다.
+// giscus에는 댓글 영역이 가까워졌을 때 처음 접속한다. 댓글까지 내려오지 않은 방문자의 정보는 보내지 않는다(개인정보 처리방침과 맞춘다).
+import { site } from "../site.config";
+import { ui, type Lang } from "../i18n";
+
+interface Props {
+  slug: string;
+  lang: Lang;
+}
+
+const { slug, lang } = Astro.props;
+---
+
+<section
+  data-comments
+  data-term={slug}
+  data-lang={lang}
+  data-repo={site.giscus.repo}
+  data-repo-id={site.giscus.repoId}
+  data-category={site.giscus.category}
+  data-category-id={site.giscus.categoryId}
+  aria-labelledby="comments-heading"
+  class="mt-4 hidden rounded-2xl border bg-card px-6 py-6 md:px-9 [.js_&]:block"
+>
+  <h2 id="comments-heading" class="mb-4 text-lg font-semibold">{ui[lang].comments}</h2>
+  <div class="giscus"></div>
+</section>
+
+<script>
+  const section = document.querySelector<HTMLElement>("[data-comments]");
+  if (section) {
+    const root = document.documentElement;
+    // 직접 고른 테마가 없으면 giscus도 시스템 설정을 따른다
+    const theme = () => root.dataset.theme ?? "preferred_color_scheme";
+    const send = () =>
+      section
+        .querySelector<HTMLIFrameElement>("iframe.giscus-frame")
+        ?.contentWindow?.postMessage({ giscus: { setConfig: { theme: theme() } } }, "https://giscus.app");
+
+    // 테마 버튼(D14)을 누르면 댓글 창도 바꾼다
+    new MutationObserver(send).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+    // 댓글 창은 늦게 불러온다. 그 전에 바꾼 테마는 창이 처음 말을 걸 때 다시 보낸다
+    let synced = false;
+    addEventListener("message", (e) => {
+      if (e.origin !== "https://giscus.app" || !e.data?.giscus) return;
+      // 로그아웃하거나 세션이 만료되면 client.js가 처음 테마로 창을 다시 연다. 새 창이 말을 걸 때 다시 맞춘다
+      if (e.data.giscus.signOut || e.data.giscus.error) {
+        synced = false;
+        return;
+      }
+      if (synced) return;
+      synced = true;
+      send();
+    });
+
+    const load = () => {
+      const { term, lang, repo, repoId, category, categoryId } = section.dataset;
+      const script = document.createElement("script");
+      script.src = "https://giscus.app/client.js";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      // 콘텐츠 차단기나 장애로 불러오지 못하면 제목만 남은 빈 상자를 두지 않는다
+      script.onerror = () => {
+        section.hidden = true;
+      };
+      Object.assign(script.dataset, {
+        repo,
+        repoId,
+        category,
+        categoryId,
+        mapping: "specific",
+        term,
+        strict: "1",
+        reactionsEnabled: "1",
+        emitMetadata: "0",
+        inputPosition: "bottom",
+        theme: theme(),
+        lang,
+      });
+      section.append(script);
+    };
+
+    // 화면 아래 600px 안으로 들어오면 한 번만 불러온다
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        load();
+      },
+      { rootMargin: "0px 0px 600px 0px" },
+    );
+    observer.observe(section);
+  }
+</script>

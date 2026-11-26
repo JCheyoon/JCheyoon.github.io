@@ -144,10 +144,10 @@
 ## Phase 5: 글 작성과 실제 검증 (이후 운영)
 
 - [ ] 첫 글 작성 → `review-post` → `publish-post`(번역 초안 검수 뒤 두 언어 함께 발행) → LinkedIn 게시
-  - 첫 글 후보: "블로그를 Vite에서 Astro로 옮긴 이유" (작성자 메모 필요)
-- [ ] 라이브 글 페이지 확인 (curl로 본문, title, description, canonical, hreflang)
-- [ ] Search Console 등록 (`https://jcheyoon.github.io` URL 접두어 속성), sitemap 제출
-- [ ] 댓글: Giscus(SPEC D17, 2026-11-26 결정). 첫 글 발행 뒤 붙인다. 처리방침·SPEC §8에 giscus 추가
+  - 2026-11-26 첫 글 `why-astro`(한국어·영어) 발행. LinkedIn 게시는 남음
+- [x] 라이브 글 페이지 확인 (curl로 본문, title, description, canonical, hreflang) (2026-11-26)
+- [x] Search Console 등록 (`https://jcheyoon.github.io` URL 접두어 속성), sitemap 제출 (2026-11-26. 색인 확인은 남음)
+- [x] 댓글: Giscus(SPEC D17, 2026-11-26 결정). 첫 글 발행 뒤 붙인다. 처리방침·SPEC §8에 giscus 추가 (2026-11-26)
 - [ ] 쿠키 없는 방문 통계(후보: Cloudflare Web Analytics). 붙일 때 공식 문서로 확인하고, 개인정보 처리방침과 SPEC §8에 추가
 - [ ] 공개 읽기 전용 MCP 서버 (SPEC D18). 사이트 데이터 파일과 백엔드 로컬 연습은 단계와 관계없이 먼저 시작해도 된다(2026-11-26 작성자 결정)
   - [x] 사이트: 빌드가 공개 글 데이터(`/data/posts.json`)를 만든다(2026-11-26)

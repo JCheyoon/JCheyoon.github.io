@@ -8,6 +8,7 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import Icon from "../../../components/Icon.astro";
 import Toc from "../../../components/Toc.astro";
 import TocSheet from "../../../components/TocSheet.astro";
+import Comments from "../../../components/Comments.astro";
 import { site } from "../../../site.config";
 import { categoryName, categoryUrl, getCategory } from "../../../data/categories";
 import { formatDate, getVisiblePosts, isoDate, ogImageUrl, postDate, postUrl, tagUrl, type Post } from "../../../lib/posts";
@@ -261,4 +262,7 @@ const jsonLd = [
       </nav>
     )
   }
+
+  {/* 댓글(D17)은 발행한 글에만 둔다. 초안 미리보기에서 쓴 댓글이 실제 Discussion이 되지 않게 한다 */}
+  {!isDraft && <Comments slug={data.slug} lang={lang} />}
 </BaseLayout>

@@ -144,6 +144,8 @@ slug 규칙:
 | lang | `ko` \| `en` | 선택 | 글의 언어. 기본 `ko`. 영어 글은 `src/content/posts/en/`에 둔다 (Phase 2) |
 | translated_from | `ko` \| `en` | 번역본만 | 원문의 언어. 원문과 번역본은 같은 slug를 쓴다 (Phase 2) |
 
+날짜 필드(`*_at`, `accessed`)는 작성자가 적은 **달력의 날짜**다(2026-11-26 작성자 결정). 새로 적을 때는 작성하는 컴퓨터 시간대의 오늘을 쓴다. 작성자가 어디에 있든 코드를 바꾸지 않는다. 사이트는 적힌 날짜를 시간대 변환 없이 그대로 보여 주고, 화면에 시간대를 표시하지 않는다.
+
 ### 5.2 빌드 실패 조건 (스키마와 검사 스크립트)
 
 - `status: published`인데 `reviewed_at`, `reviewed_by`, `published_at` 중 하나라도 없음

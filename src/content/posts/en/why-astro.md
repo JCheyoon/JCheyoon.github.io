@@ -13,11 +13,11 @@ linkedin: false
 ai_assisted: true
 audience: Developers building a personal tech blog who are choosing between popular tools such as Next.js, Jekyll, and Astro
 search_intent: I want to know whether SPA, SSR, or SSG fits a personal blog, and whether there is a reason to choose Astro
-created_at: 2026-11-27
-reviewed_at: 2026-11-27
+created_at: 2026-11-26
+reviewed_at: 2026-11-26
 reviewed_by: cheyoon
 review_notes: 번역 검수 승인. 원문과 링크·코드 표기·제목 수 일치 확인, 표현은 번역 표현집 적용, B2 수준은 작성자 판단
-published_at: 2026-11-27
+published_at: 2026-11-26
 updated_at:
 disclosure:
 cover:

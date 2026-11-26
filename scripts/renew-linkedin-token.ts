@@ -47,7 +47,7 @@ async function main() {
     // 같은 앱이면 ID는 그대로다. GitHub의 Secret은 읽을 수 없어 비교하지 않고 매번 덮어쓴다
     run("gh", ["secret", "set", "LINKEDIN_PERSON_ID", "--repo", repo], sub);
     // 만료 알림(linkedin-token.yml)이 이 날짜로 계산한다. 토큰은 오늘 발급했다고 본다
-    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date());
+    const today = new Intl.DateTimeFormat("en-CA").format(new Date());
     run("gh", ["variable", "set", "LINKEDIN_TOKEN_ISSUED_AT", "--repo", repo, "--body", today]);
 
     console.log(`완료: Secrets 2개와 Variable LINKEDIN_TOKEN_ISSUED_AT=${today}를 저장했다.\n클립보드 기록 앱을 쓰면 그 기록은 직접 지운다. 만료 알림 이슈가 열려 있으면 닫는다.`);

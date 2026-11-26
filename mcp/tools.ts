@@ -118,9 +118,9 @@ export interface DraftInput {
 
 export type WriteResult = { ok: true; path: string; warnings: string[] } | { ok: false; errors: string[] };
 
-/** 작성자 기준 날짜(서울) YYYY-MM-DD */
+/** 작성자가 있는 곳(이 컴퓨터의 시간대)의 오늘 YYYY-MM-DD */
 function today(): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date());
+  return new Intl.DateTimeFormat("en-CA").format(new Date());
 }
 
 /** frontmatter를 저장소의 글과 같은 순서·모양으로 쓴다. 빈 값은 `key:`로 둔다. */

@@ -11,11 +11,11 @@ lang: ko
 ai_assisted: false
 audience: 개인 기술 블로그를 만들면서 많이 사용되는 Next.js, Jekyll, Astro 사이에서 고민하는 개발자
 search_intent: 개인 블로그에 SPA, SSR, SSG 중 무엇이 맞는지, Astro를 고를 이유가 있는지 알고 싶다
-created_at: 2026-11-27
-reviewed_at: 2026-11-27
+created_at: 2026-11-26
+reviewed_at: 2026-11-26
 reviewed_by: cheyoon
 review_notes: review-post 8개 항목 통과
-published_at: 2026-11-27
+published_at: 2026-11-26
 updated_at:
 disclosure:
 cover:

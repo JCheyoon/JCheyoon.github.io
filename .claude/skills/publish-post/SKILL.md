@@ -20,7 +20,7 @@ description: status가 reviewed인 블로그 글만 published로 바꾸고, 빌�
 
 ## 2. 원문 상태 변경
 - `publish/<slug>` 브랜치에서 한다.
-- `status: published`, `published_at`(오늘 날짜)을 기록한다. 번역 도구가 published 원문만 받는다. 아직 커밋하지 않는다.
+- `status: published`, `published_at`(이 컴퓨터 시간대의 오늘)을 기록한다. 번역 도구가 published 원문만 받는다. 아직 커밋하지 않는다.
 
 ## 3. 번역과 번역 검수 (원문을 발행할 때만)
 발행하는 글에 `translated_from`이 없으면(원문이면) 반대 언어 번역본을 만든다. 번역본만 따로 발행할 때는 건너뛴다.

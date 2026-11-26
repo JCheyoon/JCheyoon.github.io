@@ -1,94 +1,75 @@
 # CHEYOON
 
-소프트웨어를 만들며 직접 겪은 문제와 해결을 기록하는 블로그입니다.
+English · [한국어](README.ko.md)
 
-**블로그:** https://jcheyoon.github.io · [English](https://jcheyoon.github.io/en/)
+A blog about problems I ran into while building software, and how I solved them.
 
-글 초안, 검사, 번역은 이 저장소의 **MCP 서버**와 Claude Code로 하고, 발행은 작성자가 검수한 뒤에만 합니다.
-React SPA에서 Astro로 옮긴 이유는 [블로그 글](https://jcheyoon.github.io/post/why-astro/)에 정리했습니다.
+**Blog:** https://jcheyoon.github.io/en/ · [한국어](https://jcheyoon.github.io)
 
-## 기술 스택
+I draft, check, and translate posts with the **MCP server** in this repository and Claude Code. A post is published only after I review it.
 
-| 영역 | 사용 |
+## Tech stack
+
+| Area | Tools |
 |---|---|
-| 사이트 | Astro 7(정적 생성), TypeScript, Tailwind CSS 4 |
-| 본문 | Markdown + git. frontmatter는 Zod 스키마로 검사, 코드 블록은 Expressive Code |
-| 검색 | Pagefind(빌드 때 색인 생성) |
-| 미리보기 이미지 | Satori + resvg로 글마다 1200×630 PNG 생성 |
-| 글 작성 도구 | MCP TypeScript SDK(stdio 서버) |
-| 배포 | GitHub Actions → GitHub Pages |
+| Site | Astro 7 (static site generation), TypeScript, Tailwind CSS 4 |
+| Content | Markdown + git |
+| Search | Pagefind (the index is built at build time) |
+| Preview images | Satori + resvg create a 1200×630 PNG for each post |
+| Writing tools | MCP TypeScript SDK (stdio server) |
+| Deployment | GitHub Actions → GitHub Pages |
 
-## 주요 기능
+## Features
 
-- **한국어·영어:** 한국어는 `/`, 영어는 `/en/`. 원문과 번역본을 `hreflang`으로 연결하고, 번역본에는 AI 번역 안내를 표시합니다.
-- **읽기 화면:** 목차, 안내 상자, 다크 모드, 검색(`⌘K`), 카테고리·태그, 연도별 기록, 모바일 하단 탭과 바텀 시트
-- **SEO:** canonical, Open Graph, JSON-LD, sitemap, RSS
-- **발행 안전장치:** 검수 기록이 없는 글은 발행 상태가 될 수 없고, 초안이 배포 결과물에 섞이면 빌드 검사가 실패합니다.
-- **LinkedIn 공유:** 작성자가 고른 영어 글만 배포 뒤 자동으로 게시합니다.
-- **글 데이터:** [`/data/posts.json`](https://jcheyoon.github.io/data/posts.json)에 발행한 글을 제공합니다. 독자가 자기 AI 앱에서 글을 검색할 수 있는 공개 MCP 서버([blog-backend](https://github.com/JCheyoon/blog-backend), Go)가 읽을 데이터이며, 서버는 만드는 중입니다.
+- **Korean and English:** Korean lives at `/`, English at `/en/`. Originals and translations are linked with `hreflang`, and translations show a note that they were translated with AI assistance.
+- **Reading:** table of contents, callouts, dark mode, search (`⌘K`), categories and tags, a yearly archive, and a bottom tab bar with bottom sheets on mobile
+- **SEO:** canonical URLs, Open Graph, JSON-LD, sitemap, RSS
+- **Publishing guards:** a post without a review record can't be published, and the build check fails if a draft ends up in the deployed output.
+- **LinkedIn sharing:** only the English posts I choose are posted automatically after deployment.
+- **Post data:** published posts are available at [`/data/posts.json`](https://jcheyoon.github.io/data/posts.json). It is the data source for a public MCP server ([blog-backend](https://github.com/JCheyoon/blog-backend), Go) that will let readers search posts from their own AI apps. The server is still in progress.
 
-## 글이 발행되는 흐름
+## How a post gets published
 
 ```
-초안 (draft) ── 검수 ──▶ reviewed ── 발행 ──▶ 번역 초안 ── 번역 검수 ──▶ 한국어·영어 published
-                                                                            │
-                                             PR 검증 → merge → 배포 → (선택) LinkedIn 게시
+draft ── review ──▶ reviewed ── publish ──▶ translation draft ── translation review ──▶ published (ko + en)
+                                                                                          │
+                                        PR checks → merge → deploy → (optional) LinkedIn post
 ```
 
-AI가 만든 초안과 번역본은 작성자가 승인해야 다음 단계로 갑니다. 자동 생성이나 예약 발행은 하지 않습니다.
+AI-written drafts and translations move forward only after I approve them. Nothing is generated or published on a schedule.
 
-## 블로그 MCP 서버
+## Blog MCP server
 
-이 저장소를 Claude Code로 열면 [`.mcp.json`](.mcp.json) 설정으로 [`mcp/`](mcp/) 서버가 연결됩니다.
+When you open this repository in Claude Code, the server in [`mcp/`](mcp/) is configured through [`.mcp.json`](.mcp.json).
 
-| 도구 | 하는 일 |
+| Tool | What it does |
 |---|---|
-| `list_posts`, `check_post`, `list_templates` | 글 목록, 규칙 검사, 템플릿 목록 |
-| `create_draft` | 새 초안 생성. 항상 `draft`로 만듭니다 |
-| `translate_post` | 발행한 원문의 번역 초안 저장 |
+| `list_posts`, `check_post`, `list_templates` | List posts, check a post against the rules, list templates |
+| `create_draft` | Creates a new post file, always as `draft` |
+| `translate_post` | Saves a translation draft of a published post |
 
-commit, push, 상태 승격은 하지 않습니다. 글 규칙은 [`src/lib/content-rules.ts`](src/lib/content-rules.ts) 하나를 사이트 빌드, 검사 스크립트, MCP 서버가 함께 씁니다.
+It never commits, pushes, or promotes a post's status. The site build, the check script, and the MCP server all share one rule file, [`src/lib/content-rules.ts`](src/lib/content-rules.ts).
 
-## 로컬에서 실행
-
-Node 24.22.2([`.nvmrc`](.nvmrc))를 씁니다.
-
-```bash
-npm ci
-npm run dev
-```
-
-http://localhost:4321 에서 초안 글까지 볼 수 있습니다.
-
-| 명령 | 하는 일 |
-|---|---|
-| `npm run verify` | 콘텐츠 검사 → 테스트 → 타입 검사 → 두 종류 빌드와 HTML 검사 |
-| `npm run build` / `npm run preview` | 배포용 빌드(발행한 글만)와 미리보기 |
-
-검색은 개발 서버에서 동작하지 않습니다. 초안까지 검색해 보려면 아래처럼 실행합니다.
-
-```bash
-npm run build:drafts && INCLUDE_DRAFTS=true npx astro preview
-```
-
-## 폴더 구조
+## Project structure
 
 ```
 src/
-  content/posts/     글 (한국어). 영어는 posts/en/
-  content/templates/ 글 템플릿
-  pages/             라우트
-  components/        .astro 컴포넌트
-  lib/               글 조회, 글 규칙, Markdown 플러그인, OG 이미지
-mcp/                 블로그 MCP 서버
-scripts/             콘텐츠·HTML 검사, 검색 색인, LinkedIn 게시
-docs/                요구사항(SPEC), 로드맵, 번역 표현집
-.claude/             Claude Code 규칙과 스킬
-.github/workflows/   검증·배포, LinkedIn 토큰 만료 알림
+  content/posts/     posts (Korean); English posts are in posts/en/
+  content/templates/ post templates
+  pages/             routes
+  components/        .astro components
+  lib/               post queries, content rules, Markdown plugins, OG images
+mcp/                 blog MCP server
+scripts/             content and HTML checks, search index, LinkedIn posting
+docs/                spec, roadmap, translation glossary
+.claude/             Claude Code rules and skills
+.github/workflows/   checks and deployment, LinkedIn token expiry reminder
 ```
 
-## 문서
+## Docs
 
-- [요구사항과 결정 기록](docs/SPEC.md)
-- [로드맵](docs/ROADMAP.md)
-- [번역 표현집](docs/translation-glossary.md)
+These are written in Korean.
+
+- [Spec and decision log](docs/SPEC.md)
+- [Roadmap](docs/ROADMAP.md)
+- [Translation glossary](docs/translation-glossary.md)

@@ -18,10 +18,11 @@ description: status가 reviewed인 블로그 글만 published로 바꾸고, 빌�
 - `npm run verify`를 실행한다. sitemap과 RSS는 빌드가 생성하고, HTML 검사까지 한다.
 - 해당 글의 HTML에 title, description, canonical이 있는지 보고한다.
 
-## 4. 소셜 게시 문구 (Phase 4 이후)
-- `social/linkedin/<slug>.md`에 게시 문구 초안을 만든다.
-  - 글 요약 2~3문장과 글 URL을 넣는다. 과장과 해시태그 남발은 하지 않는다.
-- 이 파일은 PR에서 사람이 검수한다. 직접 게시하지 않는다. 게시는 merge 후 Action이 한다.
+## 4. LinkedIn (영어 글을 발행할 때만, SPEC §9.3)
+- "이 글을 LinkedIn에도 올릴까요?"라고 묻는다. 한국어 글은 묻지 않는다.
+- "응"일 때만 frontmatter에 `linkedin: true`를 넣고, 게시될 문구(제목, description, 글 주소)를 보여 준다.
+  - 작성자가 다른 문구를 원하면 `linkedin_text`에 영어 2~3문장을 넣는다. 글 주소는 자동으로 붙는다. 과장과 해시태그 남발은 하지 않는다.
+- 직접 게시하지 않는다. 게시는 merge 후 Action이 한다.
 
 ## 5. 커밋과 PR
 - `publish/<slug>` 브랜치에 커밋한다.

@@ -2,6 +2,7 @@
 #
 # - PR: 검증(npm run verify)만 한다. 배포하지 않는다.
 # - master push(merge): 검증 후 GitHub Pages에 배포한다. 2026-11-25 전환 후 켰다.
+# - 배포가 성공하면 linkedin: true인 새 영어 글을 LinkedIn에 올린다(SPEC §9.3).
 # - 수동 실행(workflow_dispatch): 재배포가 필요할 때 쓴다.
 #   Pages 설정의 Source가 "GitHub Actions"일 때만 배포가 성공한다.
 name: Site
@@ -57,6 +58,31 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@v5
+
+  linkedin:
+    name: LinkedIn 게시
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # 게시 기록 태그(linkedin/<slug>)를 push한다
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - run: node scripts/post-linkedin.ts
+        env:
+          SITE_URL: ${{ needs.deploy.outputs.page_url }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_PERSON_ID: ${{ secrets.LINKEDIN_PERSON_ID }}

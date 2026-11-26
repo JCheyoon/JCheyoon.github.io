@@ -38,7 +38,7 @@
 - 댓글 (Phase 5, Giscus, D17)
 - 커스텀 도메인 연결, 광고 슬롯과 CMP (Phase 6)
 - 공개 읽기 전용 MCP 서버 (Phase 5와 함께, D18). 독자가 자기 AI 앱에 연결해 글을 검색·요약한다
-- 사이트 내 검색 (Phase 3으로 당김, §6.3), 포트폴리오 페이지 (Phase 4)
+- 사이트 내 검색 (Phase 3으로 당김, §6.3)
 
 ### 어떤 경우에도 하지 않는 것
 
@@ -137,6 +137,8 @@ slug 규칙:
 | published_at | date | published | 화면과 JSON-LD의 발행일 |
 | updated_at | date | 선택 | 내용을 고친 날 |
 | disclosure | string | 조건부 | 제휴·협찬이 있으면 필수 |
+| linkedin | boolean | 선택 | `true`면 발행 후 LinkedIn에 올린다. 영어 글만 (§9.3) |
+| linkedin_text | string | 선택 | LinkedIn 게시 문구. 없으면 제목과 description (§9.3) |
 | sources | `{title, url, accessed}[]` | 선택 | 주요 출처 |
 | cover | `{src, alt}` | 선택 | 쓰면 alt 필수 |
 | lang | `ko` \| `en` | 선택 | 글의 언어. 기본 `ko`. 영어 글은 `src/content/posts/en/`에 둔다 (Phase 2) |
@@ -340,21 +342,25 @@ slug 규칙:
 
 ### 9.3 LinkedIn 공유 (Phase 4)
 
-원칙: 검수는 PR에서 사람이 하고, 게시만 자동으로 한다.
+원칙: 올릴 글은 글마다 작성자가 고르고, 게시만 자동으로 한다. LinkedIn에는 **영어 글만** 올린다(2026-11-26 작성자 결정).
 
-- `publish-post` 스킬이 발행 PR에 `social/linkedin/<slug>.md`(게시 문구 초안)를 함께 만든다.
-- 사람이 PR에서 게시 문구를 검수하고 merge한다.
-- merge되면 GitHub Action이 다음을 처리한다.
-  1. 배포가 성공했는지, 글 URL이 200을 반환하는지 확인
-  2. LinkedIn API로 게시
-  3. 게시 결과(게시물 URL, 게시 시각)를 `social/linkedin/<slug>.md`에 기록하는 커밋
-- 같은 글을 두 번 게시하지 않는다. 기록이 있으면 건너뛴다.
+- 고르기: 영어 글 frontmatter에 `linkedin: true`를 적는다. 없으면 올리지 않는다. 한국어 글에 적으면 검사가 실패한다. 번역 도구는 이 값을 넣지 않는다.
+- 문구: 기본은 제목, description, 글 주소다. 다르게 쓸 때만 `linkedin_text`를 적는다(글 주소는 자동으로 붙는다). 문구는 발행 PR에서 사람이 검수한다.
+- merge되어 배포가 성공하면 GitHub Action(`site.yml`의 `linkedin` 작업, `scripts/post-linkedin.ts`)이 다음을 처리한다.
+  1. `published`이고 `linkedin: true`인 영어 글 중 게시 기록이 없는 글을 찾는다. 이미 발행한 글에 나중에 `linkedin: true`를 더해도 올라간다.
+  2. 글 URL이 200을 반환하는지 확인한다.
+  3. LinkedIn API(`POST /v2/ugcPosts`, 공개 범위 `PUBLIC`)로 작성자 개인 피드에 게시한다. 링크 카드 이미지는 글 페이지의 `og:image` 주소를 `media[].thumbnails`로 보낸다. 이 값이 없으면 카드에 이미지가 나오지 않는다. `thumbnails`는 [UGC Post API 문서](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/ugc-post-api)의 항목이고 Share on LinkedIn 문서에는 없다. 개인 계정 테스트 게시로 이미지가 보이는 것을 확인했다(2026-11-26).
+  4. 게시 기록으로 태그 `linkedin/<slug>`를 push한다. 태그 메시지에 게시물 ID와 게시 시각을 적는다. `master`는 PR로만 바꿀 수 있어서 파일로 커밋하지 않는다.
+- 같은 글을 두 번 게시하지 않는다. 태그가 있으면 건너뛴다. 게시는 됐는데 태그 push가 실패하면 Action이 실패하며, 다음 merge 전에 태그를 직접 push한다.
+- LinkedIn에서 지우거나 고치는 일은 사람이 LinkedIn에서 한다.
+- 확인만 하기: `SITE_URL=<사이트 주소> node scripts/post-linkedin.ts --dry-run`은 요청 내용만 출력한다. 대상 선정과 요청 형식은 `npm run test:linkedin`(verify에 포함)이 검사한다.
 - 인증 방식:
-  - LinkedIn 공식 API의 Share on LinkedIn 제품(`w_member_social` 권한)을 쓴다.
+  - LinkedIn 공식 API의 Share on LinkedIn 제품(`w_member_social` 권한)을 쓴다. 앱과 토큰은 사람이 만든다.
+  - 저장소 Secrets `LINKEDIN_ACCESS_TOKEN`, `LINKEDIN_PERSON_ID`(`/v2/userinfo`의 `sub`), Variable `LINKEDIN_TOKEN_ISSUED_AT`.
   - 액세스 토큰은 60일 만료다. 자동 갱신(refresh token)은 일부 파트너만 쓸 수 있다.
-  - 따라서 토큰은 GitHub Secrets에 넣고, 만료 2주 전에 Action이 이슈로 알린다.
+  - 만료 2주 전에 `linkedin-token.yml`이 이슈로 알린다. 공개 저장소에서 60일 동안 활동이 없으면 GitHub가 예약 실행을 끌 수 있다.
   - 근거: [Share on LinkedIn](https://learn.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/share-on-linkedin), [OAuth 흐름](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow), [refresh token](https://learn.microsoft.com/en-us/linkedin/shared/authentication/programmatic-refresh-tokens)
-- 게시는 merge 후 Action이 한다. 게시 문구 작성을 블로그 MCP 서버(§9.4)의 도구로 옮길지는 Phase 4에서 정한다.
+  - [Posts API 문서](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api)는 Posts API가 ugcPosts를 대체한다고 적었다. 종료 날짜는 없고(2026-11-26 확인), Share on LinkedIn 문서는 ugcPosts를 안내한다. 게시가 실패하기 시작하면 Posts API 이전을 검토한다.
 
 ### 9.4 블로그 MCP 서버 (Phase 2b, D10)
 

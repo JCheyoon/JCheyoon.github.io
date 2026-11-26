@@ -42,7 +42,7 @@
 
 ### 4. 목표를 정하고 검증될 때까지 반복한다
 성공 기준을 먼저 정한다. 지시를 검증 가능한 목표로 바꾼다.
-- 이 저장소에는 테스트 프레임워크가 없다. 검증 수단은 `npm run verify`(콘텐츠 검사, `astro check`, 두 종류 빌드, HTML 검사)다.
+- 이 저장소에는 테스트 프레임워크가 없다. 검증 수단은 `npm run verify`(콘텐츠 검사, MCP·LinkedIn 테스트, `astro check`, 두 종류 빌드, HTML 검사)다.
 - "검사를 추가해" → 규칙을 어긴 샘플을 만들어 검사가 실패하는지 보고, 정상일 때 통과하는지 본다.
 - "버그를 고쳐" → 먼저 재현한다(검사 실패, 샘플 글, 빌드 결과물의 특정 HTML). 그다음 고치고, 재현이 사라졌는지 확인한다.
 - "리팩터링해" → 전과 후에 `npm run verify`가 통과하고, 빌드 결과물이 의도한 만큼만 달라졌는지 확인한다.
@@ -67,7 +67,7 @@
 
 ### 명령
 - `npm run dev`: 개발 서버. draft 글도 보인다.
-- `npm run verify`: 콘텐츠 검사 → `astro check` → 템플릿 검증 빌드(`dist-drafts/`) → 배포 빌드(`dist/`) → HTML 검사. 자세한 내용은 `verify-site` 스킬.
+- `npm run verify`: 콘텐츠 검사 → MCP·LinkedIn 테스트 → `astro check` → 템플릿 검증 빌드(`dist-drafts/`) → 배포 빌드(`dist/`) → HTML 검사. 자세한 내용은 `verify-site` 스킬.
 - `npm run build` / `npm run preview`: 배포 빌드와 미리보기. published 글만 들어간다. 빌드 뒤 검색 색인(Pagefind)을 만든다.
 - 검색은 개발 서버에서 동작하지 않는다(색인은 빌드 결과물에만 있다). 확인: `npm run build:drafts` 뒤 `INCLUDE_DRAFTS=true npx astro preview`
 - 로컬에서는 `ASTRO_TELEMETRY_DISABLED=1`을 붙여 사용 통계 전송을 끈다(CI에는 설정되어 있다).
@@ -83,9 +83,9 @@
 - `src/lib/og.ts`, `src/pages/og/[...path].png.ts`: cover가 없는 글의 OG 이미지(D12)를 빌드 때 만든다. 폰트는 `src/assets/fonts/`(Pretendard, OFL)
 - `src/lib/markdown.ts`: 본문 Markdown 플러그인(안내 상자 `> [!NOTE]`, 제목 앵커). Astro 기본 처리기 Sätteri의 플러그인 API를 쓴다. 코드 블록은 `astro-expressive-code`(설정은 `astro.config.mjs`)
 - `src/site.config.ts`, `src/data/`: 사이트 정보, 카테고리, 제휴 도메인(단일 소스)
-- `scripts/`: `check-content.ts`(규칙은 `src/lib/content-rules.ts`), `check-html.mjs`
+- `scripts/`: `check-content.ts`(규칙은 `src/lib/content-rules.ts`), `check-html.mjs`, `post-linkedin.ts`(LinkedIn 게시, 테스트는 `post-linkedin.test.ts`)
 - `src/lib/content-rules.ts`: 글 스키마와 검사 규칙의 단일 소스. 사이트 빌드, 검사 스크립트, MCP 서버가 함께 쓴다. Node가 직접 실행하므로 상대 경로 import에 `.ts`를 붙인다
-- `.github/workflows/site.yml`: PR 검증, master push 자동 배포, 수동 재배포
+- `.github/workflows/site.yml`: PR 검증, master push 자동 배포, 수동 재배포, 배포 뒤 LinkedIn 게시(SPEC §9.3). `linkedin-token.yml`: 토큰 만료 알림
 - `public/`: 파비콘, 매니페스트
 - `mcp/`: 블로그 MCP 서버(SPEC §9.4). `server.ts`(stdio, 도구 등록), `tools.ts`(도구 동작), `server.test.ts`(`npm run test:mcp`, verify에 포함). Claude Code 연결 설정은 루트 `.mcp.json`
   - 도구: `list_posts`, `check_post`, `list_templates`(읽기), `create_draft`, `translate_post`(쓰기). commit·push·상태 승격은 하지 않는다

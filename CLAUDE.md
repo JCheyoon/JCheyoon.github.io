@@ -3,7 +3,7 @@
 ## 현재 상태 (먼저 읽을 것)
 
 - 무엇을 만들고, 어떤 순서로 하는지는 [docs/SPEC.md](docs/SPEC.md)와 [docs/ROADMAP.md](docs/ROADMAP.md)가 기준이다. 작업 전에 ROADMAP의 "현재 단계"를 확인한다.
-- 사이트는 저장소 루트의 **Astro 정적 사이트**다. 아래 "사이트 (Astro)" 섹션을 본다.
+- 사이트는 저장소 루트의 **Astro 정적 사이트**다. 아래 "사이트 (Astro)" 섹션을 본다. 은퇴한 Vite SPA(`legacy/spa/`)는 2026-11-26에 삭제했다. 코드는 git 기록(`19ddd8b`)에 있다.
 - 글은 Markdown + git으로 관리하고, draft → reviewed → published를 거친다.
   - 규칙: [.claude/rules/content.md](.claude/rules/content.md)
   - 스킬: `draft-post`, `review-post`, `publish-post`
@@ -75,7 +75,7 @@
 ### 디렉터리
 - `src/content/posts/<slug>.md`: 글. frontmatter 스키마는 `src/content.config.ts`(SPEC §5.1)
 - `src/assets/posts/<slug>/`: 글 이미지(SPEC §5.4)
-- `src/pages/`: 라우트. `[...lang]/` 아래 파일 하나가 한국어(`/`, `/page/n/`, `/post/slug/`, `/category/slug/`, `/tag/tag/`)와 영어(`/en/...`) 페이지를 함께 만든다(D11). 그 밖에 `/about/`, `/archive/`(+`/en/`), `/404`, `/rss.xml`, `/en/rss.xml`, `/robots.txt`
+- `src/pages/`: 라우트. `[...lang]/` 아래 파일 하나가 한국어(`/`, `/page/n/`, `/post/slug/`, `/category/slug/`, `/tag/tag/`)와 영어(`/en/...`) 페이지를 함께 만든다(D11). 그 밖에 `/about/`, `/archive/`, `/contact/`, `/privacy/`, `/terms/`(모두 +`/en/`), `/404`, `/rss.xml`, `/en/rss.xml`, `/robots.txt`. 문의·처리방침·약관은 공통 틀 `InfoPage.astro`를 쓴다
   - `[...lang]/` 아래에 정적 이름 하나짜리 라우트(예: `[...lang]/archive.astro`)를 두면 `/archive/`가 홈 라우트(lang="archive")와 겹쳐 빌드가 실패한다. 그런 페이지는 `pages/x.astro`와 `pages/en/x.astro`가 같은 컴포넌트를 쓰게 한다(`ArchivePage.astro`)
 - `src/i18n.ts`: 언어 목록, 언어별 화면 문구, `localizePath`(주소에 `/en` 붙이기)
 - `src/layouts/`, `src/components/`: 레이아웃과 `.astro` 컴포넌트
@@ -96,10 +96,6 @@
   - `posts/template-check.md`(한국어 원문), `posts/en/template-check.md`(그 영어 번역본), `posts/en/template-check-en.md`(영어 원문, 번역본 없음)
 - 주소는 끝 슬래시를 붙인다(D5): `/post/slug/`.
 - 코드 규칙: `.claude/rules/site-code.md`, `.claude/rules/rendering-seo.md`
-
-## Legacy SPA (`legacy/spa/`)
-
-은퇴한 Vite + React SPA(관리자 포함)를 보관만 한다(SPEC D6, D7). 고치거나 빌드·배포하지 않는다. 필요하면 git 기록과 그 안의 코드를 직접 읽는다.
 
 ## Claude Workspace (.claude/)
 

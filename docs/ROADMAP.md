@@ -46,7 +46,7 @@
 | 광고 슬롯, CMP | 없음 | 신규 | 6 |
 | 댓글 | 없음 | 후보. Giscus로 결정(SPEC D17) | 4 |
 | 이 글에 질문하기 | 백엔드만 있음 | 하지 않음. 공개 MCP 서버로 대신함(SPEC D18) | - |
-| 관리자 (로그인, 대시보드, 에디터, 카테고리 관리) | 동작하지만 버그 있음 | 은퇴, `legacy/spa/`에 보관 | 1 |
+| 관리자 (로그인, 대시보드, 에디터, 카테고리 관리) | 동작하지만 버그 있음 | 은퇴. `legacy/spa/`에 보관했다가 2026-11-26 삭제 | 1 |
 | MCP 서버 | 계획만 있음 | 블로그 운영용 MCP 서버를 직접 만든다 (SPEC §9.4, D10) | 2b |
 | Ask my blog (벡터 검색) | 계획만 있음 | 보류 | — |
 
@@ -63,20 +63,20 @@
 
 작업 브랜치: `migrate/astro` (JCheyoon.github.io #5, merge 2026-11-24)
 
-- [x] 기존 SPA를 `legacy/spa/`로 이동하고, 레거시 규칙에 `paths: ["legacy/**"]` 적용
+- [x] 기존 SPA를 `legacy/spa/`로 이동하고, 레거시 규칙에 `paths: ["legacy/**"]` 적용 (레거시 규칙·스킬과 `legacy/`는 2026-11-26 삭제)
 - [x] Astro 골격, `site.config.ts`(`SITE_URL=https://jcheyoon.github.io`), `categories.ts`
 - [x] 콘텐츠 스키마와 검증 규칙 (`src/content.config.ts`, `scripts/check-content.mjs`)
 - [x] 반응형 레이아웃, 홈과 페이지네이션, 글, 카테고리, 소개, 404
 - [x] SEO head, JSON-LD, sitemap, RSS, robots, typography, 이미지 처리
 - [x] GitHub Actions 워크플로(PR 검증, 수동 배포)와 HTML 검사 스크립트
 - [x] 끝 슬래시 정책 결정 (D5): `/post/slug/` (2026-11-23)
-- [x] 새 코드 기준으로 `site-code` 규칙과 `verify-site` 스킬 작성 (레거시 `verify-project`와 별도)
+- [x] 새 코드 기준으로 `site-code` 규칙과 `verify-site` 스킬 작성 (레거시 `verify-project`는 2026-11-26 삭제)
 - [x] 전환 (SPEC §3.1, 2026-11-25)
   1. Astro 사이트 PR을 `master`에 merge한다. (완료)
   2. Settings → Pages → Source를 "GitHub Actions"로 바꾼다 (사람이 직접). (완료)
   3. 바로 Actions 탭에서 Site 워크플로를 수동 실행(Run workflow)해 배포한다. (완료)
   4. 라이브 사이트를 확인한다(아래 완료 기준). (curl 항목 완료)
-  5. 확인되면 `site.yml`의 push 트리거 주석을 푸는 PR을 올린다. 이후 master merge 시 자동 배포된다. (이 PR)
+  5. 확인되면 `site.yml`의 push 트리거 주석을 푸는 PR을 올린다. 이후 master merge 시 자동 배포된다. (완료)
 
 완료 기준:
 - [x] 라이브 홈·소개 페이지 HTML에 title, description, canonical이 있다 (curl로 확인, 2026-11-25).
@@ -137,7 +137,6 @@
   - `publish-post`가 게시 문구 파일을 만들고, merge 후 Action이 게시·기록
   - 토큰 만료 알림
 - [ ] 포트폴리오 (원할 경우)
-- [ ] (후보) 댓글: Giscus(SPEC D17, 2026-11-26 결정). 첫 글 발행 뒤 붙인다. 처리방침·SPEC §8에 giscus 추가
 
 완료 기준: 필수 페이지가 공개되고, LinkedIn 게시 Action이 샘플로 검증된다(실제 게시는 Phase 5).
 
@@ -147,8 +146,9 @@
   - 첫 글 후보: "블로그를 Vite에서 Astro로 옮긴 이유" (작성자 메모 필요)
 - [ ] 라이브 글 페이지 확인 (curl로 본문, title, description, canonical, hreflang)
 - [ ] Search Console 등록 (`https://jcheyoon.github.io` URL 접두어 속성), sitemap 제출
+- [ ] 댓글: Giscus(SPEC D17, 2026-11-26 결정). 첫 글 발행 뒤 붙인다. 처리방침·SPEC §8에 giscus 추가
 - [ ] 쿠키 없는 방문 통계(후보: Cloudflare Web Analytics). 붙일 때 공식 문서로 확인하고, 개인정보 처리방침과 SPEC §8에 추가
-- [ ] 공개 읽기 전용 MCP 서버 (SPEC D18)
+- [ ] 공개 읽기 전용 MCP 서버 (SPEC D18). 사이트 데이터 파일과 백엔드 로컬 연습은 단계와 관계없이 먼저 시작해도 된다(2026-11-26 작성자 결정)
   - 사이트: 빌드가 공개 글 데이터(`/data/posts.json`)를 만든다
   - 백엔드(작성자가 Go로 직접): `/mcp`에 `search_posts`·`get_post`·`list_posts`, 횟수 제한. 로컬에서 Claude Code로 연결해 확인
   - 첫 글 발행 뒤 Render에 배포하고, 연결 방법을 글로 쓴다

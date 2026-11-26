@@ -21,6 +21,13 @@ export const site = {
   email: "cheyoonka@gmail.com",
   /** Google Search Console 소유권 확인 값(HTML 태그 방식). 홈 head에 공개되는 값이라 비밀이 아니다. 지우면 소유권 확인이 풀릴 수 있다 */
   googleSiteVerification: "6Cuv7jZa2vNbZwFzTERLZxgo_l-LSMXnuNgVrJ33Kxw",
+  /** 댓글(giscus, D17). giscus.app이 만들어 주는 값이며 글 페이지에 공개된다 */
+  giscus: {
+    repo: "JCheyoon/JCheyoon.github.io",
+    repoId: "R_kgDOQqdBmw",
+    category: "Comments",
+    categoryId: "DIC_kwDOQqdBm84DMDLe",
+  },
   /** 글을 지정하지 않은 페이지의 OG 이미지 (public/ 기준 경로) */
   defaultOgImage: "/web-app-manifest-512x512.png",
   pageSize: 5,

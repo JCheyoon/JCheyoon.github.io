@@ -70,6 +70,7 @@ export const ui = {
     /** 번역본 안내(SPEC §9.2). 원문 언어를 받아 이 언어로 부른다 */
     translatedNote: (from: Lang) => `${({ ko: "한국어", en: "영어" })[from]} 원문을 AI의 도움으로 번역했고, 작성자가 검수했습니다.`,
     readOriginal: "원문 보기",
+    comments: "댓글",
     tags: "태그",
     prevNextNav: "이전 글과 다음 글",
     prevPost: "이전 글",
@@ -134,6 +135,7 @@ export const ui = {
     accessed: (date: string) => `accessed ${date}`,
     translatedNote: (from: Lang) => `Translated from ${({ ko: "Korean", en: "English" })[from]} with AI assistance, reviewed by the author.`,
     readOriginal: "Read the original",
+    comments: "Comments",
     tags: "Tags",
     prevNextNav: "Previous and next posts",
     prevPost: "Previous post",

@@ -20,6 +20,9 @@ review_notes: 번역 검수 승인. 원문과 링크·코드 표기·제목 수 
 published_at: 2026-11-27
 updated_at:
 disclosure:
+cover:
+  src: ../../../assets/posts/why-astro/cover.png
+  alt: "Illustration of moving from a React SPA to Astro SSG: an arrow points from a React (SPA) window to an Astro (SSG) window, above a laptop with the GitHub logo"
 ---
 
 After putting it off for ages, I finally decided to start building my GitHub blog again.

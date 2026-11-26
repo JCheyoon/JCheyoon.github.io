@@ -18,6 +18,9 @@ review_notes: review-post 8개 항목 통과
 published_at: 2026-11-27
 updated_at:
 disclosure:
+cover:
+  src: ../../assets/posts/why-astro/cover.png
+  alt: "React SPA에서 Astro SSG로 옮기는 것을 나타낸 그림. 왼쪽 React(SPA) 창에서 오른쪽 Astro(SSG) 창으로 화살표가 향하고, 아래에 GitHub 로고가 있는 노트북이 있다"
 ---
 미루고 미루던 깃허브 블로그 만들기를 다시 시작하기로 했다. 
 내용이 merge할 때만 바뀌는 개인 블로그라면 **SSG** 가 맞다고 판단했다. 그중 Astro를 고른 가장 큰 이유는 사이트와 글 검사 도구를 TypeScript 하나로 만들고 규칙 파일 하나를 함께 쓸 수 있어서이다. 이 글은 기존 React SPA였던 이 블로그를 Astro로 옮기면서 블로그에 많이 사용되는 Next.js, Jekyll을 각각 왜 고르지 않았는지 정리한다.

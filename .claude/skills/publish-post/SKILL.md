@@ -1,42 +1,46 @@
 ---
 name: publish-post
-description: status가 reviewed인 블로그 글만 published로 바꾸고, 빌드로 sitemap과 RSS를 갱신한 뒤 PR을 준비한다. 원문이면 이어서 반대 언어 번역 초안을 만든다. "발행해줘" 요청에 사용한다.
+description: status가 reviewed인 블로그 글만 published로 바꾸고, 빌드로 sitemap과 RSS를 갱신한 뒤 PR을 준비한다. 원문이면 반대 언어 번역본까지 만들어 검수를 받고 두 글을 PR 하나로 함께 발행한다. "발행해줘" 요청에 사용한다.
 ---
 
 # 발행
+
+원문과 번역본은 **함께 발행한다**(PR 하나, SPEC §9.2). 작성자가 "번역 없이"라고 하면 3단계를 건너뛴다.
 
 ## 1. 사전 확인 (하나라도 실패하면 중단하고 이유를 보고한다)
 - `status: reviewed`이고 `reviewed_at`, `reviewed_by`가 있다.
 - 본문에 `[...필요]` 표시가 하나도 없다.
 - 본문에 제휴 도메인 링크가 있으면 `disclosure`가 있다.
-- 이번 주 발행이 3편 미만이다 (git log 기준).
+- 이번 주 발행이 3편 미만이다 (git log 기준, 원문과 번역본은 1편으로 센다).
 
-## 2. 상태 변경
-- `status: published`, `published_at`(오늘 날짜)을 기록한다.
+## 2. 원문 상태 변경
+- `publish/<slug>` 브랜치에서 한다.
+- `status: published`, `published_at`(오늘 날짜)을 기록한다. 번역 도구가 published 원문만 받는다. 아직 커밋하지 않는다.
 
-## 3. LinkedIn (영어 글을 발행할 때만, SPEC §9.3)
-- "이 글을 LinkedIn에도 올릴까요?"라고 묻는다. 한국어 글은 묻지 않는다.
-- "응"일 때만 frontmatter에 `linkedin: true`를 넣고, 게시될 문구(제목, description, 글 주소)를 보여 준다.
+## 3. 번역과 번역 검수 (원문을 발행할 때만)
+발행하는 글에 `translated_from`이 없으면(원문이면) 반대 언어 번역본을 만든다. 번역본만 따로 발행할 때는 건너뛴다.
+- 원문을 읽고 번역문을 쓴 뒤, 블로그 MCP 서버의 `translate_post`로 저장한다.
+  - 제목, 요약, 대상 독자, 검색 의도, 본문을 번역해서 넘긴다. disclosure가 있으면 그것도 번역한다.
+  - 사실, 수치, 코드, 출처 링크는 바꾸지 않는다. 원문에 없는 내용을 더하지 않는다. 예외는 영어 번역에서 한국 독자만 아는 맥락을 짧게 설명하는 것뿐이다.
+  - 영어 문체는 `translate_post` 도구 설명(SPEC §9.2)을 따른다. 번역하기 전에 `docs/translation-glossary.md`를 읽는다.
+  - 본문 이미지 경로는 번역본 위치 기준으로 고친다(영어 글은 `../../../assets/...`).
+  - 거부되면 이유를 보여 주고 고친다.
+- 뜻으로 옮긴 표현과 더한 설명을 `원문 → 번역` 목록으로 보여 준다. 표현집에 없는 표현은 후보 2~3개와 말투 차이를 함께 보여 주고, 작성자가 고른 것을 표현집에 기록한다.
+- `review-post` 항목으로 점검한 표를 함께 낸다.
+- **여기서 멈춘다.** 작성자가 번역본을 읽고(개발 서버에서 볼 수 있다) "승인"이라고 하면 번역본에 검수 기록을 남기고 `status: published`, `published_at`을 기록한다. 승인 전에는 번역본을 published로 바꾸지 않는다.
+
+## 4. LinkedIn (영어 글이 있을 때만, SPEC §9.3)
+- 영어 글 frontmatter에 `linkedin: false`를 적는다(3단계의 승인을 받기 전에). 올릴지 묻지 않는다.
+- 올리려면 **작성자가** `true`로 바꾼다. AI는 `true`로 바꾸지 않는다. 작성자가 대화에서 올려 달라고 직접 말한 경우만 예외다.
+- 값이 `true`면 커밋 전에 게시될 문구(`linkedin_text`, 없으면 제목과 description, 그리고 글 주소)를 보여 준다.
   - 작성자가 다른 문구를 원하면 `linkedin_text`에 영어 2~3문장을 넣는다. 글 주소는 자동으로 붙는다. 과장과 해시태그 남발은 하지 않는다.
 - 직접 게시하지 않는다. 게시는 merge 후 Action이 한다.
 
-## 4. 빌드와 검사
+## 5. 빌드와 검사
 - 앞 단계의 frontmatter 변경까지 모두 마친 뒤 `npm run verify`를 실행한다. sitemap과 RSS는 빌드가 생성하고, HTML 검사까지 한다.
-- 해당 글의 HTML에 title, description, canonical이 있는지 보고한다.
+- 발행하는 글의 HTML에 title, description, canonical(번역본이 있으면 hreflang)이 있는지 보고한다.
 
-## 5. 커밋과 PR
-- `publish/<slug>` 브랜치에 커밋한다.
+## 6. 커밋과 PR
+- 원문과 번역본을 `publish/<slug>` 브랜치에 커밋한다.
 - `create-pr` 스킬로 PR 초안을 보여 주고, 사용자가 승인하면 push하고 PR을 연다.
-- merge와 배포는 사용자가 한다. merge가 곧 발행 승인이다.
-
-## 6. 번역 초안 (원문을 발행할 때만, SPEC §9.2)
-발행한 글에 `translated_from`이 없으면(원문이면) 이어서 반대 언어 번역 초안을 만든다. 번역본을 발행할 때는 이 단계를 건너뛴다.
-- `publish/<slug>`에서 `translate/<slug>` 브랜치를 만든다. 번역 도구는 published 원문만 받기 때문이다.
-- 원문을 읽고 번역문을 쓴 뒤, 블로그 MCP 서버의 `translate_post`로 저장한다.
-  - 제목, 요약, 대상 독자, 검색 의도, 본문을 번역해서 넘긴다. disclosure가 있으면 그것도 번역한다.
-  - 사실, 수치, 코드, 출처 링크는 바꾸지 않는다. 원문에 없는 내용을 더하지 않는다.
-  - 본문 이미지 경로는 번역본 위치 기준으로 고친다(영어 글은 `../../../assets/...`).
-  - 거부되면 이유를 보여 주고 고친다.
-- `check_post`로 확인하고 커밋한다.
-- PR은 발행 PR이 merge된 뒤 `create-pr`로 연다. 그 전에 열면 발행 커밋이 섞인다.
-- 번역본도 `review-post`로 검수하고, 승인 후 `publish-post`로 발행한다.
+- merge와 배포는 사용자가 한다. merge가 곧 두 글의 발행 승인이다.

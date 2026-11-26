@@ -41,7 +41,7 @@
 | LinkedIn 자동 업로드 | 계획만 있음 | 글마다 선택(`linkedin: true`, 영어만) → merge 후 Action이 게시 (SPEC §9.3) | 4 |
 | 검색창 | 동작 안 함 | 정적 검색(Pagefind)으로 구현 | 3 |
 | 포트폴리오 | 빈 페이지 | 하지 않음. 블로그 자체가 포트폴리오다(2026-11-26 작성자 결정) | - |
-| 자동 번역 | 계획만 있음 | 한국어 ↔ 영어 양방향. 발행하면 MCP 도구가 반대 언어 번역 초안을 자동 생성, 검수 후 발행 (SPEC §9.2) | 2a, 2b |
+| 자동 번역 | 계획만 있음 | 한국어 ↔ 영어 양방향. 발행할 때 MCP 도구가 반대 언어 번역 초안을 자동 생성, 검수 후 원문과 함께 발행 (SPEC §9.2) | 2a, 2b |
 | 커스텀 도메인 | 보유, 미연결 | 연결 | 6 |
 | 광고 슬롯, CMP | 없음 | 신규 | 6 |
 | 댓글 | 없음 | 후보. Giscus로 결정(SPEC D17) | 4 |
@@ -136,14 +136,14 @@
   - [x] LinkedIn 페이지와 앱 생성, 제품 2개 추가 (작성자, 2026-11-26)
   - [x] 토큰 발급, Secrets·Variable 등록 (작성자, 2026-11-26)
   - [x] 개인 피드 테스트 게시: 게시와 카드 이미지 확인 (작성자, 2026-11-26)
-  - [x] 영어 글 `linkedin: true`면 merge 후 Action이 게시하고 태그로 기록. `publish-post`가 올릴지 묻는다 (2026-11-26 작성자 결정)
+  - [x] 영어 글 `linkedin: true`면 merge 후 Action이 게시하고 태그로 기록. 기본값은 `linkedin: false`이고 작성자가 `true`로 바꾼다 (2026-11-27 작성자 결정)
   - [x] 토큰 만료 알림 워크플로와 갱신 스크립트(`npm run linkedin:token`)
 
 완료 기준: 필수 페이지가 공개되고, LinkedIn 게시 Action이 샘플로 검증된다(실제 게시는 Phase 5).
 
 ## Phase 5: 글 작성과 실제 검증 (이후 운영)
 
-- [ ] 첫 글 작성 → `review-post` → `publish-post` → 번역 초안 검수·발행 → LinkedIn 게시
+- [ ] 첫 글 작성 → `review-post` → `publish-post`(번역 초안 검수 뒤 두 언어 함께 발행) → LinkedIn 게시
   - 첫 글 후보: "블로그를 Vite에서 Astro로 옮긴 이유" (작성자 메모 필요)
 - [ ] 라이브 글 페이지 확인 (curl로 본문, title, description, canonical, hreflang)
 - [ ] Search Console 등록 (`https://jcheyoon.github.io` URL 접두어 속성), sitemap 제출

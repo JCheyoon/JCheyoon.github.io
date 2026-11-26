@@ -21,25 +21,28 @@ const lang = post.data.lang;
 ---
 
 <article class="overflow-hidden rounded-2xl border bg-card px-6 py-5 transition hover:shadow-lg">
-  {/* 768px 미만: 이미지는 카드 맨 위 전체 폭(높이 136px). 768px 이상: 글 오른쪽의 작은 썸네일 */}
-  <div class:list={[cover && "md:flex md:items-center md:gap-6"]}>
+  {/* 640px 미만: 이미지는 카드 맨 위 전체 폭(2.4:1, 360px 화면에서 높이 136px). 640px 이상: 글 오른쪽의 작은 썸네일. 1024px 미만은 사이드바 때문에 글 칸이 좁아 더 작게(128×67) */}
+  <div class:list={[cover && "sm:flex sm:items-center sm:gap-6"]}>
     {
       cover && (
-        /* 제목이 이미 글 링크라서 썸네일은 장식으로 둔다(alt="", 화면 낭독기가 같은 글을 두 번 읽지 않는다).
-           휴대폰은 위아래를 조금 잘라 낮은 띠로 보여 주고(중요한 내용은 가운데에 둔다), 넓은 화면은 1.91:1 그대로다 */
-        <Image
-          src={cover.src}
-          alt=""
-          aria-hidden="true"
-          width={720}
-          widths={[384, 720, 1200]}
-          sizes="(min-width: 768px) 192px, 100vw"
-          loading={eager ? "eager" : "lazy"}
-          class="-mx-6 -mt-5 mb-5 h-[136px] w-[calc(100%+3rem)] max-w-none object-cover object-[50%_40%] md:order-2 md:m-0 md:h-[101px] md:w-48 md:flex-none md:rounded-xl md:object-center"
-        />
+        /* 이미지도 눌러서 글로 갈 수 있게 한다. 제목이 이미 같은 링크라서 키보드와 화면 낭독기에는 제목 링크 하나만 남긴다
+           (tabindex·aria-hidden, 이미지의 alt는 비운다). 휴대폰은 위아래를 조금 잘라 낮은 띠로 보여 주고(중요한 내용은 가운데에 둔다),
+           높이를 비율로 정해 화면 폭이 달라도 잘리는 정도가 같다. 넓은 화면은 1.91:1 그대로다 */
+        <a href={postUrl(post)} tabindex="-1" aria-hidden="true" class="-mx-6 -mt-5 mb-5 block sm:order-2 sm:m-0 sm:flex-none">
+          <Image
+            src={cover.src}
+            alt=""
+            aria-hidden="true"
+            width={720}
+            widths={[384, 720, 1200]}
+            sizes="(min-width: 1024px) 192px, (min-width: 640px) 128px, 100vw"
+            loading={eager ? "eager" : "lazy"}
+            class="aspect-[12/5] h-auto w-full object-cover object-[50%_40%] sm:aspect-auto sm:h-[67px] sm:w-32 sm:rounded-xl sm:object-center lg:h-[101px] lg:w-48"
+          />
+        </a>
       )
     }
-    <div class="relative min-w-0 pl-5 md:flex-1">
+    <div class="relative min-w-0 pl-5 sm:flex-1">
       <span class="absolute left-0 top-1.5 h-4 w-1 rounded-full bg-accent-bar" aria-hidden="true"></span>
       <h2 class="text-lg font-bold leading-snug">
         <a href={postUrl(post)} class="hover:underline">{post.data.title}</a>

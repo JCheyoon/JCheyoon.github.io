@@ -1,7 +1,7 @@
 ---
 title: "블로그를 React SPA에서 Astro로 옮긴 이유"
 slug: why-astro
-description: 개인 블로그를 React SPA에서 Astro로 옮기며 SSR 대신 SSG를, Next.js와 Jekyll 대신 Astro를 고른 이유와 그 대가를 정리했습니다.
+description: 개인 블로그를 React SPA에서 Astro로 옮기며 SSR 대신 SSG를, Next.js와 Jekyll 대신 Astro를 고른 이유와 그 대가를 정리했다.
 category: frontend
 tags:
   - astro

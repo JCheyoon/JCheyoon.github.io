@@ -1,6 +1,7 @@
 // 본문 Markdown 플러그인(SPEC §5.6, §6.1). Astro 기본 처리기인 Sätteri의 플러그인 API를 쓴다.
 // - 안내 상자: GitHub 문법 `> [!NOTE] 제목`을 <aside class="callout">로 바꾼다.
 // - 제목 앵커: h2~h4 끝에 `#` 링크를 붙인다. id는 Astro의 heading id 플러그인이 먼저 붙인다.
+// - 바깥 사이트 링크: 새 탭으로 연다. 블로그 안의 링크는 같은 탭이다.
 import { defineHastPlugin, defineMdastPlugin } from "satteri";
 
 const CALLOUT_TYPES = ["NOTE", "TIP", "IMPORTANT", "WARNING", "CAUTION"] as const;
@@ -84,3 +85,19 @@ export const headingAnchors = defineHastPlugin({
     },
   },
 });
+
+/** 본문의 바깥 사이트 링크(출처 등)는 읽던 글을 두고 새 탭으로 연다. siteUrl과 주소가 다른 http(s) 링크가 대상이다 */
+export const externalLinks = (siteUrl: string) =>
+  defineHastPlugin({
+    name: "blog-external-links",
+    element: {
+      filter: ["a"],
+      visit(node, ctx) {
+        const href = node.properties?.href;
+        if (typeof href !== "string" || !/^https?:\/\//.test(href)) return;
+        if (new URL(href).origin === new URL(siteUrl).origin) return;
+        ctx.setProperty(node, "target", "_blank");
+        ctx.setProperty(node, "rel", "noopener");
+      },
+    },
+  });

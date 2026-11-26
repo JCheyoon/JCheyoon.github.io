@@ -159,6 +159,23 @@ const jsonLd = [
       </ul>
     </header>
 
+    {/* 번역본 안내(SPEC §9.2): AI가 번역하고 작성자가 검수한 글이라고 알린다. 원문으로 가는 링크를 함께 둔다 */}
+    {
+      data.translated_from && data.ai_assisted && (
+        <p class="mt-5 rounded-xl border px-4 py-3 text-sm text-muted-foreground" role="note">
+          {t.translatedNote(data.translated_from)}
+          {translation && (
+            <>
+              {" "}
+              <a href={postUrl(translation)} hreflang={ui[data.translated_from].htmlLang}>
+                {t.readOriginal}
+              </a>
+            </>
+          )}
+        </p>
+      )
+    }
+
     {
       data.disclosure && (
         <p class="mt-5 rounded-xl border-2 border-accent-bar px-4 py-3 text-sm font-semibold" role="note">
@@ -188,7 +205,7 @@ const jsonLd = [
           <ul class="mt-3 list-disc space-y-1 pl-5 text-sm">
             {data.sources.map((s) => (
               <li>
-                <a href={s.url} rel="noopener" class="underline underline-offset-4">
+                <a href={s.url} target="_blank" rel="noopener" class="underline underline-offset-4">
                   {s.title}
                 </a>
                 <span class="text-muted-foreground"> ({t.accessed(formatDate(s.accessed, lang))})</span>

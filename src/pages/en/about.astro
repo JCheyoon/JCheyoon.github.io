@@ -27,18 +27,5 @@ const profile = {
       <li>Facts and numbers come with sources, and information that may change carries the date it was checked.</li>
       <li>English posts are often translations of Korean posts. Translations are reviewed before they are published.</li>
     </ul>
-
-    <h2>Contact</h2>
-    <ul>
-      {
-        site.social.map((s) => (
-          <li>
-            <a href={s.href} rel="me noopener">
-              {s.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
   </article>
 </BaseLayout>

@@ -118,6 +118,10 @@ for (const file of htmlFiles) {
 
   for (const a of tags(html, "a")) {
     const href = a.href;
+    // 바깥 사이트 링크는 새 탭으로 연다(SPEC §6.1)
+    if (href && /^https?:\/\//.test(href) && new URL(href).origin !== origin && a.target !== "_blank") {
+      fail(route, `바깥 링크에 target="_blank"가 없다(${href})`);
+    }
     if (!href || !href.startsWith("/") || href.startsWith("//")) continue;
     if (!resolvesInDist(href)) fail(route, `내부 링크가 빌드 결과물에 없다(${href})`);
   }

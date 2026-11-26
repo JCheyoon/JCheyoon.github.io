@@ -6,7 +6,7 @@ import expressiveCode from "astro-expressive-code";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { satteri, satteriHeadingIdsPlugin } from "@astrojs/markdown-satteri";
-import { callouts, headingAnchors } from "./src/lib/markdown.ts";
+import { callouts, externalLinks, headingAnchors } from "./src/lib/markdown.ts";
 
 // SITE_URL은 canonical, sitemap, RSS, OG의 절대 URL을 만드는 유일한 기준이다(SPEC §4, §10).
 // 도메인을 연결할 때(Phase 5) 이 값만 바꾸면 된다.
@@ -26,7 +26,7 @@ export default defineConfig({
     // 본문 플러그인(SPEC §6.1). 제목 앵커는 heading id가 붙은 뒤에 돌아야 하므로 id 플러그인을 앞에 둔다.
     processor: satteri({
       mdastPlugins: [callouts],
-      hastPlugins: [satteriHeadingIdsPlugin(), headingAnchors],
+      hastPlugins: [satteriHeadingIdsPlugin(), headingAnchors, externalLinks(SITE_URL)],
     }),
   },
   integrations: [

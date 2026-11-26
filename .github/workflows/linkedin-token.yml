@@ -1,0 +1,42 @@
+# LinkedIn 액세스 토큰(60일 만료) 갱신 알림 (SPEC §9.3). 만료 2주 전부터 이슈를 1개 만든다.
+# 저장소 변수 LINKEDIN_TOKEN_ISSUED_AT(YYYY-MM-DD)이 없으면 아무것도 하지 않는다.
+name: LinkedIn token
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # 매일 09:00 KST
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  remind:
+    name: 토큰 만료 확인
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          ISSUED_AT: ${{ vars.LINKEDIN_TOKEN_ISSUED_AT }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$ISSUED_AT" ]; then echo "발급일이 없다"; exit 0; fi
+          days=$(( ($(date -u +%s) - $(date -u -d "$ISSUED_AT" +%s)) / 86400 ))
+          echo "발급 후 ${days}일"
+          if [ "$days" -lt 46 ]; then exit 0; fi
+          title="LinkedIn 토큰 갱신 필요 (발급일 $ISSUED_AT)"
+          # 닫은 이슈도 센다. 같은 토큰의 알림을 다시 만들지 않는다
+          # 이슈가 많아져도 찾도록 제목으로 검색한 뒤, 제목이 똑같은 것만 센다
+          count=$(gh issue list --state all --search "\"$title\" in:title" --json title --jq "map(select(.title == \"$title\")) | length")
+          if [ "$count" != "0" ]; then exit 0; fi
+          gh issue create --title "$title" --body "LinkedIn 액세스 토큰은 발급 60일 뒤 만료됩니다.
+
+          갱신 방법 (작성자 Mac에서)
+          1. 터미널에서 이 저장소 폴더로 이동해 npm run linkedin:token 을 실행합니다.
+          2. https://www.linkedin.com/developers/tools/oauth/token-generator 에서 앱을 고르고 openid, profile, w_member_social을 체크해 새 토큰을 발급합니다. 발급한 당일에 반영합니다(스크립트를 실행한 날이 발급일로 저장됩니다).
+          3. 토큰을 복사만 하고, 터미널로 돌아와 Enter를 누릅니다. 터미널에 붙여 넣지 않습니다.
+          4. 화면에 나온 이름이 본인이면 y를 입력합니다.
+          5. 완료 메시지가 나오면 이 이슈를 닫습니다.
+
+          Secrets와 발급일 저장, 클립보드 비우기는 스크립트가 합니다. 클립보드 기록 앱을 쓰면 그 기록은 직접 지웁니다.
+          공개 저장소이므로 토큰을 이 이슈를 포함해 어디에도 붙여 넣지 않습니다."

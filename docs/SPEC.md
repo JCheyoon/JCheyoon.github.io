@@ -38,7 +38,7 @@
 - 댓글 (Phase 5, Giscus, D17)
 - 커스텀 도메인 연결, 광고 슬롯과 CMP (Phase 6)
 - 공개 읽기 전용 MCP 서버 (Phase 5와 함께, D18). 독자가 자기 AI 앱에 연결해 글을 검색·요약한다
-- 사이트 내 검색 (Phase 3으로 당김, §6.3), 포트폴리오 페이지 (Phase 4)
+- 사이트 내 검색 (Phase 3으로 당김, §6.3)
 
 ### 어떤 경우에도 하지 않는 것
 
@@ -96,6 +96,7 @@ Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 �
 | `/rss.xml`, `/sitemap-index.xml`, `/robots.txt` | 빌드 시 자동 생성 | |
 | `/og/<slug>.png`, `/og/en/<slug>.png` | 글 OG 이미지 | cover가 없는 글만(D12) |
 | `/pagefind/` | 검색 색인 | 공개 글이 있을 때만(D16) |
+| `/data/posts.json` | 공개 글 데이터(한국어·영어, 본문 Markdown 포함) | 공개 MCP 서버가 읽는다(D18). 형식은 D18 |
 | 그 밖의 경로 | `404.html` | 실제 404 상태 |
 
 slug 규칙:
@@ -136,6 +137,8 @@ slug 규칙:
 | published_at | date | published | 화면과 JSON-LD의 발행일 |
 | updated_at | date | 선택 | 내용을 고친 날 |
 | disclosure | string | 조건부 | 제휴·협찬이 있으면 필수 |
+| linkedin | boolean | 선택 | `true`면 발행 후 LinkedIn에 올린다. 영어 글만 (§9.3) |
+| linkedin_text | string | 선택 | LinkedIn 게시 문구. 없으면 제목과 description (§9.3) |
 | sources | `{title, url, accessed}[]` | 선택 | 주요 출처 |
 | cover | `{src, alt}` | 선택 | 쓰면 alt 필수 |
 | lang | `ko` \| `en` | 선택 | 글의 언어. 기본 `ko`. 영어 글은 `src/content/posts/en/`에 둔다 (Phase 2) |
@@ -339,21 +342,27 @@ slug 규칙:
 
 ### 9.3 LinkedIn 공유 (Phase 4)
 
-원칙: 검수는 PR에서 사람이 하고, 게시만 자동으로 한다.
+원칙: 올릴 글은 글마다 작성자가 고르고, 게시만 자동으로 한다. LinkedIn에는 **영어 글만** 올린다(2026-11-26 작성자 결정).
 
-- `publish-post` 스킬이 발행 PR에 `social/linkedin/<slug>.md`(게시 문구 초안)를 함께 만든다.
-- 사람이 PR에서 게시 문구를 검수하고 merge한다.
-- merge되면 GitHub Action이 다음을 처리한다.
-  1. 배포가 성공했는지, 글 URL이 200을 반환하는지 확인
-  2. LinkedIn API로 게시
-  3. 게시 결과(게시물 URL, 게시 시각)를 `social/linkedin/<slug>.md`에 기록하는 커밋
-- 같은 글을 두 번 게시하지 않는다. 기록이 있으면 건너뛴다.
+- 고르기: 영어 글 frontmatter에 `linkedin: true`를 적는다. 없으면 올리지 않는다. 한국어 글에 적으면 검사가 실패한다. 번역 도구는 이 값을 넣지 않는다.
+- 문구: 기본은 제목, description, 글 주소다. 다르게 쓸 때만 `linkedin_text`를 적는다(글 주소는 자동으로 붙는다). 문구는 발행 PR에서 사람이 검수한다.
+- merge되어 배포가 성공하면 GitHub Action(`site.yml`의 `linkedin` 작업, `scripts/post-linkedin.ts`)이 다음을 처리한다.
+  1. `published`이고 `linkedin: true`인 영어 글 중 게시 기록이 없는 글을 찾는다. 이미 발행한 글에 나중에 `linkedin: true`를 더해도 올라간다.
+  2. 글 URL이 200을 반환하는지 확인한다.
+  3. LinkedIn API(`POST /v2/ugcPosts`, 공개 범위 `PUBLIC`)로 작성자 개인 피드에 게시한다. 링크 카드 이미지는 글 페이지의 `og:image` 주소를 `media[].thumbnails`로 보낸다. 이 값이 없으면 카드에 이미지가 나오지 않는다. `thumbnails`는 [UGC Post API 문서](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/ugc-post-api)의 항목이고 Share on LinkedIn 문서에는 없다. 개인 계정 테스트 게시로 이미지가 보이는 것을 확인했다(2026-11-26).
+  4. 게시 기록으로 태그 `linkedin/<slug>`를 push한다. 태그 메시지에 게시물 ID와 게시 시각을 적는다. `master`는 PR로만 바꿀 수 있어서 파일로 커밋하지 않는다.
+- 같은 글을 두 번 게시하지 않는다. 태그가 있으면 건너뛴다. 응답을 받지 못했거나 5xx가 왔거나 태그 push가 실패하면 Action이 실패하고 확인 방법과 태그 명령을 출력한다. **LinkedIn 피드를 확인하고, 올라가 있으면 태그를 push하기 전에는 Re-run도 다음 merge도 하지 않는다**(하면 다시 올라간다).
+- 한 글이 실패해도 다음 글은 올린다. 태그를 남기지 못했을 때만 그 자리에서 멈춘다. `linkedin_text`는 2800자까지다(게시물 한도 3,000자에서 글 주소 자리를 뺐다).
+- LinkedIn에서 지우거나 고치는 일은 사람이 LinkedIn에서 한다.
+- 확인만 하기: `SITE_URL=<사이트 주소> node scripts/post-linkedin.ts --dry-run`은 요청 내용만 출력한다. 대상 선정과 요청 형식은 `npm run test:linkedin`(verify에 포함)이 검사한다.
 - 인증 방식:
-  - LinkedIn 공식 API의 Share on LinkedIn 제품(`w_member_social` 권한)을 쓴다.
+  - LinkedIn 공식 API의 Share on LinkedIn 제품(`w_member_social` 권한)을 쓴다. 앱과 토큰은 사람이 만든다.
+  - 저장소 Secrets `LINKEDIN_ACCESS_TOKEN`, `LINKEDIN_PERSON_ID`(`/v2/userinfo`의 `sub`), Variable `LINKEDIN_TOKEN_ISSUED_AT`.
   - 액세스 토큰은 60일 만료다. 자동 갱신(refresh token)은 일부 파트너만 쓸 수 있다.
-  - 따라서 토큰은 GitHub Secrets에 넣고, 만료 2주 전에 Action이 이슈로 알린다.
+  - 갱신: 작성자 컴퓨터에서 `npm run linkedin:token`을 실행한다. 토큰 발급과 로그인은 브라우저에서 사람이 하고, 스크립트는 클립보드의 토큰을 `/v2/userinfo`로 확인한 뒤 승인을 받아 Secrets 2개와 Variable을 저장한다. 공개 저장소이므로 토큰과 계정 ID를 파일·출력·명령 인자에 남기지 않는다. macOS 전용이다.
+  - 만료 2주 전에 `linkedin-token.yml`이 이슈로 알린다. 공개 저장소에서 60일 동안 활동이 없으면 GitHub가 예약 실행을 끌 수 있다.
   - 근거: [Share on LinkedIn](https://learn.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/share-on-linkedin), [OAuth 흐름](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow), [refresh token](https://learn.microsoft.com/en-us/linkedin/shared/authentication/programmatic-refresh-tokens)
-- 게시는 merge 후 Action이 한다. 게시 문구 작성을 블로그 MCP 서버(§9.4)의 도구로 옮길지는 Phase 4에서 정한다.
+  - [Posts API 문서](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/posts-api)는 Posts API가 ugcPosts를 대체한다고 적었다. 종료 날짜는 없고(2026-11-26 확인), Share on LinkedIn 문서는 ugcPosts를 안내한다. 게시가 실패하기 시작하면 Posts API 이전을 검토한다.
 
 ### 9.4 블로그 MCP 서버 (Phase 2b, D10)
 
@@ -403,7 +412,7 @@ slug 규칙:
 | D15 | 모바일 UI | 하단 탭 바, 목록 필터(카테고리·태그 시트), 목차 바텀 시트, 숨는 헤더, 페이지 전환. Phase 3 마지막(§6.2) | 승인 (2026-11-25) |
 | D16 | 검색 | 헤더 버튼 + ⌘K + 검색 창, 모바일 전체 화면, Pagefind. 모바일 UI 완성을 위해 Phase 3으로 당김(§6.3) | 승인 (2026-11-25) |
 | D17 | 댓글 | Giscus(GitHub Discussions, GitHub 로그인). 로그인이 봇·도배 방지를 겸하고, 회원 정보를 직접 보관하지 않으며, 서버가 필요 없다. 비개발자 독자의 익명 댓글 요구가 실제로 생기면 이름+비밀번호(수정·삭제용)+Turnstile+횟수 제한+첫 댓글 승인을 갖춘 직접 구현을 그때 검토한다. 붙일 때 SPEC §8 스크립트와 개인정보 처리방침에 giscus를 추가한다 | 승인 (2026-11-26) |
-| D18 | AI 독자 대응 | 공개 읽기 전용 MCP 서버(도구: `search_posts`, `get_post`, `list_posts`)를 `blog-backend`(Go, Render)에 둔다. 사이트 빌드가 공개 글만 담은 `/data/posts.json`(가칭, 형식은 만들 때 확정)을 만들고 서버가 그것을 읽는다. DB 없음. 답은 독자의 AI가 만들므로 블로그는 API 비용을 내지 않는다. 사이트 안 질문 위젯(블로그가 API 비용 부담)과 `llms.txt`·글 Markdown 공개(2026-11 조사에서 꾸준히 읽는 AI가 Claude Code뿐)는 하지 않는다. 사이트 데이터 파일과 로컬 연습은 단계와 관계없이 먼저 해도 되고, 배포는 첫 글 발행 뒤(ROADMAP Phase 5) | 승인 (2026-11-26) |
+| D18 | AI 독자 대응 | 공개 읽기 전용 MCP 서버(도구: `search_posts`, `get_post`, `list_posts`)를 `blog-backend`(Go, Render)에 둔다. 사이트 빌드가 공개 글만 담은 `/data/posts.json`을 만들고 서버가 그것을 읽는다. 형식: `{generatedAt, site, posts: [{slug, lang, url, title, description, category: {slug, name}, tags, publishedAt, updatedAt|null, translations: {<lang>: url}, body}]}`(필드 camelCase, `body`는 frontmatter를 뺀 Markdown 원문, 한 파일에 전체 글. 수백 편 규모에서 서버가 한 번 받아 메모리에서 검색하기 위함. 몇 MB를 넘으면 목록과 본문을 나눈다). DB 없음. 답은 독자의 AI가 만들므로 블로그는 API 비용을 내지 않는다. 사이트 안 질문 위젯(블로그가 API 비용 부담)과 `llms.txt`·글 Markdown 공개(2026-11 조사에서 꾸준히 읽는 AI가 Claude Code뿐)는 하지 않는다. 사이트 데이터 파일과 로컬 연습은 단계와 관계없이 먼저 해도 되고, 배포는 첫 글 발행 뒤(ROADMAP Phase 5) | 승인 (2026-11-26) |
 
 ## 12. 완료 정의 (모든 기능 공통)
 

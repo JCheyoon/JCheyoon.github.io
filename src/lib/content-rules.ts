@@ -56,6 +56,11 @@ export function postSchema<Src extends z.ZodType>(coverSrc: Src) {
       published_at: optionalDate,
       updated_at: optionalDate,
       disclosure: optionalText,
+      // LinkedIn에도 올릴 글(SPEC §9.3). 영어 글만 쓸 수 있다
+      linkedin: z.preprocess(emptyToUndefined, z.boolean().default(false)),
+      /** 게시 문구를 직접 쓸 때만. 없으면 제목과 description을 쓴다 */
+      // LinkedIn 게시물은 3,000자까지다. 뒤에 붙는 글 주소 자리를 남긴다
+      linkedin_text: z.preprocess(emptyToUndefined, z.string().min(1).max(2800, "linkedin_text는 2800자까지 쓴다").optional()),
       sources: z
         .array(
           z.object({
@@ -73,6 +78,9 @@ export function postSchema<Src extends z.ZodType>(coverSrc: Src) {
         .optional(),
     })
     .superRefine((data, ctx) => {
+      if (data.linkedin && data.lang !== "en") {
+        ctx.addIssue({ code: "custom", path: ["linkedin"], message: "LinkedIn에는 영어 글만 올린다(SPEC §9.3)" });
+      }
       if (data.translated_from !== undefined) {
         if (data.translated_from === data.lang) {
           ctx.addIssue({ code: "custom", path: ["translated_from"], message: "translated_from은 글의 lang과 달라야 한다" });

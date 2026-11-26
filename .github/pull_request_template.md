@@ -33,6 +33,6 @@
 - [ ] AI 특유의 반복 표현, 빈 문장, 근거 없는 일반론이 없다
 - [ ] `[경험 추가 필요]`, `[출처 확인 필요]`, `<!-- 안내: … -->`가 남아 있지 않다
 - [ ] 번역본이면 원문과 사실·수치·코드·링크가 같다
-- [ ] 소셜 게시 문구(`social/`)를 확인했다(있을 때)
+- [ ] `linkedin: true`면 LinkedIn 게시 문구(`linkedin_text` 또는 제목·description)를 확인했다
 
 관련 문서: docs/SPEC.md §…, docs/ROADMAP.md Phase …

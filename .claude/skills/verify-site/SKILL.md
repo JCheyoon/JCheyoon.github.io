@@ -16,9 +16,10 @@ ASTRO_TELEMETRY_DISABLED=1 npm run verify
 | 단계 | 명령 | 확인하는 것 |
 |---|---|---|
 | 1 | `npm run check:content` | slug = 파일명, 보완 표시(`[경험 추가 필요]`, `[출처 확인 필요]`), 제휴 링크 표시, 이미지 alt·외부 이미지. reviewed·published 글은 실패, draft는 경고 |
-| 2 | `npm run check` | `astro check` 타입 검사, frontmatter 스키마(`src/content.config.ts`) |
-| 3 | `npm run build:drafts` + `check-html dist-drafts --drafts` | 초안까지 포함해 템플릿을 검증한다. 글 페이지가 1개 이상 있어야 한다(`template-check` 샘플) |
-| 4 | `npm run build` + `check-html dist` | 배포 결과물: title·description·canonical·OG·lang, 내부 링크, img alt, 404 noindex, 초안이 결과물·sitemap·RSS에 없는지 |
+| 2 | `npm run test:mcp`, `npm run test:linkedin` | 블로그 MCP 서버 도구, LinkedIn 게시 대상 선정과 요청 형식(LinkedIn은 호출하지 않는다) |
+| 3 | `npm run check` | `astro check` 타입 검사, frontmatter 스키마(`src/content.config.ts`) |
+| 4 | `npm run build:drafts` + `check-html dist-drafts --drafts` | 초안까지 포함해 템플릿을 검증한다. 글 페이지가 1개 이상 있어야 한다(`template-check` 샘플) |
+| 5 | `npm run build` + `check-html dist` | 배포 결과물: title·description·canonical·OG·lang, 내부 링크, img alt, 404 noindex, 초안이 결과물·sitemap·RSS·`/data/posts.json`에 없는지 |
 
 ## 실패했을 때
 

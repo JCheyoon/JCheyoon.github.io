@@ -1,11 +1,36 @@
 ---
-// 개인정보 처리방침·이용약관 링크는 페이지가 생기는 Phase 4에서 추가한다.
+// 푸터(SPEC §6): 문의·개인정보 처리방침·이용약관 링크와 저작권. 링크는 지금 언어의 페이지로 간다.
 import { site } from "../site.config";
+import { localizePath, ui, type Lang } from "../i18n";
 
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
 const year = new Date().getFullYear();
+const links = [
+  { href: localizePath(lang, "/contact/"), label: t.contact },
+  { href: localizePath(lang, "/privacy/"), label: t.privacy },
+  { href: localizePath(lang, "/terms/"), label: t.terms },
+];
 ---
 
 <footer class="mt-12 border-t bg-background py-10 text-sm text-muted-foreground">
+  <nav aria-label={t.footerMenu} class="mb-3">
+    <ul class="flex flex-wrap justify-center gap-x-5 gap-y-2">
+      {
+        links.map((link) => (
+          <li>
+            <a href={link.href} class="hover:text-foreground hover:underline">
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
   <p class="text-center">
     © {year} <span class="font-semibold text-foreground">{site.author.name}</span>. All Rights Reserved.
   </p>

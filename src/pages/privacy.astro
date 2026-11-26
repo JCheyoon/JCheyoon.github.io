@@ -1,0 +1,81 @@
+---
+// 개인정보 처리방침(SPEC §6). 개인정보 보호법 제30조 제1항의 기재 항목 중 이 사이트에 해당하는 것을 쓴다.
+// 사이트가 실제로 하는 일만 적는다: 회원가입·쿠키·방문 통계 없음, 테마 설정만 기기 저장소, 호스팅 GitHub Pages, 이메일 문의.
+// 광고(AdSense)를 넣을 때 필수 고지를 추가한다(Phase 6). 문구는 작성자 검수 대상이다.
+import InfoPage from "../components/InfoPage.astro";
+import { site } from "../site.config";
+
+const effective = "2026년 11월 25일";
+---
+
+<InfoPage title="개인정보 처리방침" description={`${site.name}이 개인정보를 어떻게 처리하는지 안내합니다.`} lang="ko" alternate="/en/privacy/">
+  <p>
+    {site.name}(이하 "이 블로그")는 개인이 운영하는 블로그입니다. 회원가입이 없고, 쿠키나 방문 통계 도구를 쓰지 않습니다. 개인정보는 방문자가 이메일로
+    문의할 때만 받습니다.
+  </p>
+
+  <h2>1. 처리하는 개인정보와 목적</h2>
+  <ul>
+    <li>항목: 이메일로 문의할 때 보내 주신 이메일 주소, 이름(메일에 표시된 경우), 문의 내용</li>
+    <li>목적: 문의 확인과 답장</li>
+  </ul>
+
+  <h2>2. 보유 기간과 파기</h2>
+  <ul>
+    <li>문의 메일은 답장을 마친 날부터 1년 동안 보관하고, 그 뒤 메일함에서 지웁니다.</li>
+    <li>지워 달라고 요청하시면 기간과 관계없이 바로 지웁니다.</li>
+    <li>전자 우편으로만 보관하므로, 메일함에서 삭제하고 휴지통도 비우는 방법으로 파기합니다.</li>
+  </ul>
+
+  <h2>3. 제3자 제공</h2>
+  <p>받은 개인정보를 다른 사람이나 회사에 제공하지 않습니다.</p>
+
+  <h2>4. 이용하는 외부 서비스와 국외 이전</h2>
+  <p>이 블로그는 아래 서비스를 이용합니다. 두 회사 모두 미국에 있으며, 각 회사의 개인정보 처리방침에 따라 정보를 처리합니다.</p>
+  <ul>
+    <li>
+      GitHub(GitHub, Inc.): 사이트 호스팅(GitHub Pages). GitHub는 보안을 위해 방문자의 IP 주소를 기록합니다(<a
+        href="https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#data-collection">GitHub Pages 안내</a
+      >). 운영자는 이 기록을 받거나 볼 수 없습니다. <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+        >GitHub 개인정보 처리방침</a
+      >
+    </li>
+    <li>
+      Google(Google LLC): 문의 메일 수신과 보관(Gmail). <a href="https://policies.google.com/privacy">Google 개인정보처리방침</a>
+    </li>
+  </ul>
+  <p>국외 이전 내용은 다음과 같습니다.</p>
+  <ul>
+    <li>이전 국가: 미국</li>
+    <li>이전 항목: 방문 시 IP 주소(GitHub), 문의 메일의 이메일 주소·이름·내용(Google)</li>
+    <li>이전 시기와 방법: 사이트에 접속할 때, 문의 메일을 보낼 때 네트워크로 전송</li>
+    <li>보유 기간: GitHub의 접속 기록은 GitHub 방침에 따릅니다. 문의 메일은 2번의 기간을 따릅니다.</li>
+    <li>연락처: 각 회사의 개인정보 처리방침 페이지(위 링크)</li>
+    <li>거부 방법: 국외 이전을 원하지 않으면 이 사이트에 접속하지 않거나 문의 메일을 보내지 않으면 됩니다. 이 경우 사이트 이용이나 문의가 불가능합니다.</li>
+  </ul>
+
+  <h2>5. 자동으로 수집하는 장치</h2>
+  <ul>
+    <li>쿠키를 쓰지 않습니다.</li>
+    <li>
+      라이트·다크 테마를 직접 고르면, 그 선택(<code>theme</code> 값 하나)을 방문자 브라우저의 저장소(localStorage)에 저장합니다. 이 값은 운영자에게
+      전송되지 않으며, 브라우저 설정에서 사이트 데이터를 지우면 삭제됩니다.
+    </li>
+    <li>사이트 검색은 방문자의 브라우저 안에서만 동작하며, 검색어를 어디에도 보내지 않습니다.</li>
+  </ul>
+
+  <h2>6. 정보주체의 권리와 행사 방법</h2>
+  <p>
+    보내 주신 개인정보의 열람, 정정, 삭제, 처리 정지를 언제든 요청할 수 있습니다. 아래 연락처로 이메일을 보내 주시면 지체 없이 처리합니다.
+  </p>
+
+  <h2>7. 개인정보 보호책임자</h2>
+  <ul>
+    <li>성명: {site.author.name}(운영자)</li>
+    <li>연락처: <a href={`mailto:${site.email}`}>{site.email}</a></li>
+  </ul>
+
+  <h2>8. 처리방침의 변경</h2>
+  <p>이 방침을 바꾸면 이 페이지에 바뀐 내용과 시행일을 적습니다.</p>
+  <p>시행일: {effective}</p>
+</InfoPage>

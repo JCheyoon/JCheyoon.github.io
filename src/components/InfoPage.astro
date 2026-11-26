@@ -1,0 +1,23 @@
+---
+// 고정 안내 페이지(문의·개인정보 처리방침·이용약관, SPEC §4·§6)의 공통 틀.
+// 소개 페이지와 같은 흰 카드와 본문 스타일(SPEC §6.1)을 쓴다. 본문은 각 페이지가 slot으로 넣는다.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import type { Lang } from "../i18n";
+
+interface Props {
+  title: string;
+  description: string;
+  lang: Lang;
+  /** 다른 언어의 같은 페이지 */
+  alternate: string;
+}
+
+const { title, description, lang, alternate } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} lang={lang} alternate={alternate}>
+  <article class="post-body prose prose-slate max-w-none rounded-2xl border bg-card px-6 pt-6 pb-8 md:px-9 dark:prose-invert">
+    <h1>{title}</h1>
+    <slot />
+  </article>
+</BaseLayout>

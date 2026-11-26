@@ -8,7 +8,6 @@
       "Grep",
       "Bash(npm run dev:*)",
       "Bash(npm run build:*)",
-      "Bash(npm run lint:*)",
       "Bash(npm run preview:*)",
       "Bash(npm install:*)",
       "Bash(git status:*)",
@@ -20,15 +19,11 @@
       "mcp__cheyoon-blog__list_templates"
     ],
     "ask": [
-      "Bash(npm run deploy:*)",
       "Bash(git push:*)",
       "Bash(git commit:*)",
       "Bash(git reset:*)",
       "Edit(.env)"
     ],
     "deny": ["Bash(rm -rf *)", "Bash(git push --force:*)", "Edit(dist/**)"]
-  },
-  "env": {
-    "VITE_API_BASE_URL": "http://localhost:8080"
   }
 }

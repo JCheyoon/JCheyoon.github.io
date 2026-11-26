@@ -106,7 +106,7 @@ const searchable = visiblePosts.length > 0;
         )
       }
     </div>
-    <Footer />
+    <Footer lang={lang} />
     <BackToTop lang={lang} variant="floating" />
     <BottomTabs lang={lang} searchable={searchable} />
     {searchable && <SearchDialog lang={lang} />}

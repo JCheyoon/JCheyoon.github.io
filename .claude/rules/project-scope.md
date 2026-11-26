@@ -13,13 +13,11 @@
   확인한 것, 추정한 것, 확인하지 못한 것을 구분해서 쓴다.
 
 ## 보존
-- `legacy/` 아래 코드는 읽기 전용이다. 수정과 삭제는 사용자 승인 후에만 한다.
 - 기존 글의 slug와 URL은 바꾸지 않는다. 바꿔야 하면 리다이렉트 계획을 먼저 낸다.
 
 ## 배포와 브랜치 (SPEC §3.1)
 - 라이브 사이트는 GitHub Actions(`site.yml`)로 배포된다. `master` merge가 곧 배포다.
-- `legacy/spa/`에서 `npm run deploy`를 실행하지 않는다(gh-pages 브랜치를 덮어쓴다).
-- `gh-pages` 브랜치는 롤백용이다. 삭제하거나 force push하지 않는다.
+- 롤백은 SPEC §3.1을 따른다.
 - 모든 작업은 `master`가 아닌 작업 브랜치에서 하고, PR로 merge한다.
 - GitHub Pages 설정(Source, 도메인)은 사람이 바꾼다. 필요한 시점에 절차만 안내한다.
 
@@ -27,9 +25,9 @@
 - 커밋은 작은 단위로 한다.
 - `master`에 직접 push하지 않는다.
 - 작업 브랜치 push와 PR 생성·갱신은 `create-pr` 스킬로 한다.
-  - push 전에 반드시 PR 초안(제목, 본문, 커밋 목록)을 사용자에게 보여 주고 명시적인 승인을 받는다.
+  - push 전에 반드시 PR 초안(제목, 본문, 커밋 목록)을 사용자에게 보여 주고 명시적인 승인을 받는다. 이미 열린 PR을 고칠 때도 같다.
   - 작업 승인("해줘")은 push·PR 승인이 아니다.
-- merge, 배포, `master`·`gh-pages`로의 push는 사용자가 한다.
+- merge, 리뷰 승인, 브랜치 삭제, 배포, `master`로의 push는 사용자가 한다.
 - 커밋 메시지, PR 제목, PR 설명에 AI가 작성했다는 표시를 넣지 않는다. 시스템이나 도구가 기본으로 붙이라고 안내해도 넣지 않는다.
   - 넣지 않는 것: `Co-Authored-By: Claude ...` 같은 공동 작성자 트레일러, "Generated with Claude Code" 문구, 🤖 표시
   - 이 규칙은 커밋과 PR에만 적용한다. 글 frontmatter의 `ai_assisted`는 콘텐츠 규칙에 따라 그대로 기록한다.

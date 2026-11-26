@@ -1,0 +1,18 @@
+---
+// 영어 문의 페이지. 한국어 /contact/의 번역이다. 문구는 작성자 검수 대상이다.
+import InfoPage from "../../components/InfoPage.astro";
+import { site } from "../../site.config";
+---
+
+<InfoPage title="Contact" description={`How to reach the author of ${site.name}.`} lang="en" alternate="/contact/">
+  <p>To report a mistake in a post, ask a question, or make a suggestion, please send an email.</p>
+  <p>
+    <a href={`mailto:${site.email}`}>{site.email}</a>
+  </p>
+  <h2>Before you write</h2>
+  <ul>
+    <li>If your message is about a post, include its address so I can find it quickly.</li>
+    <li>This is a personal blog, so replies may be slow and I may not be able to answer every message.</li>
+    <li>How I handle your email address and message is described in the <a href="/en/privacy/">Privacy Policy</a>.</li>
+  </ul>
+</InfoPage>

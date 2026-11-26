@@ -1,18 +1,17 @@
 # 로드맵
 
-**현재 단계: Phase 2** (Phase 1 완료 2026-11-25)
+**현재 단계: Phase 4** (Phase 3 완료 2026-11-25)
 
 진행 원칙:
 
 - 단계는 순서대로 진행한다. 완료 기준을 통과하기 전에는 다음 단계 기능을 시작하지 않는다.
 - 작업량은 집중 작업일 기준 추정치다.
-- 브랜치와 배포 규칙은 `docs/SPEC.md` §3.1을 따른다. Phase 1에서 전환하기 전까지 `gh-pages` 브랜치와 라이브 사이트는 건드리지 않는다.
+- 브랜치와 배포 규칙은 `docs/SPEC.md` §3.1을 따른다. 라이브 사이트는 `master` merge로 자동 배포된다.
 
 ## 현재 상태 (2026-11-23 진단)
 
 | 항목 | 상태 |
 |---|---|
-| 라이브 사이트 | `gh-pages` 브랜치의 3036-13-17 초기 골격 (원격 확인) |
 | 빌드 | `npm run build` 실패 (타입 에러 3개), lint 에러 9개 |
 | 미완성 페이지 | About, Archive, Portfolio가 빈 페이지 |
 | 동작하지 않는 UI | 검색창, 언어 선택, GitHub/LinkedIn 링크 |
@@ -45,9 +44,9 @@
 | 자동 번역 | 계획만 있음 | 한국어 ↔ 영어 양방향. 발행하면 MCP 도구가 반대 언어 번역 초안을 자동 생성, 검수 후 발행 (SPEC §9.2) | 2a, 2b |
 | 커스텀 도메인 | 보유, 미연결 | 연결 | 6 |
 | 광고 슬롯, CMP | 없음 | 신규 | 6 |
-| 댓글 | 없음 | 후보. 방식(Giscus, Supabase Auth, 백엔드)은 그때 결정 | 4 |
-| 이 글에 질문하기 | 백엔드만 있음 | 선택 기능. API 키를 숨길 서버(백엔드) 필요 | 6 |
-| 관리자 (로그인, 대시보드, 에디터, 카테고리 관리) | 동작하지만 버그 있음 | 은퇴, `legacy/spa/`에 보관 | 1 |
+| 댓글 | 없음 | 후보. Giscus로 결정(SPEC D17) | 4 |
+| 이 글에 질문하기 | 백엔드만 있음 | 하지 않음. 공개 MCP 서버로 대신함(SPEC D18) | - |
+| 관리자 (로그인, 대시보드, 에디터, 카테고리 관리) | 동작하지만 버그 있음 | 은퇴. `legacy/spa/`에 보관했다가 2026-11-26 삭제 | 1 |
 | MCP 서버 | 계획만 있음 | 블로그 운영용 MCP 서버를 직접 만든다 (SPEC §9.4, D10) | 2b |
 | Ask my blog (벡터 검색) | 계획만 있음 | 보류 | — |
 
@@ -64,21 +63,20 @@
 
 작업 브랜치: `migrate/astro` (JCheyoon.github.io #5, merge 2026-11-24)
 
-- [x] 기존 SPA를 `legacy/spa/`로 이동하고, 레거시 규칙에 `paths: ["legacy/**"]` 적용
+- [x] 기존 SPA를 `legacy/spa/`로 이동하고, 레거시 규칙에 `paths: ["legacy/**"]` 적용 (레거시 규칙·스킬과 `legacy/`는 2026-11-26 삭제)
 - [x] Astro 골격, `site.config.ts`(`SITE_URL=https://jcheyoon.github.io`), `categories.ts`
 - [x] 콘텐츠 스키마와 검증 규칙 (`src/content.config.ts`, `scripts/check-content.mjs`)
 - [x] 반응형 레이아웃, 홈과 페이지네이션, 글, 카테고리, 소개, 404
 - [x] SEO head, JSON-LD, sitemap, RSS, robots, typography, 이미지 처리
 - [x] GitHub Actions 워크플로(PR 검증, 수동 배포)와 HTML 검사 스크립트
 - [x] 끝 슬래시 정책 결정 (D5): `/post/slug/` (2026-11-23)
-- [x] 새 코드 기준으로 `site-code` 규칙과 `verify-site` 스킬 작성 (레거시 `verify-project`와 별도)
+- [x] 새 코드 기준으로 `site-code` 규칙과 `verify-site` 스킬 작성 (레거시 `verify-project`는 2026-11-26 삭제)
 - [x] 전환 (SPEC §3.1, 2026-11-25)
-  1. Astro 사이트 PR을 `master`에 merge한다. 라이브 사이트는 아직 `gh-pages` 그대로다. (완료)
+  1. Astro 사이트 PR을 `master`에 merge한다. (완료)
   2. Settings → Pages → Source를 "GitHub Actions"로 바꾼다 (사람이 직접). (완료)
   3. 바로 Actions 탭에서 Site 워크플로를 수동 실행(Run workflow)해 배포한다. (완료)
   4. 라이브 사이트를 확인한다(아래 완료 기준). (curl 항목 완료)
-  5. 확인되면 `site.yml`의 push 트리거 주석을 푸는 PR을 올린다. 이후 master merge 시 자동 배포된다. (이 PR)
-  6. 문제가 생기면 Source를 다시 `gh-pages` 브랜치로 돌린다.
+  5. 확인되면 `site.yml`의 push 트리거 주석을 푸는 PR을 올린다. 이후 master merge 시 자동 배포된다. (완료)
 
 완료 기준:
 - [x] 라이브 홈·소개 페이지 HTML에 title, description, canonical이 있다 (curl로 확인, 2026-11-25).
@@ -91,7 +89,7 @@
 > 첫 글은 기능을 다 만든 뒤 쓰면서 발행 흐름, 번역, LinkedIn 공유를 한꺼번에 실제로 검증한다.
 > 검색 노출과 수익은 글이 공개된 뒤부터 쌓이므로, Phase 2~4는 기간을 정해 두고 진행한다.
 
-## Phase 2: 번역 구조와 블로그 MCP 서버
+## Phase 2: 번역 구조와 블로그 MCP 서버 (완료 2026-11-25)
 
 ### 2a. 사이트 번역 구조 (한국어 ↔ 영어, 2~3일)
 
@@ -115,16 +113,16 @@
 
 완료 기준: Claude Code에서 MCP 도구로 샘플 원문의 번역 초안을 만들고, 그 초안이 `npm run verify`를 통과한다.
 
-## Phase 3: 사이트 완성도 (2~3일)
+## Phase 3: 사이트 완성도 (완료 2026-11-25)
 
-- [ ] 본문 디자인 (SPEC §6.1, D9): 제목 앵커, 링크, 인라인 코드, 코드 블록(Expressive Code), 목록 기호, 인용문, 안내 상자, 이미지·구분선, 글 카드, 메타 아이콘, 이전·다음 글 버튼, 목차, 맨 위로 버튼
+- [x] 본문 디자인 (SPEC §6.1, D9): 제목 앵커, 링크, 인라인 코드, 코드 블록(Expressive Code), 목록 기호, 인용문, 안내 상자, 이미지·구분선, 글 카드, 메타 아이콘, 이전·다음 글 버튼, 목차, 맨 위로 버튼
   - `template-check.md`에 모든 요소를 넣어 템플릿 검증 빌드로 확인한다.
 - [x] 태그 페이지(형식 검사, 사이드바 태그 목록, 글·카드의 태그 링크), 아카이브(헤더 메뉴), 테마 토글(D14)
 - [x] 목록 카드 메타 아이콘, 페이지 번호 버튼
 - [x] OG 이미지 자동 생성(D12): `/og/<slug>.png`, `/og/en/<slug>.png`, Pretendard, 글쓴이·날짜·카테고리
-- [ ] 모바일 UI (SPEC §6.2, D15): 하단 탭 바, 목록 필터(카테고리·태그 바텀 시트), 글 목차 바텀 시트, 스크롤하면 숨는 헤더, 페이지 전환(View Transitions)
-- [ ] 정적 검색 (SPEC §6.3, D16, 2026-11-25 Phase 4에서 당김): 헤더 검색 버튼 + ⌘K/Ctrl+K + 검색 창, 모바일은 하단 탭의 검색이 전체 화면 검색, Pagefind
-- [ ] 카테고리·태그 목록 페이지 나누기, 사이드바 카테고리 "더보기"
+- [x] 모바일 UI (SPEC §6.2, D15): 하단 탭 바, 목록 필터(카테고리·태그 바텀 시트), 글 목차 바텀 시트, 스크롤하면 숨는 헤더, 페이지 전환(View Transitions)
+- [x] 정적 검색 (SPEC §6.3, D16, 2026-11-25 Phase 4에서 당김): 헤더 검색 버튼 + ⌘K/Ctrl+K + 검색 창, 모바일은 하단 탭의 검색이 전체 화면 검색, Pagefind
+- [x] 카테고리·태그 목록 페이지 나누기, 사이드바 카테고리 "더보기"
 - [x] PR 템플릿 작성(검수 체크리스트): `.github/pull_request_template.md`
 - [x] `master` 브랜치 보호 (ruleset `protect-master`: PR 필수, `검증과 빌드` 통과 필수, 강제 push·삭제 금지. 2026-11-25 작성자 설정)
 
@@ -132,14 +130,13 @@
 
 ## Phase 4: 신뢰와 공유 기능 (3~4일)
 
-- [ ] 문의, 개인정보 처리방침, 이용약관
+- [x] 문의, 개인정보 처리방침, 이용약관(+영어판, 푸터 링크). 광고 고지는 AdSense 신청 때 추가(Phase 6)
 - [ ] 제휴 표시 컴포넌트와 제휴 도메인 목록
 - [ ] LinkedIn 공유 (SPEC §9.3)
   - LinkedIn 앱 생성, Share on LinkedIn 제품 추가, 토큰을 Secrets에 등록 (사람이 직접)
   - `publish-post`가 게시 문구 파일을 만들고, merge 후 Action이 게시·기록
   - 토큰 만료 알림
 - [ ] 포트폴리오 (원할 경우)
-- [ ] (후보) 댓글. 방식은 시작할 때 정한다 (Giscus, Supabase Auth, 백엔드)
 
 완료 기준: 필수 페이지가 공개되고, LinkedIn 게시 Action이 샘플로 검증된다(실제 게시는 Phase 5).
 
@@ -149,6 +146,12 @@
   - 첫 글 후보: "블로그를 Vite에서 Astro로 옮긴 이유" (작성자 메모 필요)
 - [ ] 라이브 글 페이지 확인 (curl로 본문, title, description, canonical, hreflang)
 - [ ] Search Console 등록 (`https://jcheyoon.github.io` URL 접두어 속성), sitemap 제출
+- [ ] 댓글: Giscus(SPEC D17, 2026-11-26 결정). 첫 글 발행 뒤 붙인다. 처리방침·SPEC §8에 giscus 추가
+- [ ] 쿠키 없는 방문 통계(후보: Cloudflare Web Analytics). 붙일 때 공식 문서로 확인하고, 개인정보 처리방침과 SPEC §8에 추가
+- [ ] 공개 읽기 전용 MCP 서버 (SPEC D18). 사이트 데이터 파일과 백엔드 로컬 연습은 단계와 관계없이 먼저 시작해도 된다(2026-11-26 작성자 결정)
+  - 사이트: 빌드가 공개 글 데이터(`/data/posts.json`)를 만든다
+  - 백엔드(작성자가 Go로 직접): `/mcp`에 `search_posts`·`get_post`·`list_posts`, 횟수 제한. 로컬에서 Claude Code로 연결해 확인
+  - 첫 글 발행 뒤 Render에 배포하고, 연결 방법을 글로 쓴다
 - [ ] 주 1~3편 발행을 계속함
 
 완료 기준: draft → reviewed → published 기록과 번역본 검수 기록이 git에 남은 글이 1편 이상 있고, Search Console에서 색인이 확인되며, 글 1편이 LinkedIn에 게시된다.
@@ -165,7 +168,6 @@
 - [ ] AdSense 신청, Google CMP 설정 (EEA·UK·스위스), 개인정보 처리방침에 광고 조항 추가
 - [ ] 높이를 고정한 광고 슬롯 (본문 첫 문단 뒤, 글 끝, 데스크톱 사이드바)
 - [ ] 제휴 글 (직접 써 본 비교·후기만)
-- [ ] (선택) 질문 위젯: 백엔드가 글 본문을 사이트 기준으로 가져오도록 바꾼 뒤
 - [ ] (선택) 뉴스레터, 디지털 상품
 
 ## 하지 않을 것 (재검토 전까지)

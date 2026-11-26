@@ -2,7 +2,7 @@
 @plugin "@tailwindcss/typography";
 
 /*
- * 색상 토큰은 레거시 SPA(legacy/spa/src/index.css)의 값을 그대로 가져왔다.
+ * 색상 토큰은 레거시 SPA(삭제된 legacy/spa/src/index.css, git 기록 19ddd8b)의 값을 그대로 가져왔다.
  * 라이트 값은 :root, 다크 값은 아래 다크 블록에 둔다.
  * 기본은 시스템 설정, 테마 토글(D14)을 쓰면 <html data-theme="light|dark">로 고정한다.
  */

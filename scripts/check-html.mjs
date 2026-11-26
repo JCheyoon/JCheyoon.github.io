@@ -120,7 +120,7 @@ for (const file of htmlFiles) {
     const href = a.href;
     // 바깥 사이트 링크는 새 탭으로 연다(SPEC §6.1)
     if (href && /^https?:\/\//.test(href) && new URL(href).origin !== origin && a.target !== "_blank") {
-      fail(route, `바깥 링크에 target="_blank"가 없다(${href})`);
+      fail(route, `바깥 링크에 target="_blank"가 없다(${href}). 본문에서는 Markdown 링크로 쓰거나, HTML <a>라면 target="_blank" rel="noopener"를 넣는다`);
     }
     if (!href || !href.startsWith("/") || href.startsWith("//")) continue;
     if (!resolvesInDist(href)) fail(route, `내부 링크가 빌드 결과물에 없다(${href})`);

@@ -162,12 +162,12 @@ const jsonLd = [
     {/* 번역본 안내(SPEC §9.2): AI가 번역하고 작성자가 검수한 글이라고 알린다. 원문으로 가는 링크를 함께 둔다 */}
     {
       data.translated_from && data.ai_assisted && (
-        <p class="mt-5 rounded-xl border px-4 py-3 text-sm text-muted-foreground" role="note">
+        <p class="mt-5 rounded-xl border px-4 py-3 text-sm text-muted-foreground" role="note" data-pagefind-ignore>
           {t.translatedNote(data.translated_from)}
           {translation && (
             <>
               {" "}
-              <a href={postUrl(translation)} hreflang={ui[data.translated_from].htmlLang}>
+              <a href={postUrl(translation)} hreflang={ui[data.translated_from].htmlLang} class="underline underline-offset-4">
                 {t.readOriginal}
               </a>
             </>

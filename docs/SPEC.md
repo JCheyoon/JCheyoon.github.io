@@ -185,6 +185,7 @@ slug 규칙:
 기본 Markdown에 더해 다음을 쓸 수 있다(§6.1).
 
 - 안내 상자: GitHub 문법 `> [!NOTE]`(NOTE, TIP, IMPORTANT, WARNING, CAUTION). 같은 줄에 제목을 쓸 수 있다: `> [!TIP] 빌드 시간 줄이기`. 제목이 없으면 종류 이름(참고, 팁, 중요, 주의, 위험)을 쓴다.
+- 바깥 링크는 Markdown 문법(`[이름](주소)`)으로 쓴다. 새 탭 설정이 자동으로 붙는다. 본문에 HTML `<a>`를 직접 쓰면 자동 설정이 붙지 않으므로 `target="_blank" rel="noopener"`를 함께 써야 한다(빠지면 `check-html`이 실패한다. 2026-11-27 재현).
 - 코드 블록: 언어 뒤에 `title="파일명"`, 줄 강조 `{2-3}`, 추가·삭제 `ins={4} del={5}`, 접기 `collapse={1-5}`. 셸 세션은 `shellsession` 언어로 쓰면 줄 번호를 숨긴다.
 
 ### 5.7 글 템플릿 (Phase 2b)
@@ -356,7 +357,7 @@ slug 규칙:
 
 원칙: 올릴 글은 글마다 작성자가 고르고, 게시만 자동으로 한다. LinkedIn에는 **영어 글만** 올린다(2026-11-26 작성자 결정).
 
-- 고르기: 영어 글 frontmatter에 `linkedin: true`를 적는다. 없거나 `false`면 올리지 않는다. `publish-post`는 영어 글에 `linkedin: false`를 적어 두고 묻지 않는다. 올리려면 작성자가 `true`로 바꾼다(2026-11-27 작성자 결정). 한국어 글에 적으면 검사가 실패한다. 번역 도구는 이 값을 넣지 않는다.
+- 고르기: 영어 글 frontmatter에 `linkedin: true`를 적는다. 없거나 `false`면 올리지 않는다. `publish-post`는 영어 글에 `linkedin` 값이 없을 때만 `linkedin: false`를 적어 두고, 이미 있는 값은 바꾸지 않으며 묻지 않는다. 올리려면 작성자가 `true`로 바꾼다(2026-11-27 작성자 결정). 한국어 글에 적으면 검사가 실패한다. 번역 도구는 이 값을 넣지 않는다.
 - 문구: 기본은 제목, description, 글 주소다. 다르게 쓸 때만 `linkedin_text`를 적는다(글 주소는 자동으로 붙는다). 문구는 발행 PR에서 사람이 검수한다.
 - merge되어 배포가 성공하면 GitHub Action(`site.yml`의 `linkedin` 작업, `scripts/post-linkedin.ts`)이 다음을 처리한다.
   1. `published`이고 `linkedin: true`인 영어 글 중 게시 기록이 없는 글을 찾는다. 이미 발행한 글에 나중에 `linkedin: true`를 더해도 올라간다.

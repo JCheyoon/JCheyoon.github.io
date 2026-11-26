@@ -266,7 +266,7 @@ export function translatePost(root: string, input: TranslationInput): WriteResul
     updated_at: null,
     disclosure: input.disclosure?.trim() || null,
     ...(o.sources ? { sources: o.sources } : {}),
-    // cover alt는 원문 언어 그대로다. 검수할 때 번역한다.
+    // cover alt는 원문 언어 그대로다. 저장한 뒤 번역한다(publish-post 3단계, translate_post 설명).
     ...(cover ? { cover: { src: moveRelative(cover.src, input.from, to), alt: cover.alt } } : {}),
   };
   return writeChecked(root, to, input.slug, renderPost(front, input.body));

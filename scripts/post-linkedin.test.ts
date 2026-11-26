@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { checkPosts, readPostSources } from "../src/lib/content-rules.ts";
+import { checkPosts, plainPostSchema, readPostSources, splitPost } from "../src/lib/content-rules.ts";
 import { articleUrl, ogImage, pendingPosts, shareBody } from "./post-linkedin.ts";
 
 let root: string;
@@ -55,6 +55,14 @@ test("대표 이미지는 글 페이지의 og:image다", () => {
   const html = '<meta property="og:title" content="t"><meta property="og:image" content="https://example.com/og/en/a.png">';
   assert.equal(ogImage(html), "https://example.com/og/en/a.png");
   assert.equal(ogImage("<html></html>"), undefined);
+});
+
+test("빈 linkedin:은 false이고, linkedin_text는 2800자까지다", () => {
+  const split = splitPost(readFileSync(new URL("../src/content/posts/en/template-check-en.md", import.meta.url), "utf8"));
+  assert.ok(!("error" in split));
+  assert.equal(plainPostSchema.parse({ ...split.front, linkedin: null }).linkedin, false);
+  assert.equal(plainPostSchema.safeParse({ ...split.front, linkedin_text: "a".repeat(2800) }).success, true);
+  assert.equal(plainPostSchema.safeParse({ ...split.front, linkedin_text: "a".repeat(2801) }).success, false);
 });
 
 test("한국어 글에 linkedin: true를 쓰면 검사가 실패한다", () => {

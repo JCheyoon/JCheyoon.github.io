@@ -56,12 +56,60 @@ function remoteTags(): Set<string> {
 /** 배포 직후에는 새 글이 잠시 404일 수 있다. 열리지 않는 주소는 올리지 않는다 */
 async function fetchLivePage(url: string): Promise<string> {
   for (let attempt = 1; attempt <= 10; attempt++) {
-    const response = await fetch(url);
-    if (response.status === 200) return response.text();
-    console.log(`${url} → ${response.status} (${attempt}/10)`);
+    try {
+      const response = await fetch(url);
+      if (response.status === 200) return await response.text();
+      console.log(`${url} → ${response.status} (${attempt}/10)`);
+    } catch (error) {
+      // 배포 직후의 DNS 오류나 연결 끊김도 다시 시도한다
+      console.log(`${url} → ${(error as Error).message} (${attempt}/10)`);
+    }
     await sleep(30_000);
   }
   throw new Error(`${url}이 열리지 않아 게시하지 않았다`);
+}
+
+/** 게시 기록을 남기는 명령. 자동 기록이 실패했거나 결과를 알 수 없을 때 사람이 실행한다 */
+const tagCommands = (tag: string) =>
+  `  git fetch origin master\n  git tag -a ${tag} -m "<게시물 주소>" origin/master\n  git push origin refs/tags/${tag}`;
+
+/** LinkedIn에 올라갔는지 알 수 없거나, 올라갔는데 기록이 없다. 그대로 다시 실행하면 두 번 올라갈 수 있다 */
+const duplicateWarning = (tag: string) =>
+  `LinkedIn 개인 피드를 먼저 확인한다. 올라가 있으면 아래 태그를 push하기 전에는 Re-run도 다음 merge도 하지 않는다.\n${tagCommands(tag)}`;
+
+/** 태그를 남기지 못했다. 원인이 같으면 다음 글도 기록이 남지 않으므로 더 올리지 않는다 */
+class RecordError extends Error {}
+
+async function publish(post: PostData, url: string, token: string, personId: string) {
+  const image = ogImage(await fetchLivePage(url));
+  if (!image) throw new Error(`${url}에 og:image가 없어 게시하지 않았다`);
+
+  const tag = tagName(post.slug);
+  let response: Response;
+  try {
+    response = await fetch("https://api.linkedin.com/v2/ugcPosts", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "X-Restli-Protocol-Version": "2.0.0" },
+      body: JSON.stringify(shareBody(post, url, personId, image)),
+    });
+  } catch (error) {
+    throw new Error(`게시 요청의 응답을 받지 못했다(${(error as Error).message}).\n${duplicateWarning(tag)}`);
+  }
+  if (response.status !== 201) {
+    const reason = `게시 실패: ${response.status} ${await response.text().catch(() => "")}`;
+    // 4xx는 LinkedIn이 거부한 것이라 올라가지 않았다
+    throw new Error(response.status >= 400 && response.status < 500 ? reason : `${reason}\n${duplicateWarning(tag)}`);
+  }
+
+  const id = response.headers.get("x-restli-id") ?? "";
+  console.log(`게시함: ${post.slug} → https://www.linkedin.com/feed/update/${id}/`);
+  try {
+    git("-c", "user.name=github-actions[bot]", "-c", "user.email=41898282+github-actions[bot]@users.noreply.github.com",
+      "tag", "-a", tag, "-m", `${id}\n${new Date().toISOString()}`);
+    git("push", "origin", `refs/tags/${tag}`);
+  } catch (error) {
+    throw new RecordError(`게시했지만 태그를 남기지 못했다(${(error as Error).message}).\n${duplicateWarning(tag)}`);
+  }
 }
 
 async function main() {
@@ -72,38 +120,28 @@ async function main() {
   const posts = pendingPosts(".", dryRun ? new Set() : remoteTags());
   console.log(`LinkedIn에 올릴 글: ${posts.length}편`);
   if (posts.length === 0) return;
-  if (!dryRun && (!token || !personId)) throw new Error("Secrets LINKEDIN_ACCESS_TOKEN, LINKEDIN_PERSON_ID가 필요하다");
-
-  for (const post of posts) {
-    const url = articleUrl(SITE_URL, post.slug);
-    if (dryRun) {
+  if (dryRun) {
+    for (const post of posts) {
       // 라이브 페이지를 받지 않으므로 이미지 주소 자리에는 표시만 넣는다
-      console.log(JSON.stringify(shareBody(post, url, personId ?? "<LINKEDIN_PERSON_ID>", "<글 페이지의 og:image>"), null, 2));
-      continue;
+      const body = shareBody(post, articleUrl(SITE_URL, post.slug), personId ?? "<LINKEDIN_PERSON_ID>", "<글 페이지의 og:image>");
+      console.log(JSON.stringify(body, null, 2));
     }
-    const image = ogImage(await fetchLivePage(url));
-    if (!image) throw new Error(`${url}에 og:image가 없어 게시하지 않았다`);
-    const body = shareBody(post, url, personId!, image);
-    const response = await fetch("https://api.linkedin.com/v2/ugcPosts", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "X-Restli-Protocol-Version": "2.0.0" },
-      body: JSON.stringify(body),
-    });
-    if (response.status !== 201) throw new Error(`${post.slug} 게시 실패: ${response.status} ${await response.text()}`);
+    return;
+  }
+  if (!token || !personId) throw new Error("Secrets LINKEDIN_ACCESS_TOKEN, LINKEDIN_PERSON_ID가 필요하다");
 
-    const id = response.headers.get("x-restli-id") ?? "";
-    const tag = tagName(post.slug);
-    console.log(`게시함: ${post.slug} → https://www.linkedin.com/feed/update/${id}/`);
+  // 한 글이 실패해도 다음 글은 올린다. 실패한 글이 있으면 작업은 실패로 끝낸다
+  const failed: string[] = [];
+  for (const post of posts) {
     try {
-      git("-c", "user.name=github-actions[bot]", "-c", "user.email=41898282+github-actions[bot]@users.noreply.github.com",
-        "tag", "-a", tag, "-m", `${id}\n${new Date().toISOString()}`);
-      git("push", "origin", `refs/tags/${tag}`);
+      await publish(post, articleUrl(SITE_URL, post.slug), token, personId);
     } catch (error) {
-      // 태그가 없으면 다음 배포에서 같은 글이 또 올라간다
-      console.error(`${post.slug}은 이미 게시했지만 태그를 남기지 못했다. 다음 merge 전에 태그 ${tag}를 직접 push한다`);
-      throw error;
+      console.error(`${post.slug}: ${(error as Error).message}`);
+      failed.push(post.slug);
+      if (error instanceof RecordError) break;
     }
   }
+  if (failed.length > 0) throw new Error(`LinkedIn 게시에 실패한 글: ${failed.join(", ")}`);
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) await main();

@@ -144,7 +144,10 @@ const postsData = (() => {
   const file = join(DIR, "data", "posts.json");
   if (!existsSync(file)) return [];
   try {
-    return JSON.parse(readFileSync(file, "utf8")).posts ?? [];
+    const { posts } = JSON.parse(readFileSync(file, "utf8"));
+    if (Array.isArray(posts)) return posts;
+    fail("/data/posts.json", "posts 배열이 없다");
+    return [];
   } catch {
     fail("/data/posts.json", "JSON으로 읽을 수 없다");
     return [];
@@ -171,12 +174,16 @@ if (!DRAFTS_MODE) {
     for (const file of readdirSync(dir).filter((f) => f.endsWith(".md"))) {
       const front = readFileSync(join(dir, file), "utf8").match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? "";
       const data = parse(front) ?? {};
-      if (data.status === "published") continue;
       const route = `${prefix}${file.replace(/\.md$/, "")}/`;
+      const lang = prefix === "/en/post/" ? "en" : "ko";
+      const inData = postsData.some((p) => p.lang === lang && p.slug === file.replace(/\.md$/, ""));
+      if (data.status === "published") {
+        if (!inData) fail(route, "published 글이 /data/posts.json에 없다");
+        continue;
+      }
       if (existsSync(join(DIR, route))) fail(route, `status: ${data.status} 글이 배포 결과물에 있다`);
       if (feeds.includes(route)) fail(route, `status: ${data.status} 글이 sitemap이나 RSS에 있다`);
-      const lang = prefix === "/en/post/" ? "en" : "ko";
-      if (postsData.some((p) => p.lang === lang && p.slug === file.replace(/\.md$/, ""))) {
+      if (inData) {
         fail(route, `status: ${data.status} 글이 /data/posts.json에 있다`);
       }
     }

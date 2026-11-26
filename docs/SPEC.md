@@ -351,7 +351,8 @@ slug 규칙:
   2. 글 URL이 200을 반환하는지 확인한다.
   3. LinkedIn API(`POST /v2/ugcPosts`, 공개 범위 `PUBLIC`)로 작성자 개인 피드에 게시한다. 링크 카드 이미지는 글 페이지의 `og:image` 주소를 `media[].thumbnails`로 보낸다. 이 값이 없으면 카드에 이미지가 나오지 않는다. `thumbnails`는 [UGC Post API 문서](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/shares/ugc-post-api)의 항목이고 Share on LinkedIn 문서에는 없다. 개인 계정 테스트 게시로 이미지가 보이는 것을 확인했다(2026-11-26).
   4. 게시 기록으로 태그 `linkedin/<slug>`를 push한다. 태그 메시지에 게시물 ID와 게시 시각을 적는다. `master`는 PR로만 바꿀 수 있어서 파일로 커밋하지 않는다.
-- 같은 글을 두 번 게시하지 않는다. 태그가 있으면 건너뛴다. 게시는 됐는데 태그 push가 실패하면 Action이 실패하며, 다음 merge 전에 태그를 직접 push한다.
+- 같은 글을 두 번 게시하지 않는다. 태그가 있으면 건너뛴다. 응답을 받지 못했거나 5xx가 왔거나 태그 push가 실패하면 Action이 실패하고 확인 방법과 태그 명령을 출력한다. **LinkedIn 피드를 확인하고, 올라가 있으면 태그를 push하기 전에는 Re-run도 다음 merge도 하지 않는다**(하면 다시 올라간다).
+- 한 글이 실패해도 다음 글은 올린다. 태그를 남기지 못했을 때만 그 자리에서 멈춘다. `linkedin_text`는 2800자까지다(게시물 한도 3,000자에서 글 주소 자리를 뺐다).
 - LinkedIn에서 지우거나 고치는 일은 사람이 LinkedIn에서 한다.
 - 확인만 하기: `SITE_URL=<사이트 주소> node scripts/post-linkedin.ts --dry-run`은 요청 내용만 출력한다. 대상 선정과 요청 형식은 `npm run test:linkedin`(verify에 포함)이 검사한다.
 - 인증 방식:

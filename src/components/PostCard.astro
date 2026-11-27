@@ -1,4 +1,7 @@
 ---
+// 목록의 글 카드. 대표 이미지(cover)가 있으면 보여 주고(SPEC §6), 없으면 빈 자리 없이 글을 넓게 쓴다.
+// 넓은 화면은 오른쪽에 두어 이미지가 있든 없든 제목이 같은 위치에서 시작한다. 휴대폰은 폭이 좁아 위에 둔다.
+import { Image } from "astro:assets";
 import { categoryName, categoryUrl, getCategory } from "../data/categories";
 import { formatDate, isoDate, postDate, postUrl, tagUrl, type Post } from "../lib/posts";
 import { ui } from "../i18n";
@@ -6,49 +9,74 @@ import Icon from "./Icon.astro";
 
 interface Props {
   post: Post;
+  /** 첫 화면에 보이는 카드면 이미지를 바로 불러온다 */
+  eager?: boolean;
 }
 
-const { post } = Astro.props;
+const { post, eager = false } = Astro.props;
+const { cover } = post.data;
 const category = getCategory(post.data.category);
 const date = postDate(post);
 const lang = post.data.lang;
 ---
 
-<article class="rounded-2xl border bg-card px-6 py-5 transition hover:shadow-lg">
-  <div class="relative pl-5">
-    <span class="absolute left-0 top-1.5 h-4 w-1 rounded-full bg-accent-bar" aria-hidden="true"></span>
-    <h2 class="text-lg font-bold leading-snug">
-      <a href={postUrl(post)} class="hover:underline">{post.data.title}</a>
-    </h2>
-    {/* 메타 줄: 글 페이지와 같은 아이콘 상자를 쓴다(SPEC §6.1) */}
-    <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-muted-foreground">
-      <span class="flex items-center gap-2">
-        <span class="meta-icon"><Icon name="calendar" class="h-5 w-5" /></span>
-        <time datetime={isoDate(date)}>{formatDate(date, lang)}</time>
-      </span>
-      {
-        category && (
-          <span class="flex items-center gap-2">
-            <span class="meta-icon"><Icon name="folder" class="h-5 w-5" /></span>
-            <a href={categoryUrl(category.slug, lang)} class="hover:text-accent-bar">{categoryName(category, lang)}</a>
-          </span>
-        )
-      }
-      {
-        post.data.tags.length > 0 && (
-          <span class="hidden items-center gap-2 md:flex">
-            <span class="meta-icon"><Icon name="tag" class="h-5 w-5" /></span>
-            {post.data.tags.map((tag, i) => (
-              <>
-                {i > 0 && <span aria-hidden="true">/</span>}
-                <a href={tagUrl(tag, lang)} class="hover:text-accent-bar">{tag}</a>
-              </>
-            ))}
-          </span>
-        )
-      }
-      {post.data.status !== "published" && <span class="rounded bg-secondary px-2 py-0.5 text-xs">{ui[lang].draftBadge}: {post.data.status}</span>}
+<article class="overflow-hidden rounded-2xl border bg-card px-6 py-5 transition hover:shadow-lg">
+  {/* 640px 미만: 이미지는 카드 맨 위 전체 폭(2.4:1, 360px 화면에서 높이 136px). 640px 이상: 글 오른쪽의 작은 썸네일. 1024px 미만은 사이드바 때문에 글 칸이 좁아 더 작게(128×67) */}
+  <div class:list={[cover && "sm:flex sm:items-center sm:gap-6"]}>
+    {
+      cover && (
+        /* 이미지도 눌러서 글로 갈 수 있게 한다. 제목이 이미 같은 링크라서 키보드와 화면 낭독기에는 제목 링크 하나만 남긴다
+           (tabindex·aria-hidden, 이미지의 alt는 비운다). 휴대폰은 위아래를 조금 잘라 낮은 띠로 보여 주고(중요한 내용은 가운데에 둔다),
+           높이를 비율로 정해 화면 폭이 달라도 잘리는 정도가 같다. 넓은 화면은 1.91:1 그대로다 */
+        <a href={postUrl(post)} tabindex="-1" aria-hidden="true" class="-mx-6 -mt-5 mb-5 block sm:order-2 sm:m-0 sm:flex-none">
+          <Image
+            src={cover.src}
+            alt=""
+            aria-hidden="true"
+            width={720}
+            widths={[384, 720, 1200]}
+            sizes="(min-width: 1024px) 192px, (min-width: 640px) 128px, calc(100vw - 34px)"
+            loading={eager ? "eager" : "lazy"}
+            class="aspect-[12/5] h-auto w-full object-cover object-[50%_40%] sm:aspect-auto sm:h-[67px] sm:w-32 sm:rounded-xl sm:object-center lg:h-[101px] lg:w-48"
+          />
+        </a>
+      )
+    }
+    <div class="relative min-w-0 pl-5 sm:flex-1">
+      <span class="absolute left-0 top-1.5 h-4 w-1 rounded-full bg-accent-bar" aria-hidden="true"></span>
+      <h2 class="text-lg font-bold leading-snug">
+        <a href={postUrl(post)} class="hover:underline">{post.data.title}</a>
+      </h2>
+      {/* 메타 줄: 글 페이지와 같은 아이콘 상자를 쓴다(SPEC §6.1) */}
+      <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-muted-foreground">
+        <span class="flex items-center gap-2">
+          <span class="meta-icon"><Icon name="calendar" class="h-5 w-5" /></span>
+          <time datetime={isoDate(date)}>{formatDate(date, lang)}</time>
+        </span>
+        {
+          category && (
+            <span class="flex items-center gap-2">
+              <span class="meta-icon"><Icon name="folder" class="h-5 w-5" /></span>
+              <a href={categoryUrl(category.slug, lang)} class="hover:text-accent-text">{categoryName(category, lang)}</a>
+            </span>
+          )
+        }
+        {
+          post.data.tags.length > 0 && (
+            <span class="hidden items-center gap-2 md:flex">
+              <span class="meta-icon"><Icon name="tag" class="h-5 w-5" /></span>
+              {post.data.tags.map((tag, i) => (
+                <>
+                  {i > 0 && <span aria-hidden="true">/</span>}
+                  <a href={tagUrl(tag, lang)} class="hover:text-accent-text">{tag}</a>
+                </>
+              ))}
+            </span>
+          )
+        }
+        {post.data.status !== "published" && <span class="rounded bg-secondary px-2 py-0.5 text-xs">{ui[lang].draftBadge}: {post.data.status}</span>}
+      </div>
+      <p class="mt-3 line-clamp-2 text-sm text-muted-foreground">{post.data.description}</p>
     </div>
-    <p class="mt-3 line-clamp-2 text-sm text-muted-foreground">{post.data.description}</p>
   </div>
 </article>

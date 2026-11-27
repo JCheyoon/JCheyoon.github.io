@@ -28,6 +28,17 @@ I draft, check, and translate posts with the **MCP server** in this repository a
 - **LinkedIn sharing:** only the English posts I choose are posted automatically after deployment.
 - **Post data:** published posts are available at [`/data/posts.json`](https://jcheyoon.github.io/data/posts.json). It is the data source for a public MCP server ([blog-backend](https://github.com/JCheyoon/blog-backend), Go) that will let readers search posts from their own AI apps. The server is still in progress.
 
+## Why Korean and English have separate URLs
+
+Instead of switching languages on one URL, each language has its own (`/post/…` and `/en/post/…`).
+
+- Google recommends different URLs for each language. Its crawler mostly visits from the US and doesn't send a language setting, so if the content changes with that setting, some languages can be missed in search ([Google docs](https://developers.google.com/search/docs/specialty/international/managing-multi-regional-sites)).
+- Pages whose main content is translated aren't treated as duplicate content. Each pair points to each other with `hreflang`, and the build check verifies that every `hreflang` link on a page points to a page that links back ([Google docs](https://developers.google.com/search/docs/specialty/international/localized-versions)).
+- The language never changes automatically; readers pick it with a link. As a static site, it also can't serve different content based on a visitor's language.
+- Because the URLs are separate, a shared link shows the title and description in that language.
+
+**Code is shared where possible.** For the home page, posts, and category and tag lists, a single `[...lang]` route file builds both languages. For the archive, each language has its own file that renders the same component. About, contact, privacy, and terms have different text, so each language writes it in its own file.
+
 ## How a post gets published
 
 ```
@@ -62,8 +73,6 @@ src/
 mcp/                 blog MCP server
 scripts/             content and HTML checks, search index, LinkedIn posting
 docs/                spec, roadmap, translation glossary
-.claude/             Claude Code rules and skills
-.github/workflows/   checks and deployment, LinkedIn token expiry reminder
 ```
 
 ## Docs

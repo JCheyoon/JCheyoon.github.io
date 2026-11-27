@@ -47,7 +47,7 @@ const groups = [...Map.groupBy(posts, (p) => yearOf(postDate(p)))].sort(([a], [b
                   <span class="archive-line relative flex h-full w-[12%] items-center justify-center md:w-[8%]" aria-hidden="true">
                     <span class="z-10 h-1 w-1 rounded bg-muted-foreground outline-4 outline-card transition-all group-hover:h-5 group-hover:bg-accent-bar group-hover:outline-background" />
                   </span>
-                  <span class="min-w-0 flex-1 truncate pr-4 font-bold transition group-hover:translate-x-1 group-hover:text-accent-bar">
+                  <span class="min-w-0 flex-1 truncate pr-4 font-bold transition group-hover:translate-x-1 group-hover:text-accent-text">
                     {post.data.title}
                   </span>
                   <span class="hidden w-[20%] truncate text-sm text-muted-foreground md:block">

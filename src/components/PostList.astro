@@ -16,8 +16,8 @@ const { posts, lang } = Astro.props;
     <p class="rounded-2xl border bg-card px-6 py-10 text-center text-sm text-muted-foreground">{ui[lang].noPosts}</p>
   ) : (
     <div class="grid gap-6">
-      {posts.map((post) => (
-        <PostCard post={post} />
+      {posts.map((post, i) => (
+        <PostCard post={post} eager={i === 0} />
       ))}
     </div>
   )

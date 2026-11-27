@@ -28,6 +28,17 @@
 - **LinkedIn 공유:** 작성자가 고른 영어 글만 배포 뒤 자동으로 게시합니다.
 - **글 데이터:** [`/data/posts.json`](https://jcheyoon.github.io/data/posts.json)에 발행한 글을 제공합니다. 독자가 자기 AI 앱에서 글을 검색할 수 있는 공개 MCP 서버([blog-backend](https://github.com/JCheyoon/blog-backend), Go)가 읽을 데이터이며, 서버는 만드는 중입니다.
 
+## 왜 한국어와 영어의 주소를 나눴나
+
+한 주소에서 언어를 바꾸지 않고, 언어마다 주소를 따로 둡니다(`/post/…`, `/en/post/…`).
+
+- Google은 언어마다 다른 주소를 권장합니다. Google의 수집기는 대부분 미국에서 접속하고 언어 설정을 보내지 않아, 설정에 따라 내용이 바뀌면 일부 언어가 검색에서 빠질 수 있습니다([Google 문서](https://developers.google.com/search/docs/specialty/international/managing-multi-regional-sites)).
+- 본문까지 번역한 페이지는 중복 콘텐츠로 보지 않습니다. 두 페이지는 `hreflang`으로 서로를 가리키고, 빌드 검사는 페이지에 있는 `hreflang` 링크의 대상이 되돌아 가리키는지 확인합니다([Google 문서](https://developers.google.com/search/docs/specialty/international/localized-versions)).
+- 언어를 자동으로 바꾸지 않고 링크로 고릅니다. 정적 호스팅이라 방문자의 언어에 따라 다른 내용을 내려 줄 수도 없습니다.
+- 주소가 나뉘어 있어 공유하면 그 언어의 제목과 설명이 보입니다.
+
+**코드는 가능한 한 함께 씁니다.** 홈, 글, 카테고리·태그 목록은 `[...lang]` 라우트 파일 하나가 두 언어를 만듭니다. 기록 페이지는 언어별 파일이 같은 컴포넌트를 부릅니다. 소개, 문의, 처리방침, 약관은 문장이 달라서 언어별 파일에 따로 적습니다.
+
 ## 글이 발행되는 흐름
 
 ```
@@ -62,8 +73,6 @@ src/
 mcp/                 블로그 MCP 서버
 scripts/             콘텐츠·HTML 검사, 검색 색인, LinkedIn 게시
 docs/                요구사항(SPEC), 로드맵, 번역 표현집
-.claude/             Claude Code 규칙과 스킬
-.github/workflows/   검증·배포, LinkedIn 토큰 만료 알림
 ```
 
 ## 문서

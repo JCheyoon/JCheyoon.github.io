@@ -1,14 +1,11 @@
 # Project Guide
 
-## 현재 상태 (먼저 읽을 것)
+## 먼저 읽을 것
 
-- 무엇을 만들고, 어떤 순서로 하는지는 [docs/SPEC.md](docs/SPEC.md)와 [docs/ROADMAP.md](docs/ROADMAP.md)가 기준이다. 작업 전에 ROADMAP의 "현재 단계"를 확인한다.
-- 사이트는 저장소 루트의 **Astro 정적 사이트**다. 아래 "사이트 (Astro)" 섹션을 본다. 은퇴한 Vite SPA(`legacy/spa/`)는 2026-11-26에 삭제했다. 코드는 git 기록(`19ddd8b`)에 있다.
-- 글은 Markdown + git으로 관리하고, draft → reviewed → published를 거친다.
-  - 규칙: [.claude/rules/content.md](.claude/rules/content.md)
-  - 스킬: `draft-post`, `review-post`, `publish-post`
-  - 초안·번역 파일은 블로그 MCP 서버(`cheyoon-blog`, `mcp/`)의 도구로 만든다. 이 저장소에서 Claude Code를 열면 `.mcp.json`으로 연결된다
-- 브랜치·커밋·PR·배포 규칙은 [.claude/rules/project-scope.md](.claude/rules/project-scope.md). PR은 `create-pr` 스킬로, 승인을 받은 뒤에만 push한다. `master` merge가 곧 배포다(GitHub Actions).
+- 무엇을, 어떤 순서로 만드는지는 [docs/SPEC.md](docs/SPEC.md)와 [docs/ROADMAP.md](docs/ROADMAP.md)가 기준이다. 범위·브랜치·PR 규칙은 `.claude/rules/project-scope.md`에 있다.
+- 사이트는 저장소 루트의 Astro 정적 사이트다.
+- 글은 draft → reviewed → published를 거친다. 초안·번역 파일은 직접 만들지 않고 블로그 MCP 서버(`cheyoon-blog`, `mcp/`, 연결은 `.mcp.json`)의 도구로 만든다.
+- push와 PR 생성은 사용자 승인 뒤에만 한다. `master` merge가 곧 배포다.
 
 ## 작업 원칙
 
@@ -57,50 +54,22 @@
 - 목표는 사소한 작업을 느리게 만드는 것이 아니라, 큰 작업에서 비싼 실수를 줄이는 것이다.
 - 이 원칙이 잘 지켜지면 diff에 요청한 변경만 남고, 질문이 실수 뒤가 아니라 구현 전에 나온다.
 
-## 사이트 (Astro)
+## 명령
 
-### 스택
-- Astro 7(정적 생성), TypeScript, Tailwind CSS 4 + typography 플러그인
-- 통합: `@astrojs/sitemap`, `@astrojs/rss`
-- 버전은 `package.json`에 정확히 고정한다.
-- Node는 24.22.2로 고정한다. 값의 기준은 `.nvmrc`이고, `package.json`의 `engines`와 CI(`node-version-file: .nvmrc`)가 같은 값을 쓴다. 버전을 올릴 때는 세 곳을 같은 커밋에서 바꾼다.
+- `npm run dev`: draft 글도 보인다. dev 서버는 하나만 뜬다. 이미 떠 있으면 주소만 출력하고 끝나므로 `npx astro dev status|stop|logs`로 다룬다.
+- `npm run verify`: 전체 검증. 단계와 실패 대응은 `verify-site` 스킬.
+- `npm run build` / `npm run preview`: published 글만 들어간다.
+- 검색(Pagefind)은 dev 서버에서 동작하지 않는다(색인은 빌드 결과물에만 있다). 확인: `npm run build:drafts` 뒤 `INCLUDE_DRAFTS=true npx astro preview`
+- 로컬에서는 `ASTRO_TELEMETRY_DISABLED=1`을 붙인다(CI에는 설정되어 있다).
 
-### 명령
-- `npm run dev`: 개발 서버. draft 글도 보인다.
-- `npm run verify`: 콘텐츠 검사 → MCP·LinkedIn 테스트 → `astro check` → 템플릿 검증 빌드(`dist-drafts/`) → 배포 빌드(`dist/`) → HTML 검사. 자세한 내용은 `verify-site` 스킬.
-- `npm run build` / `npm run preview`: 배포 빌드와 미리보기. published 글만 들어간다. 빌드 뒤 검색 색인(Pagefind)을 만든다.
-- 검색은 개발 서버에서 동작하지 않는다(색인은 빌드 결과물에만 있다). 확인: `npm run build:drafts` 뒤 `INCLUDE_DRAFTS=true npx astro preview`
-- 로컬에서는 `ASTRO_TELEMETRY_DISABLED=1`을 붙여 사용 통계 전송을 끈다(CI에는 설정되어 있다).
+## 버전
 
-### 디렉터리
-- `src/content/posts/<slug>.md`: 글. frontmatter 스키마는 `src/content.config.ts`(SPEC §5.1)
-- `src/assets/posts/<slug>/`: 글 이미지(SPEC §5.4)
-- `src/pages/`: 라우트. `[...lang]/` 아래 파일 하나가 한국어(`/`, `/page/n/`, `/post/slug/`, `/category/slug/`, `/tag/tag/`)와 영어(`/en/...`) 페이지를 함께 만든다(D11). 그 밖에 `/about/`, `/archive/`, `/contact/`, `/privacy/`, `/terms/`(모두 +`/en/`), `/404`, `/rss.xml`, `/en/rss.xml`, `/robots.txt`, `/data/posts.json`(공개 MCP 서버용 글 데이터, D18). 문의·처리방침·약관은 공통 틀 `InfoPage.astro`를 쓴다
-  - `[...lang]/` 아래에 정적 이름 하나짜리 라우트(예: `[...lang]/archive.astro`)를 두면 `/archive/`가 홈 라우트(lang="archive")와 겹쳐 빌드가 실패한다. 그런 페이지는 `pages/x.astro`와 `pages/en/x.astro`가 같은 컴포넌트를 쓰게 한다(`ArchivePage.astro`)
-- `src/i18n.ts`: 언어 목록, 언어별 화면 문구, `localizePath`(주소에 `/en` 붙이기)
-- `src/layouts/`, `src/components/`: 레이아웃과 `.astro` 컴포넌트
-- `src/lib/posts.ts`: 글 조회(`getVisiblePosts`)와 주소·날짜 헬퍼
-- `src/lib/og.ts`, `src/pages/og/[...path].png.ts`: cover가 없는 글의 OG 이미지(D12)를 빌드 때 만든다. 폰트는 `src/assets/fonts/`(Pretendard, OFL)
-- `src/lib/markdown.ts`: 본문 Markdown 플러그인(안내 상자 `> [!NOTE]`, 제목 앵커). Astro 기본 처리기 Sätteri의 플러그인 API를 쓴다. 코드 블록은 `astro-expressive-code`(설정은 `astro.config.mjs`)
-- `src/site.config.ts`, `src/data/`: 사이트 정보, 카테고리, 제휴 도메인(단일 소스)
-- `scripts/`: `check-content.ts`(규칙은 `src/lib/content-rules.ts`), `check-html.mjs`, `post-linkedin.ts`(LinkedIn 게시, 테스트는 `post-linkedin.test.ts`), `renew-linkedin-token.ts`(토큰 갱신, `npm run linkedin:token`)
-- `src/lib/content-rules.ts`: 글 스키마와 검사 규칙의 단일 소스. 사이트 빌드, 검사 스크립트, MCP 서버가 함께 쓴다. Node가 직접 실행하므로 상대 경로 import에 `.ts`를 붙인다
-- `.github/workflows/site.yml`: PR 검증, master push 자동 배포, 수동 재배포, 배포 뒤 LinkedIn 게시(SPEC §9.3). `linkedin-token.yml`: 토큰 만료 알림
-- `public/`: 파비콘, 매니페스트
-- `mcp/`: 블로그 MCP 서버(SPEC §9.4). `server.ts`(stdio, 도구 등록), `tools.ts`(도구 동작), `server.test.ts`(`npm run test:mcp`, verify에 포함). Claude Code 연결 설정은 루트 `.mcp.json`
-  - 도구: `list_posts`, `check_post`, `list_templates`(읽기), `create_draft`, `translate_post`(쓰기). commit·push·상태 승격은 하지 않는다
-- `src/content/templates/`: 글 템플릿(SPEC §5.7). 기본 4종, 선택 블록 2종
+- 의존성 버전은 `package.json`에 정확히 고정한다(`^` 없이).
+- Node 버전은 `.nvmrc`, `package.json`의 `engines`, CI(`node-version-file: .nvmrc`)가 같은 값을 쓴다. 올릴 때는 같은 커밋에서 함께 바꾼다.
 
-### 주의
+## 함정
+
+- `src/pages/[...lang]/` 아래 파일 하나가 한국어(`/...`)와 영어(`/en/...`) 페이지를 함께 만든다(D11). 여기에 정적 이름 하나짜리 라우트(예: `[...lang]/archive.astro`)를 두면 홈 라우트(lang="archive")와 겹쳐 빌드가 실패한다. 그런 페이지는 `pages/x.astro`와 `pages/en/x.astro`가 같은 컴포넌트를 쓰게 한다(`ArchivePage.astro`).
 - `template-check`로 시작하는 글은 템플릿 검증용 샘플이다. 항상 `status: draft`로 둔다(check-content가 확인한다).
-  - `posts/template-check.md`(한국어 원문), `posts/en/template-check.md`(그 영어 번역본), `posts/en/template-check-en.md`(영어 원문, 번역본 없음)
 - 주소는 끝 슬래시를 붙인다(D5): `/post/slug/`.
-- 코드 규칙: `.claude/rules/site-code.md`, `.claude/rules/rendering-seo.md`
-
-## Claude Workspace (.claude/)
-
-- 규칙: `.claude/rules/`
-  - 항상 로드: `content.md`(콘텐츠), `project-scope.md`(범위·브랜치·PR)
-  - 사이트 코드 작업 시: `site-code.md`, `rendering-seo.md`
-- 스킬(`.claude/skills/<이름>/SKILL.md`): `draft-post`, `review-post`, `publish-post`, `create-pr`, `verify-site`
-- `.claude/settings.json`: 권한 기본값(allow/ask/deny)
+- `src/lib/content-rules.ts`는 사이트, 검사 스크립트, MCP 서버가 함께 쓰는 글 스키마·규칙의 단일 소스다. Node가 직접 실행하므로 상대 경로 import에 `.ts`를 붙인다.

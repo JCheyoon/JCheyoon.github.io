@@ -23,6 +23,7 @@ I draft, check, and translate posts with the **MCP server** in this repository a
 
 - **Korean and English:** Korean lives at `/`, English at `/en/`. Originals and translations are linked with `hreflang`, and translations show a note that they were translated with AI assistance.
 - **Reading:** table of contents, callouts, dark mode, search (`⌘K`), categories and tags, a yearly archive, and a bottom tab bar with bottom sheets on mobile
+- **Comments:** giscus (GitHub Discussions). The original and its translation share one thread.
 - **SEO:** canonical URLs, Open Graph, JSON-LD, sitemap, RSS
 - **Publishing guards:** a post without a review record can't be published, and the build check fails if a draft ends up in the deployed output.
 - **LinkedIn sharing:** only the English posts I choose are posted automatically after deployment.
@@ -74,6 +75,18 @@ mcp/                 blog MCP server
 scripts/             content and HTML checks, search index, LinkedIn posting
 docs/                spec, roadmap, translation glossary
 ```
+
+## Running locally
+
+Requires Node 24.22.2 (see [`.nvmrc`](.nvmrc)).
+
+```sh
+npm install
+npm run dev      # dev server, drafts included
+npm run verify   # content checks, tests, type check, builds, HTML checks
+```
+
+Search only works on a build, not on the dev server.
 
 ## Docs
 

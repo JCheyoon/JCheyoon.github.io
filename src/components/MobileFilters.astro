@@ -37,7 +37,7 @@ const filterButton = "hidden h-11 min-w-0 flex-1 items-center gap-2 rounded-xl b
           type="button"
           data-sheet-open="category-sheet"
           aria-label={`${t.categories}: ${categoryLabel}`}
-          class:list={[filterButton, categoryChosen ? "font-semibold text-accent-bar" : "text-foreground"]}
+          class:list={[filterButton, categoryChosen ? "font-semibold text-accent-text" : "text-foreground"]}
         >
           <Icon name="folder" class="h-4 w-4 flex-none" />
           <span class="truncate">{categoryLabel}</span>
@@ -48,7 +48,7 @@ const filterButton = "hidden h-11 min-w-0 flex-1 items-center gap-2 rounded-xl b
             type="button"
             data-sheet-open="tag-sheet"
             aria-label={activeTag ? `${t.tags}: ${activeTag}` : t.tags}
-            class:list={[filterButton, activeTag ? "font-semibold text-accent-bar" : "text-foreground"]}
+            class:list={[filterButton, activeTag ? "font-semibold text-accent-text" : "text-foreground"]}
           >
             <Icon name="tag" class="h-4 w-4 flex-none" />
             <span class="truncate">{activeTag ?? t.tags}</span>

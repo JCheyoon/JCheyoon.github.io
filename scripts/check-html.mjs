@@ -112,8 +112,13 @@ for (const file of htmlFiles) {
   const noindex = meta(html, "name", "robots")?.includes("noindex");
   if (is404 && !noindex) fail(route, "404 페이지에 noindex가 없다");
 
-  for (const img of tags(html, "img")) {
-    if (!img.alt?.trim()) fail(route, `alt 없는 이미지가 있다(${img.src})`);
+  for (const [tag] of html.matchAll(/<img\b[^>]*>/gi)) {
+    const img = attrs(tag);
+    // 장식 이미지(목록 썸네일처럼 옆의 글이 같은 내용을 전한다)는 빈 alt와 aria-hidden="true"를 함께 써야 한다.
+    // 빈 alt는 빌드 결과에 값 없는 `alt`로 나와서 attrs()가 아니라 태그 원문에서 찾는다
+    // 다른 속성값 속의 "alt" 글자에 속지 않게, 비어 있지 않은 값은 지우고 찾는다
+    const decorative = img["aria-hidden"] === "true" && /\salt(?:=""|(?=[\s/>]))/.test(tag.replace(/="[^"]+"/g, '="x"'));
+    if (!img.alt?.trim() && !decorative) fail(route, `alt 없는 이미지가 있다(${img.src})`);
   }
 
   for (const a of tags(html, "a")) {

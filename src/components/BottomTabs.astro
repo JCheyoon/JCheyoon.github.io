@@ -36,7 +36,7 @@ const about = { href: localizePath(lang, "/about/"), label: t.about, icon: "user
             aria-current={tab.active ? (path === tab.href ? "page" : "true") : undefined}
             class:list={[
               "flex h-full flex-col items-center justify-center gap-0.5 text-[0.7rem]",
-              tab.active ? "font-bold text-accent-bar" : "text-muted-foreground",
+              tab.active ? "font-bold text-accent-text" : "text-muted-foreground",
             ]}
           >
             <span class:list={["flex h-7 w-12 items-center justify-center rounded-full", tab.active && "bg-[var(--toc-hover)]"]}>
@@ -57,7 +57,7 @@ const about = { href: localizePath(lang, "/about/"), label: t.about, icon: "user
       <a
         href={about.href}
         aria-current={about.active ? "page" : undefined}
-        class:list={["flex h-full flex-col items-center justify-center gap-0.5 text-[0.7rem]", about.active ? "font-bold text-accent-bar" : "text-muted-foreground"]}
+        class:list={["flex h-full flex-col items-center justify-center gap-0.5 text-[0.7rem]", about.active ? "font-bold text-accent-text" : "text-muted-foreground"]}
       >
         <span class:list={["flex h-7 w-12 items-center justify-center rounded-full", about.active && "bg-[var(--toc-hover)]"]}>
           <Icon name={about.icon} class="h-5 w-5" />

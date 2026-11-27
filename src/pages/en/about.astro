@@ -1,5 +1,6 @@
 ---
 // 영어 소개 페이지(D11). 한국어 /about/의 번역이다. 문구는 작성자 검수 대상이다.
+import { Code } from "astro-expressive-code/components";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { site } from "../../site.config";
 
@@ -27,6 +28,23 @@ const profile = {
       <li>Facts and numbers that affect a post's conclusion or your decisions come with sources.</li>
       <li>Information is current as of the post's publication date. If I change a post, it shows the date it was updated.</li>
       <li>English posts are often translations of Korean posts. Translations are reviewed before they are published.</li>
+    </ul>
+
+    <h2>Ask your own AI about this blog</h2>
+    <p>If your AI app supports remote MCP servers (custom connectors), add the address below. Your AI can then search and read the public posts on this blog.</p>
+    <Code code={site.publicMcpUrl} lang="txt" frame="code" />
+    <ul>
+      <li>No sign-in. It only reads posts.</li>
+      <li>
+        Claude apps: see the <a href="https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp" target="_blank" rel="noopener">custom connector guide</a>. Menu names may change.
+      </li>
+      <li>Example question: "Does this blog have a post about Astro?"</li>
+      <li>It runs on a free server, so after a quiet period the first connection may take about a minute or fail. Please try again shortly.</li>
+      <li>Usage is limited. Limits usually reset shortly, but if the daily limit or the server's monthly allowance is used up, it may be unavailable for longer.</li>
+      <li>Answers come from your AI and may be wrong, so check the original post.</li>
+      <li>
+        See the <a href="/en/privacy/">privacy policy</a> for the information processed. The <a href="https://github.com/JCheyoon/cheyoon-mcp" target="_blank" rel="noopener">server code</a> is public.
+      </li>
     </ul>
   </article>
 </BaseLayout>

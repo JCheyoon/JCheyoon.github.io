@@ -27,7 +27,7 @@
 - **SEO:** canonical, Open Graph, JSON-LD, sitemap, RSS
 - **발행 안전장치:** 검수 기록이 없는 글은 발행 상태가 될 수 없고, 초안이 배포 결과물에 섞이면 빌드 검사가 실패합니다.
 - **LinkedIn 공유:** 작성자가 고른 영어 글만 배포 뒤 자동으로 게시합니다.
-- **글 데이터:** [`/data/posts.json`](https://jcheyoon.github.io/data/posts.json)에 발행한 글을 제공합니다. 독자가 자기 AI 앱에서 글을 검색할 수 있는 공개 MCP 서버([blog-backend](https://github.com/JCheyoon/blog-backend), Go)가 읽을 데이터이며, 서버는 만드는 중입니다.
+- **글 데이터:** [`/data/posts.json`](https://jcheyoon.github.io/data/posts.json)에 발행한 글을 제공합니다. 독자가 자기 AI 앱에서 글을 검색할 수 있는 공개 MCP 서버([cheyoon-mcp](https://github.com/JCheyoon/cheyoon-mcp))가 읽을 데이터이며, 서버는 만드는 중입니다.
 
 ## 왜 한국어와 영어의 주소를 나눴나
 

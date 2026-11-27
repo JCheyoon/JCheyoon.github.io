@@ -17,6 +17,8 @@ export const site = {
     name: "Jung Cheyoon",
   },
   social: [{ label: "GitHub", href: "https://github.com/JCheyoon" }],
+  /** 독자가 자기 AI 앱에 연결하는 공개 MCP 서버(D18). 소개 페이지가 쓴다 */
+  publicMcpUrl: "https://cheyoon-mcp.onrender.com/mcp",
   /** 문의 이메일(SPEC §6 문의). 문의·개인정보 처리방침 페이지가 쓴다 */
   email: "cheyoonka@gmail.com",
   /** Google Search Console 소유권 확인 값(HTML 태그 방식). 홈 head에 공개되는 값이라 비밀이 아니다. 지우면 소유권 확인이 풀릴 수 있다 */

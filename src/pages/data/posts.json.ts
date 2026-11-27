@@ -1,4 +1,4 @@
-// 공개 글 데이터(SPEC D18). blog-backend의 공개 MCP 서버가 이 파일 하나를 받아 검색·본문 제공에 쓴다.
+// 공개 글 데이터(SPEC D18). cheyoon-mcp 저장소의 공개 MCP 서버가 이 파일 하나를 받아 검색·본문 제공에 쓴다.
 // 글 목록은 getVisiblePosts()로 가져오므로 배포 빌드에는 published 글만, 템플릿 검증 빌드에는 샘플 초안까지 들어간다.
 // 한국어·영어 글을 한 파일에 담고 lang으로 구분한다. 본문은 frontmatter를 뺀 Markdown 원문이다.
 import type { APIRoute } from "astro";

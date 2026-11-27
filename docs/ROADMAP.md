@@ -153,7 +153,9 @@
 - [ ] 공개 읽기 전용 MCP 서버 (SPEC D18). 사이트 데이터 파일과 서버 로컬 개발은 단계와 관계없이 먼저 시작해도 된다(2026-11-26 작성자 결정)
   - [x] 사이트: 빌드가 공개 글 데이터(`/data/posts.json`)를 만든다(2026-11-26)
   - [`cheyoon-mcp`](https://github.com/JCheyoon/cheyoon-mcp)(TypeScript, 2026-11-27 Go `blog-backend`에서 변경): `/mcp`에 `search_posts`·`get_post`·`list_posts`, 횟수 제한. 로컬에서 Claude Code로 연결해 확인
-  - 호스팅을 정해 배포하고(공식 문서로 비교), 연결 방법을 글로 쓴다
+  - [x] Render 무료로 배포, 동작 확인 (작성자, 2026-11-27)
+  - [x] 소개 페이지 연결 안내, 처리방침에 MCP 서버와 Render 추가 (2026-11-27)
+  - [ ] 연결 방법을 글로 쓴다
 - [ ] 주 1~3편 발행을 계속함
 
 완료 기준: draft → reviewed → published 기록과 번역본 검수 기록이 git에 남은 글이 1편 이상 있고, Search Console에서 색인이 확인되며, 글 1편이 LinkedIn에 게시된다.

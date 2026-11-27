@@ -62,7 +62,7 @@ Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 �
 
 - 독자가 글을 볼 때 백엔드나 DB를 거치지 않는다.
 - 사이트 저장소는 `JCheyoon.github.io`이다. 기존 Vite SPA는 `legacy/spa/`에 보관했다가 2026-11-26에 삭제했다(D7, git 기록 `19ddd8b`).
-- 공개 읽기 전용 MCP 서버는 [`cheyoon-mcp`](https://github.com/JCheyoon/cheyoon-mcp) 저장소에 TypeScript로 만든다(D18). 작성자가 만든 MCP 서버를 모아 보여 주는 저장소다. DB는 쓰지 않고, 사이트 빌드가 공개하는 글 데이터 파일을 읽는다. 호스팅은 배포할 때 정한다(GitHub Pages는 서버를 실행하지 못한다).
+- 공개 읽기 전용 MCP 서버는 [`cheyoon-mcp`](https://github.com/JCheyoon/cheyoon-mcp) 저장소에 TypeScript로 만든다(D18). 작성자가 만든 MCP 서버를 모아 보여 주는 저장소다. DB는 쓰지 않고, 사이트 빌드가 공개하는 글 데이터 파일을 읽는다. 호스팅은 Render 무료 웹 서비스이고 주소는 `https://cheyoon-mcp.onrender.com/mcp`다(2026-11-27. 값은 `site.config.ts`의 `publicMcpUrl`). GitHub Pages는 서버를 실행하지 못한다.
 - 예전 `blog-backend`(Go, DB·REST API·관리자 API)는 쓰지 않는다. 2026-11-27에 공개 MCP 서버를 `cheyoon-mcp`(TypeScript)로 옮기기로 했다. 작성자의 다른 프로젝트가 React·React Native라서 같은 언어로 정했다.
 - 블로그 MCP 서버는 독자에게 보이지 않는 작성자용 도구다. 사이트 저장소의 `mcp/`에 둔다(D10, §9.4).
 
@@ -228,9 +228,9 @@ slug 규칙:
 | 목록 (홈, `/page/n`, 카테고리, 태그) | 카드에 제목 링크(`<a href>`), 발행일, 카테고리, description. `cover`가 있는 글은 이미지를 보인다. 640px 이상은 오른쪽 썸네일(1024px 이상 192×101, 미만 128×67. 사이드바가 있는 좁은 화면에서 제목 칸을 확보한다), 640px 미만은 카드 맨 위 전체 폭에 2.4:1(360px 화면에서 높이 136px. 폭이 달라도 위아래가 같은 비율로 조금 잘린다). 이미지를 눌러도 글로 가며, 키보드와 화면 낭독기에는 제목 링크 하나만 남긴다. 없으면 빈 자리 없이 글을 넓게 쓴다. 썸네일은 장식(`alt=""`, `aria-hidden`)이고 첫 카드만 바로 불러온다(2026-11-26 작성자 결정). 목록(홈·n페이지)은 페이지당 5개(2026-11-25 작성자 결정). 페이지네이션도 링크 |
 | 글 | h1, 작성자, 발행일과 수정일, disclosure(있으면 제목 바로 아래), 본문(§6.1), 태그 링크, 이전/다음 글 |
 | 아카이브 | 연도별로 묶은 전체 글(날짜는 월·일). 연도는 제목(h2) |
-| 소개 | 운영자, 사이트 목적, 제작 방식(AI 보조와 사람 검수). 연락처는 두지 않는다. 문의는 푸터의 문의 페이지, GitHub는 사이드바에 있고 768px 미만(사이드바 숨김)에서는 푸터에 보인다(2026-11-27 작성자 결정) |
+| 소개 | 운영자, 사이트 목적, 제작 방식(AI 보조와 사람 검수). 그 아래에 공개 MCP 서버 연결 안내(D18: 주소, 연결 방법, 예시 질문, 제한과 주의, 처리방침·서버 코드 링크). 연락처는 두지 않는다. 문의는 푸터의 문의 페이지, GitHub는 사이드바에 있고 768px 미만(사이드바 숨김)에서는 푸터에 보인다(2026-11-27 작성자 결정) |
 | 문의 | 실제로 확인하는 이메일 주소(`site.config.ts`의 `email`). 폼은 v1 이후 |
-| 개인정보 처리방침 | 수집 항목, 제3자 서비스, 시행일. 광고를 넣을 때 AdSense 필수 고지를 추가한다. 법령과 AdSense 요건은 작성 시점에 공식 문서로 확인한다 |
+| 개인정보 처리방침 | 수집 항목, 제3자 서비스(공개 MCP 서버 호스팅 Render 포함), 시행일. 광고를 넣을 때 AdSense 필수 고지를 추가한다. 법령과 AdSense 요건은 작성 시점에 공식 문서로 확인한다 |
 | 이용약관 | 저작권, 면책, 제휴 고지 |
 | 404 | 안내 문구, 홈과 아카이브 링크 |
 
@@ -432,7 +432,7 @@ slug 규칙:
 | D15 | 모바일 UI | 하단 탭 바, 목록 필터(카테고리·태그 시트), 목차 바텀 시트, 숨는 헤더, 페이지 전환. Phase 3 마지막(§6.2) | 승인 (2026-11-25) |
 | D16 | 검색 | 헤더 버튼 + ⌘K + 검색 창, 모바일 전체 화면, Pagefind. 모바일 UI 완성을 위해 Phase 3으로 당김(§6.3) | 승인 (2026-11-25) |
 | D17 | 댓글 | Giscus(GitHub Discussions, GitHub 로그인). 로그인이 봇·도배 방지를 겸하고, 회원 정보를 직접 보관하지 않으며, 서버가 필요 없다. 비개발자 독자의 익명 댓글 요구가 실제로 생기면 이름+비밀번호(수정·삭제용)+Turnstile+횟수 제한+첫 댓글 승인을 갖춘 직접 구현을 그때 검토한다. 설정(2026-11-26): 저장소 Discussions의 `Comments` 카테고리(Announcement 형식), 값은 `site.config.ts`. 원문과 번역본은 댓글을 함께 쓴다(`mapping: specific`, 제목은 slug, `strict`). 댓글은 검색 노출 대상이 아니라서 언어로 나누지 않는다. 화면 문구만 글의 언어를 따른다. §8 스크립트와 개인정보 처리방침에 giscus를 넣었다 | 승인 (2026-11-26) |
-| D18 | AI 독자 대응 | 공개 읽기 전용 MCP 서버(도구: `search_posts`, `get_post`, `list_posts`)를 `cheyoon-mcp`(TypeScript, 호스팅은 배포할 때 결정)에 둔다(2026-11-27 변경. 처음에는 `blog-backend`(Go)였다). 사이트 빌드가 공개 글만 담은 `/data/posts.json`을 만들고 서버가 그것을 읽는다. 형식: `{generatedAt, site, posts: [{slug, lang, url, title, description, category: {slug, name}, tags, publishedAt, updatedAt|null, translations: {<lang>: url}, body}]}`(필드 camelCase, `body`는 frontmatter를 뺀 Markdown 원문, 한 파일에 전체 글. 수백 편 규모에서 서버가 한 번 받아 메모리에서 검색하기 위함. 몇 MB를 넘으면 목록과 본문을 나눈다). DB 없음. 답은 독자의 AI가 만들므로 블로그는 API 비용을 내지 않는다. 사이트 안 질문 위젯(블로그가 API 비용 부담)과 `llms.txt`·글 Markdown 공개(2026-11 조사에서 꾸준히 읽는 AI가 Claude Code뿐)는 하지 않는다. 사이트 데이터 파일과 로컬 연습은 단계와 관계없이 먼저 해도 되고, 배포는 첫 글 발행 뒤(ROADMAP Phase 5) | 승인 (2026-11-26) |
+| D18 | AI 독자 대응 | 공개 읽기 전용 MCP 서버(도구: `search_posts`, `get_post`, `list_posts`)를 `cheyoon-mcp`(TypeScript, 호스팅은 Render 무료)에 둔다(2026-11-27 변경. 처음에는 `blog-backend`(Go)였다). 사이트 빌드가 공개 글만 담은 `/data/posts.json`을 만들고 서버가 그것을 읽는다. 형식: `{generatedAt, site, posts: [{slug, lang, url, title, description, category: {slug, name}, tags, publishedAt, updatedAt|null, translations: {<lang>: url}, body}]}`(필드 camelCase, `body`는 frontmatter를 뺀 Markdown 원문, 한 파일에 전체 글. 수백 편 규모에서 서버가 한 번 받아 메모리에서 검색하기 위함. 몇 MB를 넘으면 목록과 본문을 나눈다). DB 없음. 답은 독자의 AI가 만들므로 블로그는 API 비용을 내지 않는다. 사이트 안 질문 위젯(블로그가 API 비용 부담)과 `llms.txt`·글 Markdown 공개(2026-11 조사에서 꾸준히 읽는 AI가 Claude Code뿐)는 하지 않는다. 사이트 데이터 파일과 로컬 연습은 단계와 관계없이 먼저 해도 되고, 배포는 첫 글 발행 뒤(ROADMAP Phase 5). 연결 방법은 소개 페이지에서 안내한다(2026-11-27) | 승인 (2026-11-26) |
 
 ## 12. 완료 정의 (모든 기능 공통)
 

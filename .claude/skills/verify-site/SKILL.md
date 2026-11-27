@@ -1,6 +1,6 @@
 ---
 name: verify-site
-description: Astro 사이트 변경 후 검증한다(콘텐츠 검사, 타입 검사, 템플릿 검증 빌드, 배포 빌드, HTML 검사). 코드·글·설정을 바꾼 뒤, 커밋 전, create-pr 전에 사용한다.
+description: Astro 사이트 변경 후 검증한다(콘텐츠 검사, MCP·LinkedIn 테스트, 타입 검사, 템플릿 검증 빌드, 배포 빌드, HTML 검사). 코드·글·설정을 바꾼 뒤, 커밋 전, create-pr 전에 사용한다.
 ---
 
 # 사이트 검증

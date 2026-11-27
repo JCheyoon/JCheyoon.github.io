@@ -146,10 +146,10 @@
 - [ ] 첫 글 작성 → `review-post` → `publish-post`(번역 초안 검수 뒤 두 언어 함께 발행) → LinkedIn 게시
   - 2026-11-26 첫 글 `why-astro`(한국어·영어) 발행. LinkedIn 게시는 남음
 - [x] 라이브 글 페이지 확인 (curl로 본문, title, description, canonical, hreflang) (2026-11-26)
-- [x] Search Console 등록 (`https://jcheyoon.github.io` URL 접두어 속성), sitemap 제출 (2026-11-26. 색인 확인은 남음)
+- [x] Search Console 등록 (`https://jcheyoon.github.io` URL 접두어 속성), sitemap 제출 (등록 2026-11-26, `sitemap-index.xml` 제출 2026-11-27. 색인 확인은 남음)
 - [ ] 네이버 서치어드바이저 등록(HTML 태그 확인), sitemap·RSS 제출. 확인 태그는 2026-11-27 추가, 배포 뒤 소유 확인과 제출은 작성자가 한다
 - [x] 댓글: Giscus(SPEC D17, 2026-11-26 결정). 첫 글 발행 뒤 붙인다. 처리방침·SPEC §8에 giscus 추가 (2026-11-26)
-- [ ] 쿠키 없는 방문 통계(후보: Cloudflare Web Analytics). 붙일 때 공식 문서로 확인하고, 개인정보 처리방침과 SPEC §8에 추가
+- [x] 방문 통계: 보류. Search Console 실적 보고서로 대체하고, 필요하면 Phase 6에서 다시 검토한다 (2026-11-27 작성자 결정)
 - [ ] 공개 읽기 전용 MCP 서버 (SPEC D18). 사이트 데이터 파일과 백엔드 로컬 연습은 단계와 관계없이 먼저 시작해도 된다(2026-11-26 작성자 결정)
   - [x] 사이트: 빌드가 공개 글 데이터(`/data/posts.json`)를 만든다(2026-11-26)
   - 백엔드(작성자가 Go로 직접): `/mcp`에 `search_posts`·`get_post`·`list_posts`, 횟수 제한. 로컬에서 Claude Code로 연결해 확인
@@ -167,6 +167,7 @@
   - `SITE_URL` 변경, CNAME/DNS 설정
   - github.io → 도메인 리다이렉트 확인
   - Search Console 주소 변경 절차 확인
+- [ ] 방문 통계 다시 검토 (Phase 5에서 보류, Search Console로 대체 중). 쿠키를 쓰는 도구면 CMP 설정과 함께 한다
 - [ ] AdSense 신청, Google CMP 설정 (EEA·UK·스위스), 개인정보 처리방침에 광고 조항 추가
 - [ ] 높이를 고정한 광고 슬롯 (본문 첫 문단 뒤, 글 끝, 데스크톱 사이드바)
 - [ ] 제휴 글 (직접 써 본 비교·후기만)

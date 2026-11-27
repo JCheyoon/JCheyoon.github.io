@@ -147,6 +147,7 @@
   - 2026-11-26 첫 글 `why-astro`(한국어·영어) 발행. LinkedIn 게시는 남음
 - [x] 라이브 글 페이지 확인 (curl로 본문, title, description, canonical, hreflang) (2026-11-26)
 - [x] Search Console 등록 (`https://jcheyoon.github.io` URL 접두어 속성), sitemap 제출 (2026-11-26. 색인 확인은 남음)
+- [ ] 네이버 서치어드바이저 등록(HTML 태그 확인), sitemap·RSS 제출. 확인 태그는 2026-11-27 추가, 배포 뒤 소유 확인과 제출은 작성자가 한다
 - [x] 댓글: Giscus(SPEC D17, 2026-11-26 결정). 첫 글 발행 뒤 붙인다. 처리방침·SPEC §8에 giscus 추가 (2026-11-26)
 - [ ] 쿠키 없는 방문 통계(후보: Cloudflare Web Analytics). 붙일 때 공식 문서로 확인하고, 개인정보 처리방침과 SPEC §8에 추가
 - [ ] 공개 읽기 전용 MCP 서버 (SPEC D18). 사이트 데이터 파일과 백엔드 로컬 연습은 단계와 관계없이 먼저 시작해도 된다(2026-11-26 작성자 결정)

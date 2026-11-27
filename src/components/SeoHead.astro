@@ -48,8 +48,9 @@ const serialize = (data: Record<string, unknown>) => JSON.stringify(data).replac
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
-{/* Search Console은 홈에서 확인한다 */}
+{/* Search Console과 네이버 서치어드바이저는 홈에서 확인한다 */}
 {isHome && <meta name="google-site-verification" content={site.googleSiteVerification} />}
+{isHome && <meta name="naver-site-verification" content={site.naverSiteVerification} />}
 <link rel="canonical" href={canonical} />
 {
   alternate && (

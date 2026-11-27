@@ -55,14 +55,15 @@ Astro 빌드 (GitHub Actions)  ── 스키마 검증이 실패하면 빌드 �
    ▼
 정적 HTML/CSS (+ 최소 JS) ──→ GitHub Pages (https://jcheyoon.github.io, Phase 6에서 커스텀 도메인 연결)
 
-빌드 ──→ 공개 글 데이터 /data/posts.json (공개 글만) ◀── blog-backend 공개 MCP 서버 /mcp (D18) ◀── 독자의 AI 앱(커넥터)
+빌드 ──→ 공개 글 데이터 /data/posts.json (공개 글만) ◀── cheyoon-mcp 공개 MCP 서버 /mcp (D18) ◀── 독자의 AI 앱(커넥터)
 
 작성자 ── MCP 클라이언트(Claude Code 등) ── 블로그 MCP 서버(mcp/, 로컬 stdio) ──→ 저장소 파일·검사
 ```
 
 - 독자가 글을 볼 때 백엔드나 DB를 거치지 않는다.
 - 사이트 저장소는 `JCheyoon.github.io`이다. 기존 Vite SPA는 `legacy/spa/`에 보관했다가 2026-11-26에 삭제했다(D7, git 기록 `19ddd8b`).
-- `blog-backend`는 공개 읽기 전용 MCP 서버를 위해 유지한다(D18). 작성자가 연습을 겸해 Go로 직접 만든다. DB는 쓰지 않고, 사이트 빌드가 공개하는 글 데이터 파일을 읽는다. DB(Supabase)·REST API·질문하기·관리자 API는 2026-11-26 정리 브랜치(`chore/slim-backend`)에서 지웠다. 그 PR이 merge되어야 배포된 서버에서도 사라진다.
+- 공개 읽기 전용 MCP 서버는 [`cheyoon-mcp`](https://github.com/JCheyoon/cheyoon-mcp) 저장소에 TypeScript로 만든다(D18). 작성자가 만든 MCP 서버를 모아 보여 주는 저장소다. DB는 쓰지 않고, 사이트 빌드가 공개하는 글 데이터 파일을 읽는다. 호스팅은 배포할 때 정한다(GitHub Pages는 서버를 실행하지 못한다).
+- 예전 `blog-backend`(Go, DB·REST API·관리자 API)는 쓰지 않는다. 2026-11-27에 공개 MCP 서버를 `cheyoon-mcp`(TypeScript)로 옮기기로 했다. 작성자의 다른 프로젝트가 React·React Native라서 같은 언어로 정했다.
 - 블로그 MCP 서버는 독자에게 보이지 않는 작성자용 도구다. 사이트 저장소의 `mcp/`에 둔다(D10, §9.4).
 
 ### 3.1 배포 방식과 브랜치
@@ -431,7 +432,7 @@ slug 규칙:
 | D15 | 모바일 UI | 하단 탭 바, 목록 필터(카테고리·태그 시트), 목차 바텀 시트, 숨는 헤더, 페이지 전환. Phase 3 마지막(§6.2) | 승인 (2026-11-25) |
 | D16 | 검색 | 헤더 버튼 + ⌘K + 검색 창, 모바일 전체 화면, Pagefind. 모바일 UI 완성을 위해 Phase 3으로 당김(§6.3) | 승인 (2026-11-25) |
 | D17 | 댓글 | Giscus(GitHub Discussions, GitHub 로그인). 로그인이 봇·도배 방지를 겸하고, 회원 정보를 직접 보관하지 않으며, 서버가 필요 없다. 비개발자 독자의 익명 댓글 요구가 실제로 생기면 이름+비밀번호(수정·삭제용)+Turnstile+횟수 제한+첫 댓글 승인을 갖춘 직접 구현을 그때 검토한다. 설정(2026-11-26): 저장소 Discussions의 `Comments` 카테고리(Announcement 형식), 값은 `site.config.ts`. 원문과 번역본은 댓글을 함께 쓴다(`mapping: specific`, 제목은 slug, `strict`). 댓글은 검색 노출 대상이 아니라서 언어로 나누지 않는다. 화면 문구만 글의 언어를 따른다. §8 스크립트와 개인정보 처리방침에 giscus를 넣었다 | 승인 (2026-11-26) |
-| D18 | AI 독자 대응 | 공개 읽기 전용 MCP 서버(도구: `search_posts`, `get_post`, `list_posts`)를 `blog-backend`(Go, Render)에 둔다. 사이트 빌드가 공개 글만 담은 `/data/posts.json`을 만들고 서버가 그것을 읽는다. 형식: `{generatedAt, site, posts: [{slug, lang, url, title, description, category: {slug, name}, tags, publishedAt, updatedAt|null, translations: {<lang>: url}, body}]}`(필드 camelCase, `body`는 frontmatter를 뺀 Markdown 원문, 한 파일에 전체 글. 수백 편 규모에서 서버가 한 번 받아 메모리에서 검색하기 위함. 몇 MB를 넘으면 목록과 본문을 나눈다). DB 없음. 답은 독자의 AI가 만들므로 블로그는 API 비용을 내지 않는다. 사이트 안 질문 위젯(블로그가 API 비용 부담)과 `llms.txt`·글 Markdown 공개(2026-11 조사에서 꾸준히 읽는 AI가 Claude Code뿐)는 하지 않는다. 사이트 데이터 파일과 로컬 연습은 단계와 관계없이 먼저 해도 되고, 배포는 첫 글 발행 뒤(ROADMAP Phase 5) | 승인 (2026-11-26) |
+| D18 | AI 독자 대응 | 공개 읽기 전용 MCP 서버(도구: `search_posts`, `get_post`, `list_posts`)를 `cheyoon-mcp`(TypeScript, 호스팅은 배포할 때 결정)에 둔다(2026-11-27 변경. 처음에는 `blog-backend`(Go)였다). 사이트 빌드가 공개 글만 담은 `/data/posts.json`을 만들고 서버가 그것을 읽는다. 형식: `{generatedAt, site, posts: [{slug, lang, url, title, description, category: {slug, name}, tags, publishedAt, updatedAt|null, translations: {<lang>: url}, body}]}`(필드 camelCase, `body`는 frontmatter를 뺀 Markdown 원문, 한 파일에 전체 글. 수백 편 규모에서 서버가 한 번 받아 메모리에서 검색하기 위함. 몇 MB를 넘으면 목록과 본문을 나눈다). DB 없음. 답은 독자의 AI가 만들므로 블로그는 API 비용을 내지 않는다. 사이트 안 질문 위젯(블로그가 API 비용 부담)과 `llms.txt`·글 Markdown 공개(2026-11 조사에서 꾸준히 읽는 AI가 Claude Code뿐)는 하지 않는다. 사이트 데이터 파일과 로컬 연습은 단계와 관계없이 먼저 해도 되고, 배포는 첫 글 발행 뒤(ROADMAP Phase 5) | 승인 (2026-11-26) |
 
 ## 12. 완료 정의 (모든 기능 공통)
 

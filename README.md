@@ -27,7 +27,7 @@ I draft, check, and translate posts with the **MCP server** in this repository a
 - **SEO:** canonical URLs, Open Graph, JSON-LD, sitemap, RSS
 - **Publishing guards:** a post without a review record can't be published, and the build check fails if a draft ends up in the deployed output.
 - **LinkedIn sharing:** only the English posts I choose are posted automatically after deployment.
-- **Post data:** published posts are available at [`/data/posts.json`](https://jcheyoon.github.io/data/posts.json). It is the data source for a public MCP server ([blog-backend](https://github.com/JCheyoon/blog-backend), Go) that will let readers search posts from their own AI apps. The server is still in progress.
+- **Post data:** published posts are available at [`/data/posts.json`](https://jcheyoon.github.io/data/posts.json). It is the data source for a public MCP server ([cheyoon-mcp](https://github.com/JCheyoon/cheyoon-mcp)) that will let readers search posts from their own AI apps. The server is still in progress.
 
 ## Why Korean and English have separate URLs
 

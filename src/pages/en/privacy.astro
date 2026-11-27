@@ -3,13 +3,13 @@
 import InfoPage from "../../components/InfoPage.astro";
 import { site } from "../../site.config";
 
-const effective = "November 26, 2026";
+const effective = "November 27, 2026";
 ---
 
 <InfoPage title="Privacy Policy" description={`How ${site.name} handles personal information.`} lang="en" alternate="/privacy/">
   <p>
-    {site.name} ("this blog") is a personal blog. There are no accounts, and it does not use cookies or analytics tools. I receive personal information only when you
-    contact me by email or post a comment.
+    {site.name} ("this blog") is a personal blog. There are no accounts, and it does not use cookies or analytics tools. Personal information is processed when you
+    contact me by email, post a comment, or connect an AI app to this blog's MCP server.
   </p>
 
   <h2>1. What I collect and why</h2>
@@ -21,6 +21,14 @@ const effective = "November 26, 2026";
     <li>What: your GitHub username and profile picture, your comment, and when you posted it, when you comment or react</li>
     <li>Why: to show comments, reply to them, and prevent spam</li>
   </ul>
+  <ul>
+    <li>What: your IP address, and the search terms and requests your AI app sends, when you use the <a href="/en/about/">MCP server</a></li>
+    <li>Why: to answer requests to search and read posts, and to limit the number of requests</li>
+  </ul>
+  <p>
+    If you connect through an AI service's servers, such as a claude.ai connector, the server receives that service's IP address instead of yours. Search terms may contain part of what
+    you asked your AI, so do not include personal information. The AI service handles data under its own policy.
+  </p>
   <p>
     Comments are saved through giscus to GitHub Discussions in this blog's repository. The repository is public, so <strong>anyone can see your comments and GitHub username.</strong>
   </p>
@@ -31,13 +39,17 @@ const effective = "November 26, 2026";
     <li>I keep messages for one year after I reply, then delete them from my mailbox.</li>
     <li>If you ask me to delete your message, I will delete it right away.</li>
     <li>Messages are kept only as email, and are deleted from the mailbox and its trash.</li>
+    <li>
+      The MCP server program keeps IP addresses only in memory to limit requests. They are cleared when the next request arrives after the one-minute window, or when the server stops.
+      Search terms are used only to answer and are not saved. The program's logs do not include IP addresses or search terms, only records such as status, request type, and processing time.
+    </li>
   </ul>
 
   <h2>3. Sharing</h2>
   <p>I do not share your personal information with anyone.</p>
 
   <h2>4. Services this blog uses</h2>
-  <p>This blog uses the services below. GitHub and Google are in the United States. Each service handles data under its own privacy policy.</p>
+  <p>This blog uses the services below. GitHub, Google, and Render are U.S. companies. Each service handles data under its own privacy policy.</p>
   <ul>
     <li>
       GitHub (GitHub, Inc.): hosting (GitHub Pages) and storing comments (Discussions). GitHub logs visitors' IP addresses for security purposes (<a
@@ -53,17 +65,21 @@ const effective = "November 26, 2026";
       >
     </li>
     <li>
+      Render: hosting the MCP server. When you use it, your IP address and requests pass through Render's infrastructure (including Cloudflare in front of it). Nothing is sent if you do
+      not use the MCP server. See Render's policy for where it processes data and how long it keeps it. <a href="https://render.com/privacy" target="_blank" rel="noopener">Render Privacy Policy</a>
+    </li>
+    <li>
       Google (Google LLC): receiving and storing contact email (Gmail). <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>
     </li>
   </ul>
   <p>Details of the transfer outside Korea:</p>
   <ul>
-    <li>Country: United States (GitHub, Google). I have not confirmed where the giscus servers are.</li>
-    <li>Data: your IP address when you visit (GitHub); your username and comments (GitHub); your IP address and the address of the page you are viewing when the comments load (giscus); your email address, name, and message when you email me (Google)</li>
-    <li>When and how: sent over the network when you visit the site, load the comments, post a comment, or send an email</li>
-    <li>Retention: GitHub keeps access logs under its own policy. Comments and emails follow section 2. The giscus privacy policy says it does not collect or store data.</li>
+    <li>Country: United States (GitHub, Google, Render). I have not confirmed where the giscus servers are. See Render's policy for where it processes data.</li>
+    <li>Data: your IP address when you visit (GitHub); your username and comments (GitHub); your IP address and the address of the page you are viewing when the comments load (giscus); your email address, name, and message when you email me (Google); your IP address, search terms, and requests sent to the MCP server (Render)</li>
+    <li>When and how: sent over the network when you visit the site, load the comments, post a comment, send an email, or use the MCP server</li>
+    <li>Retention: GitHub keeps access logs under its own policy. Comments and emails follow section 2. The giscus privacy policy says it does not collect or store data. Render keeps data it processes itself under its own policy.</li>
     <li>Contact: each company's privacy policy page (links above)</li>
-    <li>How to refuse: do not visit the site, post comments, or send an email. In that case you cannot use the site, comment, or contact me. To stop only the transfer to giscus, block giscus.app with a content blocker. The comments will be hidden, and you can still read the post.</li>
+    <li>How to refuse: do not visit the site, post comments, or send an email. In that case you cannot use the site, comment, or contact me. To avoid the transfer to Render, do not connect the MCP server. You can still read the posts on the site. To stop only the transfer to giscus, block giscus.app with a content blocker. The comments will be hidden, and you can still read the post.</li>
   </ul>
 
   <h2>5. Cookies and browser storage</h2>
